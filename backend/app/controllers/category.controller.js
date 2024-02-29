@@ -13,7 +13,7 @@ class CategoryController {
             });
         }
         catch(error) {
-            return new BadRequestError('Error when fetching categories.');
+            throw new BadRequestError('Error when fetching categories.');
         }
     }
     async store(req, res, next) {
@@ -26,7 +26,7 @@ class CategoryController {
             });
         }
         catch(error) {
-            return new BadRequestError('Error when creating  category.');
+            throw new BadRequestError('Error when creating  category.');
         }
     }
     async update(req, res) {
@@ -39,7 +39,7 @@ class CategoryController {
             });
         }
         catch(error) {
-            return new BadRequestError('Error when updating category.');
+            throw new BadRequestError('Error when updating category.');
         }
     }
 
@@ -53,7 +53,7 @@ class CategoryController {
             });
         }
         catch(error) {
-            return new BadRequestError('Error when deleting category.');
+            throw new BadRequestError('Error when deleting category.');
         }
     }
 }

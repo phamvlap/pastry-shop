@@ -4,6 +4,7 @@ import 'dotenv/config';
 
 import connectDB from './db/index.js';
 import categoryRoute from './routes/categories.route.js';
+import discountRoute from './routes/discounts.route.js';
 import userRoute from './routes/users.route.js';
 import productRoute from './routes/products.route.js';
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // routes
 app.use('/api/v1/categories', categoryRoute);
+app.use('/api/v1/discounts', discountRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/products', productRoute);
 
