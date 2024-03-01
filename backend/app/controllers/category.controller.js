@@ -13,37 +13,36 @@ class CategoryController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when fetching categories.');
+            next(new BadRequestError(error.message);)
         }
     }
     async store(req, res, next) {
         try {
             const categoryModel = new CategoryModel();
             await categoryModel.create(req.body);
-            return res.status(StatusCodes.CREATED).json({
+            res.status(StatusCodes.CREATED).json({
                 status: 'success',
                 message: 'Category created successfully.',
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when creating  category.');
+            next(new BadRequestError(error.message));
         }
     }
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             const categoryModel = new CategoryModel();
             await categoryModel.update(req.params.id, req.body);
-            return res.status(StatusCodes.OK).json({
+            res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Category updated successfully.',
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when updating category.');
+            next(new BadRequestError(error.message));
         }
     }
-
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             const categoryModel = new CategoryModel();
             await categoryModel.delete(req.params.id);
@@ -53,7 +52,7 @@ class CategoryController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when deleting category.');
+            next(new BadRequestError(error.message));
         }
     }
 }

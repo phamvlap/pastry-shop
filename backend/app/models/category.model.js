@@ -1,4 +1,5 @@
 import connectDB from './../db/index.js';
+import Validator from './validator.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -13,60 +14,49 @@ class Category {
         };
         return category;
     }
+    // validate
+    async validateData(data) {
+        const category = this.extractCategoryData(data);
+        const validator = new Validator();
+        validator.isLeastLength('category_name', category.category_name, 3);
+        const errors = validator.getErrors();
+        return { category, errors };
+    }
     // get all
     async getAll() {
-        try {
-            const preparedStmt = `select * from ${this.table}`;
-            const [rows] = await connection.execute(preparedStmt);
-            return rows;
-        }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `select * from ${this.table}`;
+        const [rows] = await connection.execute(preparedStmt);
+        return rows;
     }
     // create
     async create(data) {
-        try {
-            const category = this.extractCategoryData(data);
-            const preparedStmt = `insert into ${this.table} (${Object.keys(category).join(', ')}) values (${Object.keys(category).map(key => `:${key}`).join(', ')})`;
-            connection.execute(preparedStmt, category, (error, rows) => {
-                console.log(rows);
-            });
+        const { category, errors } = await this.validateData(data);
+        if(errors.length > 0) {
+            const errorMessage = errors.map(error => error.msg).join(' ');
+            throw new Error(errorMessage);
         }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `insert into ${this.table} (${Object.keys(category).join(', ')}) values (${Object.keys(category).map(key => `:${key}`).join(', ')})`;
+        connection.execute(preparedStmt, category);
     }
     // update
     async update(id, data) {
-        try {
-            const category = this.extractCategoryData(data);
-            const preparedStmt = `update ${this.table} set ${Object.keys(category).map(key => `${key} = :${key}`).join(', ')} where category_id = :category_id`;
-            console.log(preparedStmt);
-            connection.execute(preparedStmt, {
-                    ...category,
-                    category_id: id,
-                }, (error, rows) => {
-                        console.log(rows);
-                });
+        const { category, errors } = await this.validateData(data);
+        if(errors.length > 0) {
+            const errorMessage = errors.map(error => error.msg).join(' ');
+            throw new Error(errorMessage);
         }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `update ${this.table} set ${Object.keys(category).map(key => `${key} = :${key}`).join(', ')} where category_id = :category_id`;
+        connection.execute(preparedStmt, {
+                ...category,
+                category_id: id,
+            });
     }
     // delete
     async delete(id) {
-        try {
-            const preparedStmt = `delete from ${this.table} where category_id = :category_id`;
-            connection.execute(preparedStmt, {
-                category_id: id,
-            }, (err, rows) => {
-                console.log(rows);
-            });
-        }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `delete from ${this.table} where category_id = :category_id`;
+        connection.execute(preparedStmt, {
+            category_id: id,
+        });
     }
 }
 

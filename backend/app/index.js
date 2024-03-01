@@ -7,6 +7,7 @@ import categoryRoute from './routes/categories.route.js';
 import discountRoute from './routes/discounts.route.js';
 import userRoute from './routes/users.route.js';
 import productRoute from './routes/products.route.js';
+import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.use('/api/v1/categories', categoryRoute);
 app.use('/api/v1/discounts', discountRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/products', productRoute);
+
+app.use(errorHandler);
 
 const port = process.env.PORT || 3000;
 const startServer = async () => {
