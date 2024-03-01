@@ -38,6 +38,14 @@ class Validator {
             });
         }
     }
+    checkPeriod(startFieldName, endFieldName, startDate, endDate) {
+        if(startDate > endDate) {
+            this.errors.push({
+                fieldName: startFieldName + endFieldName,
+                msg: `${this.formatFieldName(startFieldName)} must be less than ${this.formatFieldName(endFieldName)}.`,
+            });
+        }
+    }
     getErrors() {
         return this.errors;
     }

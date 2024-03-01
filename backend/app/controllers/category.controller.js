@@ -13,7 +13,7 @@ class CategoryController {
             });
         }
         catch(error) {
-            next(new BadRequestError(error.message);)
+            next(new BadRequestError(error.message));
         }
     }
     async store(req, res, next) {

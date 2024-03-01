@@ -1,4 +1,5 @@
 import connectDB from './../db/index.js';
+import Validator from './validator.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -9,86 +10,86 @@ class Discount {
     }
     extractDiscountData(payload) {
         const discount = {
-            discount_code: payload.code?.toUpperCase(),
-            discount_rate: Math.round(parseFloat(payload.rate) * 100) / 100,
-            discount_limit: parseInt(payload.limit),
+            discount_code: payload.code,
+            discount_rate: payload.rate,
+            discount_limit: payload.limit,
             discount_start: payload.start,
             discount_end: payload.end,
         };
         Object.keys(discount).forEach(key => {
-            if(discount[key] === undefined || isNaN(discount[key])) {
+            if(discount[key] === undefined) {
                 delete discount[key];
             }
         });
         return discount;
     }
+    validateDiscountData(data) {
+        const discount = this.extractDiscountData(data);
+        const validator = new Validator();
+        if(discount.discount_code) {
+            validator.length('discount_code', discount.discount_code, 5, 20);
+        }
+        if(discount.discount_start && discount.discount_end) {
+            validator.checkPeriod('discount_start', 'discount_end', discount.discount_start, discount.discount_end);
+        }
+
+        const errors = validator.getErrors();
+
+        if(discount.discount_code) {
+            discount.discount_code = discount.discount_code.toUpperCase();
+        }
+        if(discount.discount_rate) {
+            discount.discount_rate = parseFloat(discount.discount_rate).toFixed(2);
+        }
+        if(discount.discount_limit) {
+            discount.discount_limit = parseInt(discount.discount_limit);
+        }
+
+        return { discount, errors };
+    }
     // get all
     async getAll() {
-        try {
-            const preparedStmt = `select * from ${this.table}`;
-            const [rows] = await connection.execute(preparedStmt);
-            return rows;
-        }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `select * from ${this.table}`;
+        const [rows] = await connection.execute(preparedStmt);
+        return rows;
     }
     // get
-    async get() {
-        try {
-            const preparedStmt = `select * from ${this.table} where discount_id = :discount_id`;
-            const [rows] = await connection.execute(preparedStmt, {
-                discount_id: id,
-            });
-            return rows;
-        }
-        catch(error) {
-            console.log(error);
-        }
+    async get(id) {
+        const preparedStmt = `select * from ${this.table} where discount_id = :discount_id`;
+        const [rows] = await connection.execute(preparedStmt, {
+            discount_id: id,
+        });
+        return rows;
     }
     // create
     async create(data) {
-        try {
-            const discount = this.extractDiscountData(data);
-            const preparedStmt = `insert into ${this.table} (${Object.keys(discount).join(', ')}) values (${Object.keys(discount).map(key => `:${key}`).join(', ')})`;
-            connection.execute(preparedStmt, discount, (error, rows) => {
-                console.log(rows);
-            });
+        const { discount, errors } = this.validateDiscountData(data);
+        if(errors.length > 0) {
+            const errorMessage = errors.map(error => error.msg).join(' ');
+            throw new Error(errorMessage);
         }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `insert into ${this.table} (${Object.keys(discount).join(', ')}) values (${Object.keys(discount).map(key => `:${key}`).join(', ')})`;
+        connection.execute(preparedStmt, discount);
     }
     // update
     async update(id, data) {
-        try {
-            const discount = this.extractDiscountData(data);
-            console.log(discount)
-            const preparedStmt = `update ${this.table} set ${Object.keys(discount).map(key => `${key} = :${key}`).join(', ')} where discount_id = :discount_id`;
-            connection.execute(preparedStmt, {
-                    ...discount,
-                    discount_id: id,
-                }, (error, rows) => {
-                        console.log(rows);
-                });
+        const { discount, errors } = this.validateDiscountData(data);
+        if(errors.length > 0) {
+            const errorMessage = errors.map(error => error.msg).join(' ');
+            throw new Error(errorMessage);
         }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `update ${this.table} set ${Object.keys(discount).map(key => `${key} = :${key}`).join(', ')} where discount_id = :discount_id`;
+        connection.execute(preparedStmt, {
+                ...discount,
+                discount_id: id,
+            });
     }
     // delete
     async delete(id) {
-        try {
-            const preparedStmt = `delete from ${this.table} where discount_id = :discount_id`;
-            connection.execute(preparedStmt, {
-                discount_id: id,
-            }, (err, rows) => {
-                console.log(rows);
-            });
-        }
-        catch(error) {
-            console.log(error);
-        }
+        const preparedStmt = `delete from ${this.table} where discount_id = :discount_id`;
+        connection.execute(preparedStmt, {
+            discount_id: id,
+        });
     }
 }
 

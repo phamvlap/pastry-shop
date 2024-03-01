@@ -13,7 +13,7 @@ class DiscountController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when fetching discounts.');
+            next(new BadRequestError(error.message));
         }
     }
     async get(req, res, next) {
@@ -26,7 +26,7 @@ class DiscountController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when fetching discount.');
+            next(new BadRequestError(error.message));
         }
     }
     async store(req, res, next) {
@@ -39,10 +39,10 @@ class DiscountController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when creating  discount.');
+            next(new BadRequestError(error.message));
         }
     }
-    async update(req, res) {
+    async update(req, res, next) {
         try {
             const discountModel = new DiscountModel();
             await discountModel.update(req.params.id, req.body);
@@ -52,11 +52,11 @@ class DiscountController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when updating discount.');
+            next(new BadRequestError(error.message));
         }
     }
 
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
             const discountModel = new DiscountModel();
             await discountModel.delete(req.params.id);
@@ -66,7 +66,7 @@ class DiscountController {
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when deleting discount.');
+            next(new BadRequestError(error.message));
         }
     }
 }
