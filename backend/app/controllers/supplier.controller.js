@@ -1,74 +1,73 @@
 import { StatusCodes } from 'http-status-codes';
-import DiscountModel from './../models/discount.model.js';
+import SupplierModel from './../models/supplier.model.js';
 import { BadRequestError } from './../errors/index.js';
 
-class DiscountController {
+class SupplierController {
     async index(req, res, next) {
         try {
-            const discountModel = new DiscountModel();
-            const discounts = await discountModel.getAll();
+            const supplierModel = new SupplierModel();
+            const suppliers = await supplierModel.getAll();
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                data: discounts,
+                data: suppliers,
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when fetching discounts.');
+            next(new BadRequestError(error.message));
         }
     }
     async get(req, res, next) {
         try {
-            const discountModel = new DiscountModel();
-            const discount = await discountModel.get(req.params.id);
+            const supplierModel = new SupplierModel();
+            const supplier = await supplierModel.get(req.params.id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                data: discount,
+                data: supplier,
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when fetching discount.');
+            next(new BadRequestError(error.message));
         }
     }
     async store(req, res, next) {
         try {
-            const discountModel = new DiscountModel();
-            await discountModel.create(req.body);
+            const supplierModel = new SupplierModel();
+            await supplierModel.create(req.body);
             return res.status(StatusCodes.CREATED).json({
                 status: 'success',
-                message: 'Discount created successfully.',
+                message: 'Supplier created successfully.',
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when creating  discount.');
+            next(new BadRequestError(error.message));
         }
     }
-    async update(req, res) {
+    async update(req, res, next) {
         try {
-            const discountModel = new DiscountModel();
-            await discountModel.update(req.params.id, req.body);
+            const supplierModel = new SupplierModel();
+            await supplierModel.update(req.params.id, req.body);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                message: 'Discount updated successfully.',
+                message: 'Supplier updated successfully.',
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when updating discount.');
+            next(new BadRequestError(error.message));
         }
     }
-
-    async delete(req, res) {
+    async delete(req, res, next) {
         try {
-            const discountModel = new DiscountModel();
-            await discountModel.delete(req.params.id);
+            const supplierModel = new SupplierModel();
+            await supplierModel.delete(req.params.id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                message: 'Discount deleted successfully.',
+                message: 'Supplier deleted successfully.',
             });
         }
         catch(error) {
-            throw new BadRequestError('Error when deleting discount.');
+            next(new BadRequestError(error.message));
         }
     }
 }
 
-export default new DiscountController();
+export default new SupplierController();

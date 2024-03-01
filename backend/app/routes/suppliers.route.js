@@ -1,12 +1,12 @@
 import express from 'express';
-import DiscountController from './../controllers/discount.controller.js';
+import SupplierController from './../controllers/supplier.controller.js';
 
 const router = express.Router();
 
-router.get('/', DiscountController.index);
-router.get('/:id', DiscountController.get);
-router.post('/', DiscountController.store);
-router.patch('/:id', DiscountController.update);
-router.delete('/:id', DiscountController.delete);
+router.get('/', SupplierController.index);
+router.get('/:id', SupplierController.get);
+router.post('/', SupplierController.store);
+router.patch('/:id', SupplierController.update);
+router.delete('/:id', SupplierController.delete);
 
 export default router;

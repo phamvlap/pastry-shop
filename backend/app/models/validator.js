@@ -22,18 +22,18 @@ class Validator {
             });
         }
     }
-    isEmail(email) {
+    isEmail(fieldName, email) {
         if(!(typeof email === 'string' && email.length > 0 && /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email))) {
             this.errors.push({
-                fieldName: 'email',
+                fieldName,
                 msg: 'Invalid email.',
             });
         }
     }
-    isPhoneNumber(phoneNumber) {
+    isPhoneNumber(fieldName, phoneNumber) {
         if(typeof phoneNumber !== 'string' || phoneNumber.length === 0 || /((09|03|07|08|05)+([0-9]{8})\b)/g.test(phoneNumber)) {
             this.errors.push({
-                fieldName: 'phone_number',
+                fieldName,
                 msg: 'Invalid phone number.',
             });
         }

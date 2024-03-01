@@ -7,6 +7,7 @@ import categoryRoute from './routes/categories.route.js';
 import discountRoute from './routes/discounts.route.js';
 import userRoute from './routes/users.route.js';
 import productRoute from './routes/products.route.js';
+import supplierRoute from './routes/suppliers.route.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(express.json());
 // routes
 app.use('/api/v1/categories', categoryRoute);
 app.use('/api/v1/discounts', discountRoute);
+app.use('/api/v1/suppliers', supplierRoute);
 app.use('/api/v1/users', userRoute);
 app.use('/api/v1/products', productRoute);
 
