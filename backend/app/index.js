@@ -1,20 +1,23 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
+import bodyParser from 'body-parser';
 
 import connectDB from './db/index.js';
+import errorHandler from './middlewares/errorHandler.js';
 import categoryRoute from './routes/categories.route.js';
 import discountRoute from './routes/discounts.route.js';
-import userRoute from './routes/users.route.js';
-import productRoute from './routes/products.route.js';
 import supplierRoute from './routes/suppliers.route.js';
-import errorHandler from './middlewares/errorHandler.js';
+import productRoute from './routes/products.route.js';
+import userRoute from './routes/users.route.js';
 
 const app = express();
 
 app.use(cors());
-app.use(express.urlencoded());
-app.use(express.json());
+app.use(bodyParser.urlencoded({
+    extended: true,
+}));
+app.use(bodyParser.json());
 
 // routes
 app.use('/api/v1/categories', categoryRoute);

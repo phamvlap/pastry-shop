@@ -1,49 +1,146 @@
 import multer from 'multer';
+import { unlink } from 'fs/promises';
 
+import { StatusCodes } from 'http-status-codes';
 import ProductModel from './../models/product.model.js';
-import uploadImagesProduct from './../utils/uploadImagesProduct.util.js';
+import { BadRequestError } from './../errors/index.js';
+import uploadImages from './../utils/uploadProductImages.util.js';
 
 class ProductController {
-    async index(req, res) {
-
+    async index(req, res, next) {
+        try {
+            const productModel = new ProductModel();
+            const products = await productModel.getAll();
+            res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: products,
+            });
+        }
+        catch(error) {
+            next(new BadRequestError(error.message));
+        }
     }
-
-    async get(req, res) {
-
+    async get(req, res, next) {
+        try {
+            const productModel = new ProductModel();
+            const product = await productModel.get(req.params.id);
+            res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: product,
+            });
+        }
+        catch(error) {
+            next(new BadRequestError(error.message));
+        }
     }
-
-    async save(req, res, next) {
-        uploadImagesProduct(req, res, async err => {
+    async create(req, res, next) {
+        uploadImages(req, res, async err => {
             if(err instanceof multer.MulterError) {
-                return res.status(400).json({
-                    status: 'failed',
-                    msg: err.message,
-                })
+                req.files.forEach(async file => {
+                    try {
+                        await unlink(file.path);
+                    }
+                    catch(err) {
+                        return next(new BadRequestError(err.message));
+                    }
+                });
+                return next(new BadRequestError(err.message));
             }
             else if(err) {
-                return res.status(400).json({
-                    status: err.status,
-                    msg: err.message
+                req.files.forEach(async file => {
+                    try {
+                        await unlink(file.path);
+                    }
+                    catch(err) {
+                        return next(new BadRequestError(err.message));
+                    }
+                });
+                return next(new BadRequestError(err.message));
+            }
+            if(req.files.length > 0) {
+                req.body['images'] = [ ...req.files ];
+            }
+            try {
+                const productModel = new ProductModel();
+                await productModel.store(req.body);
+                res.status(StatusCodes.OK).json({
+                    status: 'success',
+                    message: 'Product created successfully',
                 });
             }
-            const imageFiles = req.files.map(file => {
-                return file.filename;
-            });
-            const productModel = new ProductModel();
-            await productModel.create({
-                ...req.body,
-                images: imageFiles,
-            });
-            next();
+            catch(error) {
+                req.files.forEach(async file => {
+                    try {
+                        await unlink(file.path);
+                    }
+                    catch(err) {
+                        return next(new BadRequestError(err.message));
+                    }
+                });
+                next(new BadRequestError(error.message));
+            }
         });
     }
-
-    async update(req, res) {
-
+    async update(req, res, next) {
+        uploadImages(req, res, async err => {
+            if(err instanceof multer.MulterError) {
+                req.files.forEach(async file => {
+                    try {
+                        await unlink(file.path);
+                    }
+                    catch(err) {
+                        return next(new BadRequestError(err.message));
+                    }
+                });
+                return next(new BadRequestError(err.message));
+            }
+            else if(err) {
+                req.files.forEach(async file => {
+                    try {
+                        await unlink(file.path);
+                    }
+                    catch(err) {
+                        return next(new BadRequestError(err.message));
+                    }
+                });
+                return next(new BadRequestError(err.message));
+            }
+            if(req.files.length > 0) {
+                req.body['images'] = [ ...req.files ];
+            }
+            try {
+                const productModel = new ProductModel();
+                await productModel.update(req.params.id, req.body);
+                res.status(StatusCodes.OK).json({
+                    status: 'success',
+                    message: 'Product updated successfully',
+                });
+            }
+            catch(error) {
+                req.files.forEach(async file => {
+                    try {
+                        await unlink(file.path);
+                    }
+                    catch(err) {
+                        return next(new BadRequestError(err.message));
+                    }
+                });
+                next(new BadRequestError(error.message));
+            }
+        });
     }
-
-    async delete(req, res) {
-
+    async delete(req, res, next) {
+        try {
+            const productModel = new ProductModel();
+            const products = await productModel.delete(req.params.id);
+            res.status(StatusCodes.OK).json({
+                status: 'success',
+                message: 'Product deleted successfully',
+            });
+        }
+        catch(error) {
+            next(new BadRequestError(error.message));
+        }
     }
 }
 

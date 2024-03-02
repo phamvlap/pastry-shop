@@ -46,6 +46,24 @@ class Validator {
             });
         }
     }
+    checkUploadImages(fieldName, imageList) {
+        if(imageList.length === 0 ) {
+            this.errors.push({
+                fieldName,
+                msg: `${this.formatFieldName(fieldName)} are required.`,
+            });
+        }
+    }
+    checkValidDate(fieldName, stringDate) {
+        const currentDate = new Date();
+        const date = new Date(stringDate);
+        if(date < currentDate) {
+            this.errors.push({
+                fieldName,
+                msg: `${this.formatFieldName(fieldName)} must be greater than current date.`,
+            });
+        }
+    }
     getErrors() {
         return this.errors;
     }
