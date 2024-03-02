@@ -6,7 +6,7 @@ connection.config.namedPlaceholders = true;
 
 class Supplier {
     constructor() {
-        this.table = 'suppliers';
+        this.table = process.env.TABLE_SUPPLIERS;
     }
     extractSupplierData(payload) {
         const supplier = {

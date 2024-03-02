@@ -6,7 +6,7 @@ connection.config.namedPlaceholders = true;
 
 class Category {
     constructor() {
-        this.table = 'categories';
+        this.table = process.env.TABLE_CATEGORIES;
     }
     extractCategoryData(payload) {
         const category = {
@@ -26,6 +26,14 @@ class Category {
     async getAll() {
         const preparedStmt = `select * from ${this.table}`;
         const [rows] = await connection.execute(preparedStmt);
+        return rows;
+    }
+    // get
+    async get(id) {
+        const preparedStmt = `select * from ${this.table} where category_id = :category_id`;
+        const [rows] = await connection.execute(preparedStmt, {
+            category_id: id,
+        });
         return rows;
     }
     // create

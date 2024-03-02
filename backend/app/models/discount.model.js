@@ -6,7 +6,7 @@ connection.config.namedPlaceholders = true;
 
 class Discount {
     constructor() {
-        this.table = 'discounts';
+        this.table = process.env.TABLE_DISCOUNTS;
     }
     extractDiscountData(payload) {
         const discount = {
