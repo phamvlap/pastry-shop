@@ -5,6 +5,8 @@ import bodyParser from 'body-parser';
 
 import connectDB from './db/index.js';
 import errorHandler from './middlewares/errorHandler.js';
+import notFoundHandler from './middlewares/notFoundHandler.js';
+
 import categoryRoute from './routes/categories.route.js';
 import discountRoute from './routes/discounts.route.js';
 import supplierRoute from './routes/suppliers.route.js';
@@ -27,6 +29,7 @@ app.use('/api/v1/users', userRoute);
 app.use('/api/v1/products', productRoute);
 
 app.use(errorHandler);
+app.use(notFoundHandler);
 
 const port = process.env.PORT || 3000;
 const startServer = async () => {

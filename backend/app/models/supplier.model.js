@@ -37,9 +37,10 @@ class Supplier {
         if(validator.supplier_address) {
             validator.isLeastLength('supplier_address', supplier.supplier_address, 3);
         }
-
-        const errors = validator.getErrors();
-        return { supplier, errors };
+        return {
+            supplier,
+            errors: validator.getErrors(),
+        };
     }
     // get all
     async getAll() {
@@ -50,10 +51,10 @@ class Supplier {
     // get
     async get(id) {
         const preparedStmt = `select * from ${this.table} where supplier_id = :supplier_id`;
-        const [rows] = await connection.execute(preparedStmt, {
+        const [row] = await connection.execute(preparedStmt, {
             supplier_id: id,
         });
-        return rows;
+        return row;
     }
     // create
     async create(data) {
@@ -63,7 +64,7 @@ class Supplier {
             throw new Error(errorMessage);
         }
         const preparedStmt = `insert into ${this.table} (${Object.keys(supplier).join(', ')}) values (${Object.keys(supplier).map(key => `:${key}`).join(', ')})`;
-        connection.execute(preparedStmt, supplier);
+        await connection.execute(preparedStmt, supplier);
     }
     // update
     async update(id, data) {
@@ -73,7 +74,7 @@ class Supplier {
             throw new Error(errorMessage);
         }
         const preparedStmt = `update ${this.table} set ${Object.keys(supplier).map(key => `${key} = :${key}`).join(', ')} where supplier_id = :supplier_id`;
-        connection.execute(preparedStmt, {
+        await connection.execute(preparedStmt, {
                 ...supplier,
                 supplier_id: id,
             });
@@ -81,7 +82,7 @@ class Supplier {
     // delete
     async delete(id) {
         const preparedStmt = `delete from ${this.table} where discount_id = :discount_id`;
-        connection.execute(preparedStmt, {
+        await connection.execute(preparedStmt, {
             discount_id: id,
         });
     }

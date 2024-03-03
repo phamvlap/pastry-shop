@@ -22,11 +22,11 @@ class PriceModel {
     }
     async retrieve(product_id, price_applied_date) {
         const preparedStmt = `select * from ${this.table} where product_id = :product_id and price_applied_date = :price_applied_date`;
-        const [rows] = await connection .execute(preparedStmt, {
+        const [row] = await connection .execute(preparedStmt, {
             product_id,
             price_applied_date,
         });
-        return rows;
+        return row;
     }
     async add(data) {
         const price = this.validatePriceData(data);

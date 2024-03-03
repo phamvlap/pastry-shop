@@ -32,9 +32,6 @@ class Discount {
         if(discount.discount_start && discount.discount_end) {
             validator.checkPeriod('discount_start', 'discount_end', discount.discount_start, discount.discount_end);
         }
-
-        const errors = validator.getErrors();
-
         if(discount.discount_code) {
             discount.discount_code = discount.discount_code.toUpperCase();
         }
@@ -44,8 +41,10 @@ class Discount {
         if(discount.discount_limit) {
             discount.discount_limit = parseInt(discount.discount_limit);
         }
-
-        return { discount, errors };
+        return {
+            discount,
+            errors: validator.getErrors(),
+        };
     }
     // get all
     async getAll() {
@@ -56,10 +55,10 @@ class Discount {
     // get
     async get(id) {
         const preparedStmt = `select * from ${this.table} where discount_id = :discount_id`;
-        const [rows] = await connection.execute(preparedStmt, {
+        const [row] = await connection.execute(preparedStmt, {
             discount_id: id,
         });
-        return rows;
+        return row;
     }
     // create
     async create(data) {
@@ -69,7 +68,7 @@ class Discount {
             throw new Error(errorMessage);
         }
         const preparedStmt = `insert into ${this.table} (${Object.keys(discount).join(', ')}) values (${Object.keys(discount).map(key => `:${key}`).join(', ')})`;
-        connection.execute(preparedStmt, discount);
+        await connection.execute(preparedStmt, discount);
     }
     // update
     async update(id, data) {
@@ -79,7 +78,7 @@ class Discount {
             throw new Error(errorMessage);
         }
         const preparedStmt = `update ${this.table} set ${Object.keys(discount).map(key => `${key} = :${key}`).join(', ')} where discount_id = :discount_id`;
-        connection.execute(preparedStmt, {
+        await connection.execute(preparedStmt, {
                 ...discount,
                 discount_id: id,
             });
@@ -87,7 +86,7 @@ class Discount {
     // delete
     async delete(id) {
         const preparedStmt = `delete from ${this.table} where discount_id = :discount_id`;
-        connection.execute(preparedStmt, {
+        await connection.execute(preparedStmt, {
             discount_id: id,
         });
     }

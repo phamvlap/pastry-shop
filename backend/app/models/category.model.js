@@ -15,7 +15,7 @@ class Category {
         return category;
     }
     // validate
-    async validateData(data) {
+    validateData(data) {
         const category = this.extractCategoryData(data);
         const validator = new Validator();
         validator.isLeastLength('category_name', category.category_name, 3);
@@ -31,30 +31,30 @@ class Category {
     // get
     async get(id) {
         const preparedStmt = `select * from ${this.table} where category_id = :category_id`;
-        const [rows] = await connection.execute(preparedStmt, {
+        const [row] = await connection.execute(preparedStmt, {
             category_id: id,
         });
-        return rows;
+        return row;
     }
     // create
     async create(data) {
-        const { category, errors } = await this.validateData(data);
+        const { category, errors } = this.validateData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
         const preparedStmt = `insert into ${this.table} (${Object.keys(category).join(', ')}) values (${Object.keys(category).map(key => `:${key}`).join(', ')})`;
-        connection.execute(preparedStmt, category);
+        await connection.execute(preparedStmt, category);
     }
     // update
     async update(id, data) {
-        const { category, errors } = await this.validateData(data);
+        const { category, errors } = this.validateData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
         const preparedStmt = `update ${this.table} set ${Object.keys(category).map(key => `${key} = :${key}`).join(', ')} where category_id = :category_id`;
-        connection.execute(preparedStmt, {
+        await connection.execute(preparedStmt, {
                 ...category,
                 category_id: id,
             });
@@ -62,7 +62,7 @@ class Category {
     // delete
     async delete(id) {
         const preparedStmt = `delete from ${this.table} where category_id = :category_id`;
-        connection.execute(preparedStmt, {
+        await connection.execute(preparedStmt, {
             category_id: id,
         });
     }
