@@ -7,6 +7,31 @@ connection.config.namedPlaceholders = true;
 class Discount {
     constructor() {
         this.table = process.env.TABLE_DISCOUNTS;
+        this.schema = {
+            discount_code: {
+                type: String,
+                required: true,
+                between: [5, 20],
+                uppercase: true,
+            },
+            discount_rate: {
+                required: true,
+                toFixed: 2,
+            },
+            discount_limit: {
+                required: true,
+                toInt: true,
+            },
+            discount_start: {
+                type: Date,
+                required: true,
+            },
+            discount_end: {
+                type: Date,
+                required: true,
+                previousDate: 'discount_start',
+            },
+        };
     }
     extractDiscountData(payload) {
         const discount = {
@@ -26,25 +51,7 @@ class Discount {
     validateDiscountData(data) {
         const discount = this.extractDiscountData(data);
         const validator = new Validator();
-        if(discount.discount_code) {
-            validator.length('discount_code', discount.discount_code, 5, 20);
-        }
-        if(discount.discount_start && discount.discount_end) {
-            validator.checkPeriod('discount_start', 'discount_end', discount.discount_start, discount.discount_end);
-        }
-        if(discount.discount_code) {
-            discount.discount_code = discount.discount_code.toUpperCase();
-        }
-        if(discount.discount_rate) {
-            discount.discount_rate = parseFloat(discount.discount_rate).toFixed(2);
-        }
-        if(discount.discount_limit) {
-            discount.discount_limit = parseInt(discount.discount_limit);
-        }
-        return {
-            discount,
-            errors: validator.getErrors(),
-        };
+        return validator.validate(discount, this.schema);
     }
     // get all
     async getAll() {
@@ -62,7 +69,7 @@ class Discount {
     }
     // create
     async create(data) {
-        const { discount, errors } = this.validateDiscountData(data);
+        const { result: discount, errors } = this.validateDiscountData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -72,7 +79,7 @@ class Discount {
     }
     // update
     async update(id, data) {
-        const { discount, errors } = this.validateDiscountData(data);
+        const { result: discount, errors } = this.validateDiscountData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);

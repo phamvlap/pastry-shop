@@ -7,6 +7,13 @@ connection.config.namedPlaceholders = true;
 class Category {
     constructor() {
         this.table = process.env.TABLE_CATEGORIES;
+        this.schema = {
+            category_name: {
+                type: String,
+                required: true,
+                min: 3,
+            },
+        };
     }
     extractCategoryData(payload) {
         const category = {
@@ -15,12 +22,10 @@ class Category {
         return category;
     }
     // validate
-    validateData(data) {
+    validateCategoryData(data) {
         const category = this.extractCategoryData(data);
         const validator = new Validator();
-        validator.isLeastLength('category_name', category.category_name, 3);
-        const errors = validator.getErrors();
-        return { category, errors };
+        return validator.validate(category, this.schema);
     }
     // get all
     async getAll() {
@@ -38,7 +43,7 @@ class Category {
     }
     // create
     async create(data) {
-        const { category, errors } = this.validateData(data);
+        const { result: category, errors } = this.validateCategoryData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -48,7 +53,7 @@ class Category {
     }
     // update
     async update(id, data) {
-        const { category, errors } = this.validateData(data);
+        const { result: category, errors } = this.validateCategoryData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);

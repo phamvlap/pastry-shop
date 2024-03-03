@@ -1,4 +1,3 @@
-import slugify from 'slugify';
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
 import formatDateToString from '../utils/formatDateToString.util.js';
@@ -13,6 +12,39 @@ connection.config.namedPlaceholders = true;
 class ProductModel {
     constructor() {
         this.table = process.env.TABLE_PRODUCTS;
+        this.schema = {
+            product_name: {
+                type: String,
+                required: true,
+                min: 3,
+                slug: true,
+            },
+            product_stock_quantity: {
+                required: true,
+                toInt: true,
+            },
+            product_description: {
+                type: String,
+                required: true,
+                min: 10,
+            },
+            product_expire_date: {
+                type: Date,
+                required: true,
+            },
+            category_id: {
+                required: true,
+                toInt: true,
+            },
+            discount_id: {
+                required: true,
+                toInt: true,
+            },
+            supplier_id: {
+                required: true,
+                toInt: true,
+            },
+        };
     }
     extractProductData(payload) {
         const product = {
@@ -34,47 +66,18 @@ class ProductModel {
     validateProductData(data) {
         const product = this.extractProductData(data);
         const validator = new Validator();
+        let { result, errors } = validator.validate(product, this.schema);
         if(!data.product_id) {
-            validator.checkUploadImages('product_images', data.images);
-            product.product_images = data.images.map(image => image.filename).join(';');
-            product['product_sold_quantity'] = 0;
-            product['product_created_at'] = formatDateToString();
-            product['product_updated_at'] = formatDateToString();
-            product['product_deleted_at'] = null;
+            result['product_images'] = validator.checkUploadImages('product_images', data.images);
+            result['product_sold_quantity'] = 0;
+            result['product_created_at'] = formatDateToString();
+            result['product_updated_at'] = formatDateToString();
+            result['product_deleted_at'] = null;
         }
         else {
-            product['product_updated_at'] = formatDateToString();
+            result['product_updated_at'] = formatDateToString();
         }
-        if(product.product_name) {
-            validator.isLeastLength('product_name', product.product_name, 3);
-            product.product_slug = slugify(product.product_name, {
-                replacement: '_',
-                lower: true,
-                trim: true,
-            });
-        }
-        if(product.product_stock_quantity) {
-            product.product_stock_quantity = parseInt(product.product_stock_quantity);
-        }
-        if(product.product_description) {
-            validator.isLeastLength('product_description', product.product_description, 10);
-        }
-        if(product.product_expire_date) {
-            validator.checkValidDate('product_expire_date', product.product_expire_date);
-        }
-        if(product.category_id) {
-            product.category_id = parseInt(product.category_id);
-        }
-        if(product.discount_id) {
-            product.discount_id = parseInt(product.discount_id);
-        }
-        if(product.supplier_id) {
-            product.supplier_id = parseInt(product.supplier_id);
-        }
-        return {
-            product,
-            errors: validator.getErrors(),
-        }
+        return { result, errors };
     }
     async getAll() {
         const categoryModel = new CategoryModel();
@@ -128,7 +131,7 @@ class ProductModel {
         return row;
     }
     async store(data) {
-        const { product, errors } = this.validateProductData(data);
+        const { result: product, errors } = this.validateProductData(data);
         if(errors.length > 0) {
             throw new Error(errors.map(error => error.msg).join(' '));
         }

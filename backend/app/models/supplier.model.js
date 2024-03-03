@@ -7,6 +7,27 @@ connection.config.namedPlaceholders = true;
 class Supplier {
     constructor() {
         this.table = process.env.TABLE_SUPPLIERS;
+        this.schema = {
+            supplier_name: {
+                type: String,
+                required: true,
+                min: 3,
+            },
+            supplier_phone_number: {
+                type: String,
+                required: true,
+                phoneNumber: true,
+            },
+            supplier_email: {
+                type: String,
+                required: true,
+                email: true,
+            },
+            supplier_address: {
+                type: String,
+                required: true,
+            },
+        };
     }
     extractSupplierData(payload) {
         const supplier = {
@@ -25,22 +46,7 @@ class Supplier {
     validateSupplierData(data) {
         const supplier = this.extractSupplierData(data);
         const validator = new Validator();
-        if(validator.supplier_name) {
-            validator.isLeastLength('supplier_name', supplier.supplier_name, 3);
-        }
-        if(validator.supplier_phone_number) {
-            validator.isPhoneNumber('supplier_phone_number', supplier.supplier_phone_number);
-        }
-        if(validator.supplier_email) {
-            validator.isEmail('supplier_email', supplier.supplier_email);
-        }
-        if(validator.supplier_address) {
-            validator.isLeastLength('supplier_address', supplier.supplier_address, 3);
-        }
-        return {
-            supplier,
-            errors: validator.getErrors(),
-        };
+        return validator.validate(supplier, this.schema);
     }
     // get all
     async getAll() {
@@ -58,7 +64,7 @@ class Supplier {
     }
     // create
     async create(data) {
-        const { supplier, errors } = this.validateSupplierData(data);
+        const { result: supplier, errors } = this.validateSupplierData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -68,7 +74,7 @@ class Supplier {
     }
     // update
     async update(id, data) {
-        const { supplier, errors } = this.validateSupplierData(data);
+        const { result: supplier, errors } = this.validateSupplierData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
