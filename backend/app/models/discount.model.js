@@ -4,7 +4,7 @@ import Validator from './validator.js';
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
 
-class Discount {
+class DiscountModel {
     constructor() {
         this.table = process.env.TABLE_DISCOUNTS;
         this.schema = {
@@ -99,4 +99,4 @@ class Discount {
     }
 }
 
-export default Discount;
+export default DiscountModel;

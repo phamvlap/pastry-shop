@@ -115,6 +115,16 @@ class Validator {
             });
         }
     }
+    checkPassword(fieldName, password) {
+        if(!/^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,}$/.test(password)) {
+            this.errors.push({
+                fieldName,
+                msg: `${this.formatFieldName(fieldName)} have minimum 8 characters that includes least at one letter and least at one digit.`,
+            });
+            return false;
+        }
+        return true;
+    }
     validate(data, schema) {
         const result = { ...data };
         Object.keys(schema).forEach(key => {
@@ -158,6 +168,9 @@ class Validator {
                         trim: true,
                     });
                 }
+                if(rules.password !== undefined) {
+                    this.checkPassword(key, data[key]);
+                }
             }
         });
         return {
@@ -167,6 +180,17 @@ class Validator {
     }
     getErrors() {
         return this.errors;
+    }
+    validateUpdatePassword(fieldName, newPassword, confirmPassword) {
+        // new_password, confirm_password
+        if(this.checkPassword(fieldName, newPassword)) {
+            if(newPassword !== confirmPassword) {
+                this.errors.push({
+                    fieldName,
+                    msg: `Confirm password must be matched with new password.`,
+                });
+            }
+        }
     }
 }
 

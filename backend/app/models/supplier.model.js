@@ -4,7 +4,7 @@ import Validator from './validator.js';
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
 
-class Supplier {
+class SupplierModel {
     constructor() {
         this.table = process.env.TABLE_SUPPLIERS;
         this.schema = {
@@ -94,4 +94,4 @@ class Supplier {
     }
 }
 
-export default Supplier;
+export default SupplierModel;
