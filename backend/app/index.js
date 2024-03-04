@@ -12,7 +12,7 @@ import discountRoute from './routes/discounts.route.js';
 import supplierRoute from './routes/suppliers.route.js';
 import productRoute from './routes/products.route.js';
 import staffRoute from './routes/staffs.route.js';
-import userRoute from './routes/users.route.js';
+import customerRoute from './routes/customers.route.js';
 
 const app = express();
 
@@ -28,7 +28,7 @@ app.use('/api/v1/discounts', discountRoute);
 app.use('/api/v1/suppliers', supplierRoute);
 app.use('/api/v1/products', productRoute);
 app.use('/api/v1/staffs', staffRoute);
-app.use('/api/v1/users', userRoute);
+app.use('/api/v1/customers', customerRoute);
 
 app.use(errorHandler);
 app.use(notFoundHandler);

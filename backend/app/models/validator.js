@@ -94,7 +94,7 @@ class Validator {
     }
     checkUploadImages(fieldName, imageList) {
         let stringImages = '';
-        if(imageList.length === 0 ) {
+        if(imageList === undefined || imageList?.length === 0 ) {
             this.errors.push({
                 fieldName,
                 msg: `${this.formatFieldName(fieldName)} are required.`,
