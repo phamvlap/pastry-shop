@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
+import formatDateToString from './../utils/formatDateToString.util.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -60,24 +61,48 @@ class StaffModel {
     validateStaffData(data) {
         const staff = this.extractStaffData(data);
         const validator = new Validator();
-        return validator.validate(staff, this.schema);
+        let { result, errors } = validator.validate(staff, this.schema); 
+        if(!data.staff_id) {
+            result['staff_deleted_at'] = null;
+        }
+        return { result, errors };   
+    }
+    escapeData(data, exceptions = []) {
+        const escapedData = {};
+        Object.keys(data).forEach(key => {
+            if(!exceptions.includes(key)) {
+                escapedData[key] = data[key];
+            }
+        });
+        return escapedData;
     }
     // get all
     async getAll() {
-        const preparedStmt = `select * from ${this.table}`;
+        const preparedStmt = `select * from ${this.table} where staff_deleted_at is null`;
         const [rows] = await connection.execute(preparedStmt);
-        return rows;
+        if(rows.length === 0) {
+            return [];
+        }
+        const staffs = rows.map(row => this.escapeData(row, ['staff_password', 'staff_deleted_at']));
+        return staffs;
     }
     // get
-    async getById(id) {
-        const preparedStmt = `select * from ${this.table} where staff_id = :staff_id`;
-        const [row] = await connection.execute(preparedStmt, {
+    async get(id) {
+        const preparedStmt = `select * from ${this.table} where staff_id = :staff_id and staff_deleted_at is null`;
+        const [rows] = await connection.execute(preparedStmt, {
             staff_id: id,
         });
-        return row;
+        return (rows.length > 0) ? rows[0] : null;
+    }
+    async getById(id) {
+        const data = await this.get(id);
+        return (data) ? this.escapeData(data, ['staff_password']) : null;
     }
     async login(email, password) {
-        const preparedStmt = `select * from ${this.table} where staff_email = :staff_email`;
+        if(!email || !password) {
+            throw Error('Please provide email and password.');
+        }
+        const preparedStmt = `select * from ${this.table} where staff_email = :staff_email and staff_deleted_at is null`;
         const [rows] = await connection.execute(preparedStmt, {
             staff_email: email,
         });
@@ -122,7 +147,11 @@ class StaffModel {
         await connection.execute(preparedStmt, staff);
     }
     // update
-    async update(id, data) {
+    async update(id, payload) {
+        const data = {
+            ...payload,
+            staff_id: id,
+        }
         const { result: staff, errors } = this.validateStaffData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
@@ -136,10 +165,15 @@ class StaffModel {
     }
     // change password
     async changePassword(id, data) {
-        const { result: staff, errors } = this.validateStaffData(data);
-        if(errors.length > 0) {
-            const errorMessage = errors.map(error => error.msg).join(' ');
-            throw new Error(errorMessage);
+        const staff = await this.get(id);
+        if(!staff) {
+            throw new Error('Staff not exists.');
+        }
+        if(!data.staff_password || !data.staff_new_password || !data.staff_confirm_password) {
+            throw new Error('Please provide current password, new password and confirm password.');
+        }
+        if(!bcrypt.compareSync(data.staff_password, staff.staff_password)) {
+            throw new Error('Invalid password.');
         }
         const validator = new Validator();
         validator.validateUpdatePassword('staff_password', data.staff_new_password, data.staff_confirm_password);
@@ -157,8 +191,9 @@ class StaffModel {
     }
     // delete
     async delete(id) {
-        const preparedStmt = `delete from ${this.table} where staff_id = :staff_id`;
+        const preparedStmt = `update ${this.table} set staff_deleted_at = :deleted_at where staff_id = :staff_id`;
         await connection.execute(preparedStmt, {
+            deleted_at: formatDateToString(new Date()),
             staff_id: id,
         });
     }

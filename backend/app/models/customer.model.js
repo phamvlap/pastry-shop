@@ -35,11 +35,6 @@ class CustomerModel {
                 type: String,
                 required: true,
             },
-            customer_address: {
-                type: String,
-                required: true,
-                min: 5,
-            },
         };
     }
     extractCustomerData(payload) {
@@ -48,7 +43,6 @@ class CustomerModel {
             customer_password: payload.customer_password,
             customer_name: payload.customer_name,
             customer_phone_number: payload.customer_phone_number,
-            customer_address: payload.customer_address,
         };
         Object.keys(customer).forEach(key => {
             if(customer[key] === undefined) {
@@ -154,7 +148,6 @@ class CustomerModel {
             customer_name: customer.customer_name,
             customer_phone_number: customer.customer_phone_number,
             customer_avatar: customer.customer_avatar,
-            customer_address: customer.customer_address,
         }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
@@ -165,13 +158,16 @@ class CustomerModel {
                 name: customer.customer_name,
                 phone_number: customer.customer_phone_number,
                 avatar: customer.customer_avatar,
-                address: customer.customer_address,
             },
             token,
         };
     }
     // update
-    async update(id, data) {
+    async update(id, payload) {
+        const data = {
+            ...payload,
+            customer_id: id,
+        }
         const { result: customer, errors } = this.validateCustomerData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
@@ -187,7 +183,7 @@ class CustomerModel {
     async changePassword(id, data) {
         const customer = await this.getById(id);
         if(!customer) {
-            throw new Error('User not exists.');
+            throw new Error('Customer not exists.');
         }
         if(!data.customer_password || !data.customer_new_password || !data.customer_confirm_password) {
             throw new Error('Please provide current password, new password and confirm password.');
