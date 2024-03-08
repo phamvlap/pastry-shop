@@ -22,7 +22,7 @@ class CustomerController {
     async get(req, res, next) {
         try {
             const customerModel = new CustomerModel();
-            const customer = await customerModel.getById(req.params.id);
+            const customer = await customerModel.getById(req.customer.customer_id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: customer,
@@ -126,7 +126,7 @@ class CustomerController {
             }
             try {
                 const customerModel = new CustomerModel();
-                await customerModel.update(req.params.id, req.body);
+                await customerModel.update(req.customer.customer_id, req.body);
                 res.status(StatusCodes.OK).json({
                     status: 'success',
                     message: 'Customer updated successfully',
@@ -153,7 +153,7 @@ class CustomerController {
                 customer_new_password: req.body.customer_new_password,
                 customer_confirm_password: req.body.customer_confirm_password,
             }
-            await customerModel.changePassword(req.params.id, data);
+            await customerModel.changePassword(req.customer.customer_id, data);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Password changed successfully.',
@@ -166,7 +166,7 @@ class CustomerController {
     async delete(req, res, next) {
         try {
             const customerModel = new CustomerModel();
-            await customerModel.delete(req.params.id);
+            await customerModel.delete(req.customer.customer_id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Customer deleted successfully.',

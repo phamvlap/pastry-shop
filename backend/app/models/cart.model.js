@@ -1,6 +1,7 @@
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
 import ProductModel from './product.model.js';
+import extractData from './../utils/extractData.util.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -8,6 +9,7 @@ connection.config.namedPlaceholders = true;
 class CartModel {
     constructor() {
         this.table = process.env.TABLE_CARTS;
+        this.fields = ['customer_id', 'product_id', 'cart_quantity'];
         this.schema = {
             customer_id: {
                 required: true,
@@ -23,24 +25,10 @@ class CartModel {
             },
         };
     }
-    extractCustomerData(payload) {
-        const cart = {
-            customer_id: payload.customer_id,
-            product_id: payload.product_id,
-            cart_quantity: payload.cart_quantity,
-        };
-        Object.keys(cart).forEach(key => {
-            if(cart[key] === undefined) {
-                delete cart[key];
-            }
-        });
-        return cart;
-    }
     validateCartData(data) {
-        const cart = this.extractCustomerData(data);
+        const cart = extractData(data, this.fields);
         const validator = new Validator();
-        let { result, errors } = validator.validate(cart, this.schema);
-        return { result, errors };
+        return validator.validate(cart, this.schema);
     }
     async getOneFromCart(customerId, itemId) {
         const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and product_id = :product_id`;
@@ -48,7 +36,7 @@ class CartModel {
             customer_id: customerId,
             product_id: itemId,
         });
-        return rows[0];
+        return (rows.length > 0) ? rows[0] : null;
     }
     // get all products in cart of customer
     async get(customerId) {
@@ -58,12 +46,14 @@ class CartModel {
         });
         const productModel = new ProductModel();
         let products = [];
-        for(const row of rows) {
-            const item = await productModel.get(row.product_id);
-            products.push({
-                cart_quantity: row.cart_quantity,
-                details: item,    
-            });
+        if(rows.length > 0) {
+            for(const row of rows) {
+                const item = await productModel.get(row.product_id);
+                products.push({
+                    cart_quantity: row.cart_quantity,
+                    details: item,    
+                });
+            }
         }
         return products;
     }

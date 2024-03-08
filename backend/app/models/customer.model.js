@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
 import formatDateToString from './../utils/formatDateToString.util.js';
+import escapeData from './../utils/escapeData.util.js';
+import extractData from './../utils/extractData.util.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -10,6 +12,7 @@ connection.config.namedPlaceholders = true;
 class CustomerModel {
     constructor() {
         this.table = process.env.TABLE_CUSTOMERS;
+        this.fields = ['customer_username', 'customer_password', 'customer_name', 'customer_phone_number', 'customer_avatar'];
         this.schema = {
             customer_username: {
                 type: String,
@@ -33,83 +36,62 @@ class CustomerModel {
             },
             customer_avatar: {
                 type: String,
-                required: true,
             },
         };
     }
-    extractCustomerData(payload) {
-        const customer = {
-            customer_username: payload.customer_username,
-            customer_password: payload.customer_password,
-            customer_name: payload.customer_name,
-            customer_phone_number: payload.customer_phone_number,
-        };
-        Object.keys(customer).forEach(key => {
-            if(customer[key] === undefined) {
-                delete customer[key];
+    validateCustomerData(data, exceptions = []) {
+        const customer = extractData(data, this.fields);
+        const schema = {};
+        Object.keys(this.schema).map(key => {
+            if(!exceptions.includes(key)) {
+                schema[key] = this.schema[key];
             }
         });
-        return customer;
-    }
-    validateCustomerData(data) {
-        const customer = this.extractCustomerData(data);
         const validator = new Validator();
-        let { result, errors } = validator.validate(customer, this.schema);
+        if(customer.customer_avatar) {
+            customer.customer_avatar = validator.convertToImagesString('customer_avatar', customer.customer_avatar);
+        }
+        let { result, errors } = validator.validate(customer, schema);
         if(!data.customer_id) {
-            if(data.customer_avatar) {
-                result['customer_avatar'] = validator.checkUploadImages('customer_avatar', data.customer_avatar);
-            }
             result['customer_deleted_at'] = null;
         }
-        if(Object.keys(result).length === 0 && !data.customer_avatar) {
-            errors.push({
-                msg: 'Please fill in the required fields.',
-            });
-        }
         return { result, errors };
-    }
-    escapeData(data, exceptions = []) {
-        const escapedData = {};
-        Object.keys(data).forEach(key => {
-            if(!exceptions.includes(key)) {
-                escapedData[key] = data[key];
-            }
-        });
-        return escapedData;
     }
     // get all
     async getAll() {
         const preparedStmt = `select * from ${this.table} where customer_deleted_at is null`;
         const [rows] = await connection.execute(preparedStmt);
-        let result = [];
-        if(rows.length > 0) {
-            result = rows.map(row => this.escapeData(row, ['customer_password', 'customer_deleted_at']));
-        }
-        return result;
+        return (rows.length > 0) ? rows.map(row => escapeData(row, ['customer_password', 'customer_deleted_at'])) : [];
     }
-    // get
+    // get by Id
     async getById(id) {
         const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and customer_deleted_at is null`;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: id,
         });
-        return rows[0];
+        return (rows[0]) ? escapeData(rows[0], ['customer_password', 'customer_deleted_at']) : null;
     }
-    // get by username
-    async getByUsername(username) {
-        const preparedStmt = `select * from ${this.table} where customer_username = :customer_username  and customer_deleted_at is null`;
-        const [rows] = await connection.execute(preparedStmt, {
-            customer_username: username,
-        });
-        return rows[0];
-    }
+    // get newest user
     async getNewestUser() {
         const preparedStmt = `select * from ${this.table} where customer_deleted_at is null order by customer_id desc limit 1`;
         const [rows] = await connection.execute(preparedStmt);
-        if(rows[0]) {
-            return this.escapeData(rows[0], ['customer_password', 'customer_deleted_at']);
-        }
-        return null;
+        return (rows[0]) ? escapeData(rows[0], ['customer_password', 'customer_deleted_at']) : null;
+    }
+    // get all infos by Id
+    async getAllById(id) {
+        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and customer_deleted_at is null`;
+        const [rows] = await connection.execute(preparedStmt, {
+            customer_id: id,
+        });
+        return (rows.length > 0) ? rows[0] : null;
+    }
+    // get all infos by username
+    async getAllByUsername(username) {
+        const preparedStmt = `select * from ${this.table} where customer_username = :customer_username and customer_deleted_at is null`;
+        const [rows] = await connection.execute(preparedStmt, {
+            customer_username: username,
+        });
+        return (rows.length > 0) ? rows[0] : null;
     }
     // register
     async register(data) {
@@ -118,8 +100,8 @@ class CustomerModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const foundCustomer = await this.getByUsername(customer.customer_username);
-        if(foundCustomer) {
+        const oldCustomer = await this.getAllByUsername(customer.customer_username);
+        if(oldCustomer) {
             throw new Error('Username already exists.');
         }
         const salt = bcrypt.genSaltSync(Number(process.env.SALT_ROUNDS));
@@ -133,9 +115,9 @@ class CustomerModel {
     // login
     async login(username, password) {
         if(!username || !password) {
-            throw Error('Please provide username and password.');
+            throw Error('Please provide both username and password.');
         }
-        const customer = await this.getByUsername(username);
+        const customer = await this.getAllByUsername(username);
         if(!customer) {
             throw Error('Invalid username or password.');
         }
@@ -164,11 +146,18 @@ class CustomerModel {
     }
     // update
     async update(id, payload) {
+        let exceptions= [];
+        payload = Object.assign({}, payload);
+        Object.keys(this.schema).forEach(key => {
+            if(!payload.hasOwnProperty(key)) {
+                exceptions.push(key);
+            }
+        });
         const data = {
             ...payload,
             customer_id: id,
         }
-        const { result: customer, errors } = this.validateCustomerData(data);
+        const { result: customer, errors } = this.validateCustomerData(data, exceptions);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -181,13 +170,13 @@ class CustomerModel {
     }
     // change password
     async changePassword(id, data) {
-        const customer = await this.getById(id);
-        if(!customer) {
-            throw new Error('Customer not exists.');
-        }
+        const customer = await this.getAllById(id);
         if(!data.customer_password || !data.customer_new_password || !data.customer_confirm_password) {
             throw new Error('Please provide current password, new password and confirm password.');
         }
+        data.customer_password = data.customer_password.trim();
+        data.customer_new_password = data.customer_new_password.trim();
+        data.customer_confirm_password = data.customer_confirm_password.trim();
         if(!bcrypt.compareSync(data.customer_password, customer.customer_password)) {
             throw new Error('Invalid password.');
         }

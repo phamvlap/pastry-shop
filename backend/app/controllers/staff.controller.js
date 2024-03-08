@@ -76,7 +76,7 @@ class StaffController {
                 staff_confirm_password: req.body.staff_confirm_password,
             }
             const staffModel = new StaffModel();
-            await staffModel.changePassword(req.params.id, data);
+            await staffModel.changePassword(req.staff.staff_id, data);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Password changed successfully.',

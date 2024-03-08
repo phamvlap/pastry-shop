@@ -1,6 +1,10 @@
 import slugify from 'slugify';
 import formatDateToString from './../utils/formatDateToString.util.js';
 
+const regexEmail = new RegExp(process.env.REGEX_EMAIL);
+const regexPassword = new RegExp(process.env.REGEX_PASSWORD);
+const regexPhoneNumber = new RegExp(process.env.REGEX_PHONE_NUMBER);
+
 class Validator {
     constructor() {
         this.errors = [];
@@ -69,7 +73,7 @@ class Validator {
         }
     }
     isEmail(fieldName, email) {
-        if(!(typeof email === 'string' && email.length > 0 && /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email))) {
+        if(!(typeof email === 'string' && email.length > 0 && regexEmail.test(email))) {
             this.errors.push({
                 fieldName,
                 msg: `${this.formatFieldName(fieldName)} is invalid.`,
@@ -77,7 +81,7 @@ class Validator {
         }
     }
     isPhoneNumber(fieldName, phoneNumber) {
-        if(!(typeof phoneNumber === 'string' && phoneNumber.length > 0 && /((09|03|07|08|05)+([0-9]{8})\b)/g.test(phoneNumber))) {
+        if(!(typeof phoneNumber === 'string' && phoneNumber.length > 0 && regexPhoneNumber.test(phoneNumber))) {
             this.errors.push({
                 fieldName,
                 msg: `${this.formatFieldName(fieldName)} is invalid.`,
@@ -92,7 +96,7 @@ class Validator {
             });
         }
     }
-    checkUploadImages(fieldName, imageList) {
+    convertToImagesString(fieldName, imageList) {
         let stringImages = '';
         if(imageList === undefined || imageList?.length === 0 ) {
             this.errors.push({
@@ -116,7 +120,7 @@ class Validator {
         }
     }
     checkPassword(fieldName, password) {
-        if(!/^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,}$/.test(password)) {
+        if(!regexPassword.test(password)) {
             this.errors.push({
                 fieldName,
                 msg: `${this.formatFieldName(fieldName)} have minimum 8 characters that includes least at one letter and least at one digit.`,
@@ -128,39 +132,39 @@ class Validator {
     validate(data, schema) {
         const result = { ...data };
         Object.keys(schema).forEach(key => {
+            if(schema[key].required) {
+                this.isRequired(key, data[key]);
+            }
             if(data.hasOwnProperty(key)) {
                 const rules = schema[key];
-                if(rules.type !== undefined) {
+                if(rules.type) {
                     result[key] = this.checkValidType(key, data[key], rules.type);
                 }
-                if(rules.required !== undefined) {
-                    this.isRequired(key, data[key]);
-                }
-                if(rules.between !== undefined) {
+                if(rules.between) {
                     this.between(key, data[key], rules.between[0], rules.between[1]);
                 }
-                if(rules.uppercase !== undefined) {
+                if(rules.uppercase) {
                     result[key] = this.convertToUpperCase(result[key]);
                 }
-                if(rules.toFixed !== undefined) {
+                if(rules.toFixed) {
                     result[key] = this.fixDecimal(result[key], rules.toFixed);
                 }
-                if(rules.toInt !== undefined) {
+                if(rules.toInt) {
                     result[key] = parseInt(result[key]);
                 }
-                if(rules.previousDate !== undefined) {
+                if(rules.previousDate) {
                     this.checkPeriod(rules.previousDate, key, data[rules.previousDate], data[key]);
                 }
-                if(rules.min !== undefined) {
+                if(rules.min) {
                     this.isLeastLength(key, data[key], rules.min);
                 }
-                if(rules.email !== undefined) {
+                if(rules.email) {
                     this.isEmail(key, data[key]);
                 }
-                if(rules.phoneNumber !== undefined) {
+                if(rules.phoneNumber) {
                     this.isPhoneNumber(key, data[key]);
                 }
-                if(rules.slug !== undefined) {
+                if(rules.slug) {
                     const slugFieldName = key.replace('name', 'slug');
                     result[slugFieldName] = slugify(result[key], {
                         replacement: '_',
@@ -168,7 +172,7 @@ class Validator {
                         trim: true,
                     });
                 }
-                if(rules.password !== undefined) {
+                if(rules.password) {
                     this.checkPassword(key, data[key]);
                 }
             }

@@ -1,5 +1,6 @@
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
+import extractData from './../utils/extractData.util.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -7,6 +8,7 @@ connection.config.namedPlaceholders = true;
 class DiscountModel {
     constructor() {
         this.table = process.env.TABLE_DISCOUNTS;
+        this.fields = ['discount_code', 'discount_rate', 'discount_limit', 'discount_start', 'discount_end'];
         this.schema = {
             discount_code: {
                 type: String,
@@ -33,39 +35,30 @@ class DiscountModel {
             },
         };
     }
-    extractDiscountData(payload) {
-        const discount = {
-            discount_code: payload.code,
-            discount_rate: payload.rate,
-            discount_limit: payload.limit,
-            discount_start: payload.start,
-            discount_end: payload.end,
-        };
-        Object.keys(discount).forEach(key => {
-            if(discount[key] === undefined) {
-                delete discount[key];
+    validateDiscountData(data, exceptions = []) {
+        const discount = extractData(data, this.fields);
+        const schema = {};
+        Object.keys(this.schema).map(key => {
+            if(!exceptions.includes(key)) {
+                schema[key] = this.schema[key];
             }
         });
-        return discount;
-    }
-    validateDiscountData(data) {
-        const discount = this.extractDiscountData(data);
         const validator = new Validator();
-        return validator.validate(discount, this.schema);
+        return validator.validate(discount, schema);
     }
     // get all
     async getAll() {
         const preparedStmt = `select * from ${this.table}`;
         const [rows] = await connection.execute(preparedStmt);
-        return rows;
+        return (rows.length > 0) ? rows : [];
     }
     // get
     async get(id) {
         const preparedStmt = `select * from ${this.table} where discount_id = :discount_id`;
-        const [row] = await connection.execute(preparedStmt, {
+        const [rows] = await connection.execute(preparedStmt, {
             discount_id: id,
         });
-        return row;
+        return (rows.length > 0) ? rows[0] : null;
     }
     // create
     async create(data) {
@@ -78,8 +71,14 @@ class DiscountModel {
         await connection.execute(preparedStmt, discount);
     }
     // update
-    async update(id, data) {
-        const { result: discount, errors } = this.validateDiscountData(data);
+    async update(id, payload) {
+        let exceptions= [];
+        Object.keys(this.schema).forEach(key => {
+            if(!payload.hasOwnProperty(key)) {
+                exceptions.push(key);
+            }
+        });
+        const { result: discount, errors } = this.validateDiscountData(payload, exceptions);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -89,13 +88,6 @@ class DiscountModel {
                 ...discount,
                 discount_id: id,
             });
-    }
-    // delete
-    async delete(id) {
-        const preparedStmt = `delete from ${this.table} where discount_id = :discount_id`;
-        await connection.execute(preparedStmt, {
-            discount_id: id,
-        });
     }
 }
 

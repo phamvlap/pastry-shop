@@ -58,7 +58,7 @@ class ProductController {
                 return next(new BadRequestError(err.message));
             }
             if(req.files.length > 0) {
-                req.body['images'] = [ ...req.files ];
+                req.body['product_images'] = [ ...req.files ];
             }
             try {
                 const productModel = new ProductModel();
@@ -106,7 +106,7 @@ class ProductController {
                 return next(new BadRequestError(err.message));
             }
             if(req.files.length > 0) {
-                req.body['images'] = [ ...req.files ];
+                req.body['product_images'] = [ ...req.files ];
             }
             try {
                 const productModel = new ProductModel();

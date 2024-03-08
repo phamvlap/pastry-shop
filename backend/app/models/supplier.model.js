@@ -1,5 +1,7 @@
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
+import extractData from './../utils/extractData.util.js';
+import formatDateToString from './../utils/formatDateToString.util.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -7,6 +9,7 @@ connection.config.namedPlaceholders = true;
 class SupplierModel {
     constructor() {
         this.table = process.env.TABLE_SUPPLIERS;
+        this.fields = ['supplier_name', 'supplier_phone_number', 'supplier_email', 'supplier_address'];
         this.schema = {
             supplier_name: {
                 type: String,
@@ -26,41 +29,38 @@ class SupplierModel {
             supplier_address: {
                 type: String,
                 required: true,
+                min: 6,
             },
         };
     }
-    extractSupplierData(payload) {
-        const supplier = {
-            supplier_name: payload.name,
-            supplier_phone_number: payload.phone_number,
-            supplier_email: payload.email,
-            supplier_address: payload.address,
-        };
-        Object.keys(supplier).forEach(key => {
-            if(supplier[key] === undefined) {
-                delete supplier[key];
+    validateSupplierData(data, exceptions = []) {
+        const supplier = extractData(data, this.fields);
+        const schema = {};
+        Object.keys(this.schema).map(key => {
+            if(!exceptions.includes(key)) {
+                schema[key] = this.schema[key];
             }
         });
-        return supplier;
-    }
-    validateSupplierData(data) {
-        const supplier = this.extractSupplierData(data);
         const validator = new Validator();
-        return validator.validate(supplier, this.schema);
+        let { result, errors } = validator.validate(supplier, schema);
+        if(!data.supplier_id) {
+            result['supplier_deleted_at'] = null;
+        }
+        return { result, errors };
     }
     // get all
     async getAll() {
-        const preparedStmt = `select * from ${this.table}`;
+        const preparedStmt = `select * from ${this.table} where supplier_deleted_at is null`;
         const [rows] = await connection.execute(preparedStmt);
-        return rows;
+        return (rows.length > 0) ? rows : [];
     }
     // get
     async get(id) {
-        const preparedStmt = `select * from ${this.table} where supplier_id = :supplier_id`;
-        const [row] = await connection.execute(preparedStmt, {
+        const preparedStmt = `select * from ${this.table} where supplier_id = :supplier_id and supplier_deleted_at is null`;
+        const [rows] = await connection.execute(preparedStmt, {
             supplier_id: id,
         });
-        return row;
+        return (rows.length > 0) ? rows[0] : null;
     }
     // create
     async create(data) {
@@ -73,8 +73,17 @@ class SupplierModel {
         await connection.execute(preparedStmt, supplier);
     }
     // update
-    async update(id, data) {
-        const { result: supplier, errors } = this.validateSupplierData(data);
+    async update(id, payload) {
+        let exceptions= [];
+        Object.keys(this.schema).forEach(key => {
+            if(!payload.hasOwnProperty(key)) {
+                exceptions.push(key);
+            }
+        });
+        const { result: supplier, errors } = this.validateSupplierData({
+            ...payload,
+            supplier_id: id,
+        }, exceptions);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -87,9 +96,9 @@ class SupplierModel {
     }
     // delete
     async delete(id) {
-        const preparedStmt = `delete from ${this.table} where discount_id = :discount_id`;
-        await connection.execute(preparedStmt, {
-            discount_id: id,
+        await connection.execute(`update ${this.table} set supplier_deleted_at = :deleted_at where supplier_id = :supplier_id`, {
+            deleted_at: formatDateToString(),
+            supplier_id: id,
         });
     }
 }

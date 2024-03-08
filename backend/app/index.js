@@ -15,6 +15,7 @@ import productRoute from './routes/products.route.js';
 import staffRoute from './routes/staffs.route.js';
 import customerRoute from './routes/customers.route.js';
 import cartRoute from './routes/carts.route.js';
+import addressRoute from './routes/addresses.route.js';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/v1/products', productRoute);
 app.use('/api/v1/staffs', staffRoute);
 app.use('/api/v1/customers', customerRoute);
 app.use('/api/v1/carts', authorizeCustomer, cartRoute);
+app.use('/api/v1/addresses', authorizeCustomer, addressRoute);
 
 app.use(errorHandler);
 app.use(notFoundHandler);

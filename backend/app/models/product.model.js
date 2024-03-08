@@ -1,10 +1,13 @@
 import connectDB from './../db/index.js';
 import Validator from './validator.js';
-import formatDateToString from '../utils/formatDateToString.util.js';
 import PriceModel from './price.model.js';
 import CategoryModel from './category.model.js';
 import SupplierModel from './supplier.model.js';
 import DiscountModel from './discount.model.js';
+
+import formatDateToString from './../utils/formatDateToString.util.js';
+import extractData from './../utils/extractData.util.js';
+import escapeData from './../utils/escapeData.util.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -12,12 +15,17 @@ connection.config.namedPlaceholders = true;
 class ProductModel {
     constructor() {
         this.table = process.env.TABLE_PRODUCTS;
+        this.fields = ['product_name', 'product_images', 'product_stock_quantity', 'product_description', 'product_expire_date', 'category_id', 'discount_id', 'supplier_id', 'product_sold_quantity', 'product_created_at', 'product_updated_at', 'product_deleted_at', 'product_price'];
         this.schema = {
             product_name: {
                 type: String,
                 required: true,
                 min: 3,
                 slug: true,
+            },
+            product_images: {
+                type: String,
+                required: true,
             },
             product_stock_quantity: {
                 required: true,
@@ -44,31 +52,26 @@ class ProductModel {
                 required: true,
                 toInt: true,
             },
+            product_price: {
+                required: true,
+                toInt: true,
+            },
         };
     }
-    extractProductData(payload) {
-        const product = {
-            product_name: payload.name,
-            product_stock_quantity: payload.stock_quantity,
-            product_description: payload.description,
-            product_expire_date: payload.expire_date,
-            category_id: payload.category_id,
-            discount_id: payload.discount_id,
-            supplier_id: payload.supplier_id,
-        };
-        Object.keys(product).forEach(key => {
-            if(product[key] === undefined) {
-                delete product[key];
+    validateProductData(data, exceptions = []) {
+        const product = extractData(data, this.fields);
+        const schema = {};
+        Object.keys(this.schema).map(key => {
+            if(!exceptions.includes(key)) {
+                schema[key] = this.schema[key];
             }
         });
-        return product;
-    }
-    validateProductData(data) {
-        const product = this.extractProductData(data);
         const validator = new Validator();
-        let { result, errors } = validator.validate(product, this.schema);
+        if(product.product_images) {
+            product.product_images = validator.convertToImagesString('product_images', product.product_images);
+        }
+        let { result, errors } = validator.validate(product, schema);
         if(!data.product_id) {
-            result['product_images'] = validator.checkUploadImages('product_images', data.images);
             result['product_sold_quantity'] = 0;
             result['product_created_at'] = formatDateToString();
             result['product_updated_at'] = formatDateToString();
@@ -92,15 +95,15 @@ class ProductModel {
             const [supplier] = await supplierModel.get(row.supplier_id);
             const [discount] = await discountModel.get(row.discount_id);
             const [price] = await priceModel.retrieve(row.product_id, row.product_updated_at);
-            if(price) {
-                delete price.product_id;
-            }
+
             products.push({
-                ...row,
+                ...escapeData(row, ['category_id', 'discount_id', 'supplier_id', 'product_deleted_at']),
                 category,
                 supplier,
                 discount,
-                price,
+                price: {
+                    ...escapeData(price, ['product_id']),
+                },
             });
         }
         return products;
@@ -111,7 +114,9 @@ class ProductModel {
         const discountModel = new DiscountModel();
         const priceModel = new PriceModel();
 
-        const [rows] = await connection.execute(`select * from ${this.table} where product_id = :product_id and product_deleted_at is null`, { product_id: id });
+        const [rows] = await connection.execute(`select * from ${this.table} where product_id = :product_id and product_deleted_at is null`, {
+            product_id: id
+        });
         if(rows.length === 0) {
             throw new Error('Product not found.');
         }
@@ -120,16 +125,15 @@ class ProductModel {
         const [supplier] = await supplierModel.get(row.supplier_id);
         const [discount] = await discountModel.get(row.discount_id);
         const [price] = await priceModel.retrieve(row.product_id, row.product_updated_at);
-        if(price) {
-            delete price.product_id;
-        }
 
         return {
-            ...row,
+            ...escapeData(row, ['category_id', 'discount_id', 'supplier_id', 'product_deleted_at']),
             category,
             supplier,
             discount,
-            price,
+            price: {
+                ...escapeData(price, ['product_id']),
+            },
         };
     }
     async getOneNewest() {
@@ -141,35 +145,48 @@ class ProductModel {
         if(errors.length > 0) {
             throw new Error(errors.map(error => error.msg).join(' '));
         }
+        const priceValue = product.product_price;
+        delete product.product_price;
         const preparedStmt = `insert into ${this.table} (${Object.keys(product).join(', ')}) values (${Object.keys(product).map(key => `:${key}`).join(', ')})`;
         await connection.execute(preparedStmt, product);
-        const newestProduct = await this.getOneNewest();
+        const newestItem = await this.getOneNewest();
         const price = {
-            product_id: newestProduct[0].product_id,
-            price_applied_date: newestProduct[0].product_updated_at,
-            price_value: data.price,
+            product_id: newestItem[0].product_id,
+            price_applied_date: newestItem[0].product_updated_at,
+            price_value: priceValue,
         };
         const priceModel = new PriceModel();
         await priceModel.add(price);
     }
     async update(id, payload) {
-        const { product, errors } = this.validateProductData({
+        let exceptions= [];
+        payload = Object.assign({}, payload);
+        Object.keys(this.schema).forEach(key => {
+            if(!payload.hasOwnProperty(key)) {
+                exceptions.push(key);
+            }
+        });
+        const { result: product, errors } = this.validateProductData({
             ...payload,
             product_id: id,
-        });
+        }, exceptions);
         if(errors.length > 0) {
             throw new Error(errors.map(error => error.msg).join(' '));
+        }
+        let priceValue = 0;
+        if(product.product_price) {
+            priceValue = product.product_price;
+            delete product.product_price;
         }
         const preparedStmt = `update ${this.table} set ${Object.keys(product).map(key => `${key} = :${key}`).join(', ')} where product_id = :product_id`;
         await connection.execute(preparedStmt, {
             ...product,
             product_id: id,
         });
-        const [newestProduct] = await this.getOneNewest();
         const price = {
-            product_id: newestProduct.product_id,
-            price_applied_date: newestProduct.product_updated_at,
-            price_value: payload.price,
+            product_id: id,
+            price_applied_date: product.product_updated_at,
+            price_value: priceValue,
         };
         const priceModel = new PriceModel();
         await priceModel.add(price);
