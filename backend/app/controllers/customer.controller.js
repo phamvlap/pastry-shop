@@ -3,7 +3,7 @@ import multer from 'multer';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from './../errors/index.js';
 import CustomerModel from './../models/customer.model.js';
-import uploadAvatar from './../utils/uploadAvatar.util.js';
+import { uploadAvatar } from './../utils/index.js';
 
 class CustomerController {
     async index(req, res, next) {

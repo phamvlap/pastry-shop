@@ -1,10 +1,7 @@
 import connectDB from './../db/index.js';
-import Validator from './validator.js';
-import StaffModel from './staff.model.js';
-import CustomerModel from './customer.model.js';
-import StatusModel from './status.model.js';
-import extractData from './../utils/extractData.util.js';
-import formatDateToString from './../utils/formatDateToString.util.js';
+import Validator from './../helpers/validator.js';
+import { StaffModel, CustomerModel, StatusModel} from './index.js';
+import { formatDateToString, extractData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;

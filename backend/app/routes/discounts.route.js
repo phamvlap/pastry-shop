@@ -1,6 +1,6 @@
 import express from 'express';
 import DiscountController from './../controllers/discount.controller.js';
-import authorizeStaff from './../middlewares/authorizeStaff.js';
+import { authorizeStaff } from './../middlewares/index.js';
 
 const router = express.Router();
 

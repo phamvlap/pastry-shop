@@ -1,6 +1,6 @@
 import connectDB from './../db/index.js';
-import Validator from './validator.js';
-import ProductModel from './product.model.js';
+import Validator from './../helpers/validator.js';
+import { ProductModel } from './index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;

@@ -1,11 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import connectDB from './../db/index.js';
-import Validator from './validator.js';
 
-import formatDateToString from './../utils/formatDateToString.util.js';
-import escapeData from './../utils/escapeData.util.js';
-import extractData from './../utils/extractData.util.js';
+import connectDB from './../db/index.js';
+import Validator from './../helpers/validator.js';
+import { formatDateToString, escapeData, extractData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;

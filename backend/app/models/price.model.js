@@ -1,6 +1,7 @@
 import connectDB from './../db/index.js';
-import Validator from './validator.js';
-import extractData from './../utils/extractData.util.js';
+import Validator from './../helpers/validator.js';
+
+import { extractData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;

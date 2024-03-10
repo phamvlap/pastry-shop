@@ -1,15 +1,13 @@
 import connectDB from './../db/index.js';
-import Validator from './validator.js';
-
-import CartModel from './cart.model.js';
-import OrderDetailModel from './orderDetail.model.js';
-import AddressModel from './address.model.js';
-import PaymentMethodModel from './paymentMethod.model.js';
-import StatusDetailModel from './statusDetail.model.js';
-
-import formatDateToString from './../utils/formatDateToString.util.js';
-import extractData from './../utils/extractData.util.js';
-import escapeData from './../utils/escapeData.util.js';
+import Validator from './../helpers/validator.js';
+import {
+    CartModel,
+    OrderDetailModel,
+    AddressModel,
+    PaymentMethodModel,
+    StatusDetailModel,
+} from './index.js';
+import { formatDateToString, escapeData, extractData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;

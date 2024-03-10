@@ -1,8 +1,6 @@
 import express from 'express';
 import OrderController from './../controllers/order.controller.js';
-import authorizeStaff from './../middlewares/authorizeStaff.js';
-import authorizeCustomer from './../middlewares/authorizeCustomer.js';
-import authorizeStaffOrCustomer from './../middlewares/authorizeStaffOrCustomer.js';
+import { authorizeStaff, authorizeCustomer, authorizeStaffOrCustomer } from './../middlewares/index.js';
 
 const router = express.Router();
 

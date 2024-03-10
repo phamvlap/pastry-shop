@@ -1,10 +1,9 @@
-import multer from 'multer';
 import { unlink } from 'fs/promises';
-
+import multer from 'multer';
 import { StatusCodes } from 'http-status-codes';
 import ProductModel from './../models/product.model.js';
 import { BadRequestError } from './../errors/index.js';
-import uploadImages from './../utils/uploadProductImages.util.js';
+import { uploadProductImages } from './../utils/index.js';
 
 class ProductController {
     async index(req, res, next) {
@@ -34,7 +33,7 @@ class ProductController {
         }
     }
     async create(req, res, next) {
-        uploadImages(req, res, async err => {
+        uploadProductImages(req, res, async err => {
             if(err instanceof multer.MulterError) {
                 req.files.forEach(async file => {
                     try {
@@ -82,7 +81,7 @@ class ProductController {
         });
     }
     async update(req, res, next) {
-        uploadImages(req, res, async err => {
+        uploadProductImages(req, res, async err => {
             if(err instanceof multer.MulterError) {
                 req.files.forEach(async file => {
                     try {

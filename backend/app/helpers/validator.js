@@ -1,5 +1,5 @@
 import slugify from 'slugify';
-import formatDateToString from './../utils/formatDateToString.util.js';
+import { formatDateToString } from './../utils/index.js';
 
 const regexEmail = new RegExp(process.env.REGEX_EMAIL);
 const regexPassword = new RegExp(process.env.REGEX_PASSWORD);
