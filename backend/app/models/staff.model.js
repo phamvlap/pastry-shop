@@ -103,7 +103,7 @@ class StaffModel {
         if(!email || !password) {
             throw Error('Please provide email and password.');
         }
-        const staff = this.getAllByEmail(email);
+        const staff = await this.getAllByEmail(email);
         if(!staff) {
             throw Error('Invalid email or password.');
         }

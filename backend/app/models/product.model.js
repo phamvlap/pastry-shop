@@ -91,10 +91,10 @@ class ProductModel {
         const [rows] = await connection.execute(`select * from ${this.table} where product_deleted_at is null`);
         let products = [];
         for(const row of rows) {
-            const [category] = await categoryModel.get(row.category_id);
-            const [supplier] = await supplierModel.get(row.supplier_id);
-            const [discount] = await discountModel.get(row.discount_id);
-            const [price] = await priceModel.retrieve(row.product_id, row.product_updated_at);
+            const category = await categoryModel.get(row.category_id);
+            const supplier = await supplierModel.get(row.supplier_id);
+            const discount = await discountModel.get(row.discount_id);
+            const price = await priceModel.retrieve(row.product_id, row.product_updated_at);
 
             products.push({
                 ...escapeData(row, ['category_id', 'discount_id', 'supplier_id', 'product_deleted_at']),
@@ -121,10 +121,10 @@ class ProductModel {
             throw new Error('Product not found.');
         }
         const row = rows[0];
-        const [category] = await categoryModel.get(row.category_id);
-        const [supplier] = await supplierModel.get(row.supplier_id);
-        const [discount] = await discountModel.get(row.discount_id);
-        const [price] = await priceModel.retrieve(row.product_id, row.product_updated_at);
+        const category = await categoryModel.get(row.category_id);
+        const supplier = await supplierModel.get(row.supplier_id);
+        const discount = await discountModel.get(row.discount_id);
+        const price = await priceModel.retrieve(row.product_id, row.product_updated_at);
 
         return {
             ...escapeData(row, ['category_id', 'discount_id', 'supplier_id', 'product_deleted_at']),

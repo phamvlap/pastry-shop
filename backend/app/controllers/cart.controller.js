@@ -36,8 +36,14 @@ class CartController {
     }
     async update(req, res, next) {
         try {
+            const data = {
+                customer_id: req.customer.customer_id,
+                product_id: req.params.itemId,
+                cart_quantity: req.body.quantity,
+                cart_is_selected: req.body.isSelected,
+            }
             const cartModel = new CartModel();
-            await cartModel.update(req.customer.customer_id, req.params.itemId, req.body.quantity);
+            await cartModel.update(data);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Item is updated in cart successfully.',
