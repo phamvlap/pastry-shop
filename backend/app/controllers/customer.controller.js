@@ -2,7 +2,7 @@ import { unlink } from 'fs/promises';
 import multer from 'multer';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from './../errors/index.js';
-import CustomerModel from './../models/customer.model.js';
+import { CustomerModel } from './../models/index.js';
 import { uploadAvatar } from './../utils/index.js';
 
 class CustomerController {

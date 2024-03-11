@@ -2,6 +2,8 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { generateRandomString} from './../utils/index.js';
+
 // define __dirname
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // define target directory
@@ -15,7 +17,7 @@ const storage = multer.diskStorage({
 		const name = path.parse(file.originalname).name;
 		const ext = path.parse(file.originalname).ext;
 
-		const newFileName = file.fieldname + '_' + name + '_' + Math.floor(Math.random() * 100) + ext;
+		const newFileName = name + '_' + generateRandomString(6) + ext;
 		callback(null, newFileName);
 	}
 });

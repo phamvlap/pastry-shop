@@ -1,15 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from './../errors/index.js';
-import AddressModel from './../models/address.model.js';
+import { AddressModel } from './../models/index.js';
 
 class AddressController {
     async get(req, res, next) {
         try {
             const addressModel = new AddressModel();
-            const address = await addressModel.get(req.customer.customer_id);
+            const addresses = await addressModel.get(req.customer.customer_id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                data: address,
+                data: addresses,
             });
         }
         catch(error) {

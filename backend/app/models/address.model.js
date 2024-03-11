@@ -42,19 +42,21 @@ class AddressModel {
         });
         let { result, errors } = validator.validate(address, schema);
         if(!data.address_id) {
-            result.address_deleted_at = null;
+            result.address_deleted_at = process.env.TIME_NOT_DELETED;
         }
         return { result, errors };
     }
+    // get all addresses of customer
     async get(customerId) {
-        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and address_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and address_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: customerId,
         });
-        return (rows.length === 0) ? [] : rows.map(row => escapeData(row, ['address_deleted_at', 'customer_id']));        
+        return (rows.length > 0) ? rows.map(row => escapeData(row, ['address_deleted_at', 'customer_id'])) : [];        
     }
+    // get one address base on id
     async getOneAddress(addressId) {
-        const preparedStmt = `select * from ${this.table} where address_id = :address_id and address_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where address_id = :address_id and address_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             address_id: addressId,
         });
@@ -85,7 +87,7 @@ class AddressModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(address).map(key => `${key} = :${key}`).join(', ')} where address_id = :address_id`;
+        const preparedStmt = `update ${this.table} set ${Object.keys(address).map(key => `${key} = :${key}`).join(', ')} where address_id = :address_id and address_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
                 ...address,
                 address_id: addressId,
@@ -97,7 +99,7 @@ class AddressModel {
         if(!oldAddress) {
             throw new Error('Address is not found.');
         }
-        const preparedStmt = `update ${this.table} set address_deleted_at = :deleted_at where address_id = :address_id`;
+        const preparedStmt = `update ${this.table} set address_deleted_at = :deleted_at where address_id = :address_id and address_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
             deleted_at: formatDateToString(new Date()),
             address_id: addressId,

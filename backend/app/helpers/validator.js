@@ -110,9 +110,9 @@ class Validator {
         return stringImages;
     }
     checkValidDate(fieldName, stringDate) {
-        const currentDate = new Date();
-        const date = new Date(stringDate);
-        if(date < currentDate) {
+        const currentDate = formatDateToString(new Date());
+        const date = formatDateToString(new Date(stringDate));
+        if(new Date(date) < new Date(currentDate)) {
             this.errors.push({
                 fieldName,
                 msg: `${this.formatFieldName(fieldName)} must be greater than current date.`,

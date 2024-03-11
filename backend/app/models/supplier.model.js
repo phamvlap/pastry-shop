@@ -1,6 +1,6 @@
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { formatDateToString, extractData } from './../utils/index.js';
+import { formatDateToString, extractData, escapeData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -43,26 +43,29 @@ class SupplierModel {
         const validator = new Validator();
         let { result, errors } = validator.validate(supplier, schema);
         if(!data.supplier_id) {
-            result['supplier_deleted_at'] = null;
+            result['supplier_deleted_at'] = process.env.TIME_NOT_DELETED;
         }
         return { result, errors };
     }
     // get all
     async getAll() {
-        const preparedStmt = `select * from ${this.table} where supplier_deleted_at is null`;
-        const [rows] = await connection.execute(preparedStmt);
+        const preparedStmt = `select * from ${this.table} where supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}'`;
+        let [rows] = await connection.execute(preparedStmt);
+        if(rows.length > 0) {
+            rows = rows.map(row => escapeData(row, ['supplier_deleted_at']));
+        }
         return (rows.length > 0) ? rows : [];
     }
-    // get
+    // get by id
     async get(id) {
-        const preparedStmt = `select * from ${this.table} where supplier_id = :supplier_id and supplier_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where supplier_id = :supplier_id and supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             supplier_id: id,
         });
-        return (rows.length > 0) ? rows[0] : null;
+        return (rows.length > 0) ? escapeData(rows[0], ['supplier_deleted_at']) : null;
     }
     // create
-    async create(data) {
+    async store(data) {
         const { result: supplier, errors } = this.validateSupplierData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
@@ -73,6 +76,10 @@ class SupplierModel {
     }
     // update
     async update(id, payload) {
+        const oldSupplier = await this.get(id);
+        if(!oldSupplier) {
+            throw new Error('Supplier not found.');
+        }
         let exceptions= [];
         Object.keys(this.schema).forEach(key => {
             if(!payload.hasOwnProperty(key)) {
@@ -87,7 +94,7 @@ class SupplierModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(supplier).map(key => `${key} = :${key}`).join(', ')} where supplier_id = :supplier_id`;
+        const preparedStmt = `update ${this.table} set ${Object.keys(supplier).map(key => `${key} = :${key}`).join(', ')} where supplier_id = :supplier_id and supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
                 ...supplier,
                 supplier_id: id,
@@ -95,7 +102,11 @@ class SupplierModel {
     }
     // delete
     async delete(id) {
-        await connection.execute(`update ${this.table} set supplier_deleted_at = :deleted_at where supplier_id = :supplier_id`, {
+        const oldSupplier = await this.get(id);
+        if(!oldSupplier) {
+            throw new Error('Supplier not found.');
+        }
+        await connection.execute(`update ${this.table} set supplier_deleted_at = :deleted_at where supplier_id = :supplier_id and supplier_deleted_at = '${process.env.TIME_NOT_DELETED}'`, {
             deleted_at: formatDateToString(),
             supplier_id: id,
         });

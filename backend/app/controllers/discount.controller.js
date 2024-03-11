@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import DiscountModel from './../models/discount.model.js';
+import { DiscountModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 
 class DiscountController {
@@ -29,10 +29,10 @@ class DiscountController {
             next(new BadRequestError(error.message));
         }
     }
-    async store(req, res, next) {
+    async create(req, res, next) {
         try {
             const discountModel = new DiscountModel();
-            await discountModel.create(req.body);
+            await discountModel.store(req.body);
             return res.status(StatusCodes.CREATED).json({
                 status: 'success',
                 message: 'Discount created successfully.',

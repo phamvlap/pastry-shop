@@ -1,7 +1,7 @@
 import { unlink } from 'fs/promises';
 import multer from 'multer';
 import { StatusCodes } from 'http-status-codes';
-import ProductModel from './../models/product.model.js';
+import { ProductModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 import { uploadProductImages } from './../utils/index.js';
 
@@ -131,7 +131,7 @@ class ProductController {
     async delete(req, res, next) {
         try {
             const productModel = new ProductModel();
-            const products = await productModel.delete(req.params.id);
+            await productModel.delete(req.params.id);
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Product deleted successfully',

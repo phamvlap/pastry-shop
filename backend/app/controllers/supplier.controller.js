@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import SupplierModel from './../models/supplier.model.js';
+import { SupplierModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 
 class SupplierController {
@@ -29,10 +29,10 @@ class SupplierController {
             next(new BadRequestError(error.message));
         }
     }
-    async store(req, res, next) {
+    async create(req, res, next) {
         try {
             const supplierModel = new SupplierModel();
-            await supplierModel.create(req.body);
+            await supplierModel.store(req.body);
             return res.status(StatusCodes.CREATED).json({
                 status: 'success',
                 message: 'Supplier created successfully.',

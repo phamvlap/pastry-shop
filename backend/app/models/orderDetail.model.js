@@ -1,6 +1,7 @@
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
 import { ProductModel } from './index.js';
+import { escapeData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -24,6 +25,7 @@ class OrderDetailModel {
             },
         };
     }
+    // get all products in order
     async get(orderId) {
         const preparedStmt = `select * from ${this.table} where order_id = :order_id`;
         const [rows] = await connection.execute(preparedStmt, {
@@ -35,13 +37,14 @@ class OrderDetailModel {
             for(const row of rows) {
                 const item = await productModel.get(row.product_id);
                 items.push({
-                    ...row,
+                    ...escapeData(row, ['product_id']),
                     detail: item,
                 });
             }
         }
         return items;
     }
+    // add product to order
     async add(orderId = '', productId = '', productQuantity = '') {
         const validator = new Validator();
         const { result: orderDetail, errors } = validator.validate({

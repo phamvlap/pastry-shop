@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import StaffModel from './../models/staff.model.js';
+import { StaffModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 
 class StaffController {

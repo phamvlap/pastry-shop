@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import OrderModel from './../models/order.model.js';
+import { OrderModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 
 class OrderController {

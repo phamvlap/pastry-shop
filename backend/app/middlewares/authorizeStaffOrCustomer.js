@@ -9,7 +9,7 @@ export default (req, res, next) => {
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        if(!(decoded.staff_id || decoded.customer__id)) {
+        if(!(decoded.staff_id || decoded.customer_id)) {
             return next(new UnauthorizedError('Unauthorized staff or customer.'));
         }
         req.activePerson = {

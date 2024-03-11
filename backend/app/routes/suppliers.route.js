@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', SupplierController.index);
 router.get('/:id', SupplierController.get);
-router.post('/', authorizeStaff, SupplierController.store);
+router.post('/', authorizeStaff, SupplierController.create);
 router.patch('/:id', authorizeStaff, SupplierController.update);
 router.delete('/:id', authorizeStaff, SupplierController.delete);
 

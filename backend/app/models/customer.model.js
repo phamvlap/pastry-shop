@@ -1,3 +1,6 @@
+import { unlink } from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -7,6 +10,8 @@ import { formatDateToString, escapeData, extractData } from './../utils/index.js
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
+
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 class CustomerModel {
     constructor() {
@@ -52,33 +57,33 @@ class CustomerModel {
         }
         let { result, errors } = validator.validate(customer, schema);
         if(!data.customer_id) {
-            result['customer_deleted_at'] = null;
+            result['customer_deleted_at'] = process.env.TIME_NOT_DELETED;
+            if(!result['customer_avatar']) {
+                result['customer_avatar'] = process.env.DEFAULT_AVATAR_USER;
+            }
         }
         return { result, errors };
     }
     // get all
     async getAll() {
-        const preparedStmt = `select * from ${this.table} where customer_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where customer_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt);
         return (rows.length > 0) ? rows.map(row => escapeData(row, ['customer_password', 'customer_deleted_at'])) : [];
     }
-    // get by Id
+    // get by id
     async getById(id) {
-        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and customer_deleted_at is null`;
-        const [rows] = await connection.execute(preparedStmt, {
-            customer_id: id,
-        });
-        return (rows[0]) ? escapeData(rows[0], ['customer_password', 'customer_deleted_at']) : null;
+        const customer = await this.getAllById(id);
+        return (customer) ? escapeData(customer, ['customer_password', 'customer_deleted_at']) : null;
     }
     // get newest user
     async getNewestUser() {
-        const preparedStmt = `select * from ${this.table} where customer_deleted_at is null order by customer_id desc limit 1`;
+        const preparedStmt = `select * from ${this.table} where customer_deleted_at = '${process.env.TIME_NOT_DELETED}' order by customer_id desc limit 1`;
         const [rows] = await connection.execute(preparedStmt);
         return (rows[0]) ? escapeData(rows[0], ['customer_password', 'customer_deleted_at']) : null;
     }
-    // get all infos by Id
+    // get all infos by id
     async getAllById(id) {
-        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and customer_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and customer_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: id,
         });
@@ -86,15 +91,15 @@ class CustomerModel {
     }
     // get all infos by username
     async getAllByUsername(username) {
-        const preparedStmt = `select * from ${this.table} where customer_username = :customer_username and customer_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where customer_username = :customer_username and customer_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             customer_username: username,
         });
         return (rows.length > 0) ? rows[0] : null;
     }
     // register
-    async register(data) {
-        const { result: customer, errors } = this.validateCustomerData(data);
+    async register(payload) {
+        const { result: customer, errors } = this.validateCustomerData(payload);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
@@ -114,37 +119,29 @@ class CustomerModel {
     // login
     async login(username, password) {
         if(!username || !password) {
-            throw Error('Please provide both username and password.');
+            throw new Error('Please provide both username and password.');
         }
         const customer = await this.getAllByUsername(username);
         if(!customer) {
-            throw Error('Invalid username or password.');
+            throw new Error('Invalid username or password.');
         }
         if(!bcrypt.compareSync(password, customer.customer_password)) {
-            throw Error('Invalid username or password.');
+            throw new Error('Invalid username or password.');
         }
-        const token = jwt.sign({
-            customer_id: customer.customer_id,
-            customer_username: customer.customer_username,
-            customer_name: customer.customer_name,
-            customer_phone_number: customer.customer_phone_number,
-            customer_avatar: customer.customer_avatar,
-        }, process.env.JWT_SECRET, {
+        const token = jwt.sign(escapeData(customer, ['customer_password', 'customer_deleted_at']), process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
         return {
-            customer: {
-                id: customer.customer_id,
-                username: customer.customer_username,
-                name: customer.customer_name,
-                phone_number: customer.customer_phone_number,
-                avatar: customer.customer_avatar,
-            },
+            customer: escapeData(customer, ['customer_password', 'customer_deleted_at']),
             token,
         };
     }
     // update
     async update(id, payload) {
+        const oldCustomer = await this.getAllById(id);
+        if(!oldCustomer) {
+            throw new Error('Customer not exists.');
+        }
         let exceptions= [];
         payload = Object.assign({}, payload);
         Object.keys(this.schema).forEach(key => {
@@ -161,7 +158,16 @@ class CustomerModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(customer).map(key => `${key} = :${key}`).join(', ')} where customer_id = :customer_id`;
+        const uploadDir = path.join(dirname, '../../public/uploads');
+        if(customer.customer_avatar && oldCustomer.customer_avatar !== process.env.DEFAULT_AVATAR_USER) {
+            try {
+                unlink(path.join(uploadDir, 'avatars', oldCustomer.customer_avatar));
+            }
+            catch(error) {
+                throw new Error('Failed to remove old avatar.');
+            }
+        }
+        const preparedStmt = `update ${this.table} set ${Object.keys(customer).map(key => `${key} = :${key}`).join(', ')} where customer_id = :customer_id and customer_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
                 ...customer,
                 customer_id: id,
@@ -187,7 +193,7 @@ class CustomerModel {
         }
         const salt = bcrypt.genSaltSync(Number(process.env.SALT_ROUNDS));
         const hashNewPassword = bcrypt.hashSync(data.customer_new_password, salt);
-        const preparedStmt = `update ${this.table} set customer_password = :customer_password where customer_id = :customer_id and customer_deleted_at is null`;
+        const preparedStmt = `update ${this.table} set customer_password = :customer_password where customer_id = :customer_id and customer_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
                 customer_password: hashNewPassword,
                 customer_id: id,
@@ -195,7 +201,7 @@ class CustomerModel {
     }
     // delete
     async delete(id) {
-        await connection.execute(`update ${this.table} set customer_deleted_at = :deleted_at where customer_id = :customer_id`, {
+        await connection.execute(`update ${this.table} set customer_deleted_at = :deleted_at where customer_id = :customer_id and customer_deleted_at = '${process.env.TIME_NOT_DELETED}'`, {
             deleted_at: formatDateToString(new Date()),
             customer_id: id,
         });

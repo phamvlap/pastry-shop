@@ -55,34 +55,36 @@ class StaffModel {
         });
         let { result, errors } = validator.validate(staff, schema); 
         if(!data.staff_id) {
-            result['staff_deleted_at'] = null;
+            result['staff_deleted_at'] = process.env.TIME_NOT_DELETED;
         }
         return { result, errors };   
     }
     // get all
     async getAll() {
-        const preparedStmt = `select * from ${this.table} where staff_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where staff_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt);
         return (rows.length > 0) ? rows.map(row => escapeData(row, ['staff_password', 'staff_deleted_at'])) : [];
     }
-    // get all by id
+    // get by id 
+    async getById(id) {
+        const data = await this.getAllById(id);
+        return (data) ? escapeData(data, ['staff_password', 'staff_deleted_at']) : null;
+    }
+    // get all properties of staff by id
     async getAllById(id) {
-        const preparedStmt = `select * from ${this.table} where staff_id = :staff_id and staff_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where staff_id = :staff_id and staff_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             staff_id: id,
         });
         return (rows.length > 0) ? rows[0] : null;
     }
+    // get all properties of staff by email
     async getAllByEmail(email) {
-        const preparedStmt = `select * from ${this.table} where staff_email = :staff_email and staff_deleted_at is null`;
+        const preparedStmt = `select * from ${this.table} where staff_email = :staff_email and staff_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         const [rows] = await connection.execute(preparedStmt, {
             staff_email: email,
         });
         return (rows.length > 0) ? rows[0] : null;
-    }
-    async getById(id) {
-        const data = await this.getAllById(id);
-        return (data) ? escapeData(data, ['staff_password', 'staff_deleted_at']) : null;
     }
     // create
     async store(data) {
@@ -97,6 +99,7 @@ class StaffModel {
         const preparedStmt = `insert into ${this.table} (${Object.keys(staff).join(', ')}) values (${Object.keys(staff).map(key => `:${key}`).join(', ')})`;
         await connection.execute(preparedStmt, staff);
     }
+    // login staff
     async login(email, password) {
         if(!email || !password) {
             throw Error('Please provide email and password.');
@@ -108,28 +111,22 @@ class StaffModel {
         if(!bcrypt.compareSync(password, staff.staff_password)) {
             throw Error('Invalid email or password.');
         }
-        const token = jwt.sign({
-            staff_id: staff.staff_id,
-            staff_name: staff.staff_name,
-            staff_email: staff.staff_email,
-            staff_role: staff.staff_role,
-            staff_phone_number: staff.staff_phone_number,
-        }, process.env.JWT_SECRET, {
+        const token = jwt.sign(escapeData(staff, ['staff_password', 'staff_deleted_at']), process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
         return {
             staff: {
-                id: staff.staff_id,
-                name: staff.staff_name,
-                email: staff.staff_email,
-                role: staff.staff_role,
-                phone_number: staff.staff_phone_number,
+                ...escapeData(staff, ['staff_password', 'staff_deleted_at']),
             },
             token,
         };
     }
     // update
     async update(id, payload) {
+        const oldStaff = await this.getById(id);
+        if(!oldStaff) {
+            throw new Error('Staff not exists.');
+        }
         let exceptions= [];
         Object.keys(this.schema).forEach(key => {
             if(!payload.hasOwnProperty(key)) {
@@ -145,7 +142,7 @@ class StaffModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(staff).map(key => `${key} = :${key}`).join(', ')} where staff_id = :staff_id`;
+        const preparedStmt = `update ${this.table} set ${Object.keys(staff).map(key => `${key} = :${key}`).join(', ')} where staff_id = :staff_id and staff_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
                 ...staff,
                 staff_id: id,
@@ -174,7 +171,7 @@ class StaffModel {
         }
         const salt = bcrypt.genSaltSync(Number(process.env.SALT_ROUNDS));
         const hashNewPassword = bcrypt.hashSync(data.staff_new_password, salt);
-        const preparedStmt = `update ${this.table} set staff_password = :staff_password where staff_id = :staff_id`;
+        const preparedStmt = `update ${this.table} set staff_password = :staff_password where staff_id = :staff_id and staff_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
         await connection.execute(preparedStmt, {
                 staff_password: hashNewPassword,
                 staff_id: id,
@@ -182,7 +179,11 @@ class StaffModel {
     }
     // delete
     async delete(id) {
-        const preparedStmt = `update ${this.table} set staff_deleted_at = :deleted_at where staff_id = :staff_id`;
+        const oldStaff = await this.getById(id);
+        if(!oldStaff) {
+            throw new Error('Staff not exists.');
+        }
+        const preparedStmt = `update ${this.table} set staff_deleted_at = :deleted_at where staff_id = :staff_id and staff_deleted_at = ${process.env.TIME_NOT_DELETED}`;
         await connection.execute(preparedStmt, {
             deleted_at: formatDateToString(),
             staff_id: id,

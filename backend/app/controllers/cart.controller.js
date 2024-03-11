@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from './../errors/index.js';
-import CartModel from './../models/cart.model.js';
+import { CartModel } from './../models/index.js';
 
 class CartController {
     async get(req, res, next) {

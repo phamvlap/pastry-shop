@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', DiscountController.index);
 router.get('/:id', DiscountController.get);
-router.post('/', authorizeStaff, DiscountController.store);
+router.post('/', authorizeStaff, DiscountController.create);
 router.patch('/:id', authorizeStaff, DiscountController.update);
 
 export default router;

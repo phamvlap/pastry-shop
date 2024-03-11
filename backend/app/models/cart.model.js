@@ -32,6 +32,7 @@ class CartModel {
         const validator = new Validator();
         return validator.validate(cart, this.schema);
     }
+    // get one item from cart
     async getOneFromCart(customerId, itemId) {
         const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and product_id = :product_id`;
         const [rows] = await connection.execute(preparedStmt, {
@@ -115,13 +116,9 @@ class CartModel {
         if(!oldItem) {
             await this.add(cart);
         }
-        const updatedContent = {};
-        if(cart.cart_quantity) {
-            updatedContent['cart_quantity'] = cart.cart_quantity;
-        }
-        if(cart.cart_is_selected) {
-            updatedContent['cart_is_selected'] = cart.cart_is_selected;
-        }
+        const updatedContent = {
+            ...extractData(cart, ['cart_quantity', 'cart_is_selected']),
+        };
         const preparedStmt = `update ${this.table} set ${Object.keys(updatedContent).map(key => `${key} = :${key}`).join(', ')} where customer_id = :customer_id and product_id = :product_id`;
         await connection.execute(preparedStmt, cart);
     }

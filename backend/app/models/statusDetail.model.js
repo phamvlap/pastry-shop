@@ -1,6 +1,6 @@
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { StaffModel, CustomerModel, StatusModel} from './index.js';
+import { StaffModel, CustomerModel, StatusModel } from './index.js';
 import { formatDateToString, extractData } from './../utils/index.js';
 
 const connection = await connectDB();
@@ -26,7 +26,7 @@ class StatusDetailModel {
             },
         };
     }
-    validateOrderData(data) {
+    validateStatusDetailData(data) {
         const product = extractData(data, this.fields);
         const validator = new Validator();
         return validator.validate(product, this.schema);
@@ -76,15 +76,11 @@ class StatusDetailModel {
         const [rows] = await connection.execute(preparedStmt, {
             order_id: orderId,
         });
-
-        let status = {};
-        if(rows.length > 0) {
-            status = await this.getOneStatusDetail(rows[0]);
-        }
-        return status;
+        return (rows.length > 0) ? await this.getOneStatusDetail(rows[0]) : {};
     }
+    // add new status of order
     async add(payload) {
-        const { result: statusDetail, errors } = this.validateOrderData(payload);
+        const { result: statusDetail, errors } = this.validateStatusDetailData(payload);
         if(errors.length > 0) {
             throw new Error(errors.map(error => error.msg).join(' '));
         }

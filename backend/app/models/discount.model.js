@@ -52,7 +52,7 @@ class DiscountModel {
         const [rows] = await connection.execute(preparedStmt);
         return (rows.length > 0) ? rows : [];
     }
-    // get
+    // get by id
     async get(id) {
         const preparedStmt = `select * from ${this.table} where discount_id = :discount_id`;
         const [rows] = await connection.execute(preparedStmt, {
@@ -61,7 +61,7 @@ class DiscountModel {
         return (rows.length > 0) ? rows[0] : null;
     }
     // create
-    async create(data) {
+    async store(data) {
         const { result: discount, errors } = this.validateDiscountData(data);
         if(errors.length > 0) {
             const errorMessage = errors.map(error => error.msg).join(' ');

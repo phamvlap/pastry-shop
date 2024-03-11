@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import CategoryModel from './../models/category.model.js';
+import { CategoryModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 
 class CategoryController {
@@ -16,10 +16,10 @@ class CategoryController {
             next(new BadRequestError(error.message));
         }
     }
-    async store(req, res, next) {
+    async create(req, res, next) {
         try {
             const categoryModel = new CategoryModel();
-            await categoryModel.create(req.body);
+            await categoryModel.store(req.body);
             res.status(StatusCodes.CREATED).json({
                 status: 'success',
                 message: 'Category created successfully.',

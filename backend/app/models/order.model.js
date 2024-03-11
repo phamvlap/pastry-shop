@@ -72,6 +72,7 @@ class OrderModel {
         }
         return orderList;
     }
+    // get order by date
     async getByDate(date) {
         const preparedStmt = `select * from ${this.table} where order_date = :order_date`;
         const [rows] = await connection.execute(preparedStmt, {
@@ -79,6 +80,7 @@ class OrderModel {
         });
         return (rows.length > 0) ? rows[0] : null;
     }
+    // get order by id
     async get(id) {
         const preparedStmt = `select * from ${this.table} where order_id = :order_id`;
         const [rows] = await connection.execute(preparedStmt, {
@@ -90,6 +92,7 @@ class OrderModel {
         const orderDetail = await this.getInfoOneOrder(rows[0]);
         return orderDetail;
     }
+    // get all orders of an user
     async getUserOrders(customerId) {
         const addressTable = process.env.TABLE_ADDRESSES;
         const preparedStmt = `select * from ${this.table} join ${addressTable} on ${this.table}.address_id = ${addressTable}.address_id where ${addressTable}.customer_id = :customer_id`;
@@ -99,12 +102,16 @@ class OrderModel {
         const orders = [];
         if(rows.length > 0) {
             for(const row of rows) {
-                const orderDetail = await this.getInfoOneOrder(row);
+                const order = {
+                    ...escapeData(row, ['address_fullname', 'address_phone_number', 'address_detail', 'address_deleted_at', 'customer_id']),
+                }
+                const orderDetail = await this.getInfoOneOrder(order);
                 orders.push(orderDetail);
             }
         }
         return orders;
     }
+    // add order
     async add(customerId, payload) {
         const cartModel = new CartModel();
         const orderDetailModel = new OrderDetailModel();
@@ -116,6 +123,7 @@ class OrderModel {
         if(selectedList.length === 0) {
             throw new Error('No product selected.');
         }
+        console.log('>>> debug: selectedList', selectedList);
         const total = selectedList.reduce((oldTotal, currItem) => oldTotal + currItem.detail.price.price_value * currItem.quantityInCart, 0);
         const data = {
             ...payload,
@@ -136,7 +144,7 @@ class OrderModel {
                 await cartModel.delete(customerId, item.detail.product_id);
             }
             const statusDetail = {
-                status_id: 1001,
+                status_id: process.env.STATUS_WAITING_FOR_CONFIRMATION,
                 order_id: justAddedOrder.order_id,
                 status_updated_at: currentDate,
                 status_updated_by: `customer_${customerId}`,
@@ -144,8 +152,10 @@ class OrderModel {
             await statusDetailModel.add(statusDetail);
         }
     }
+    // update status of order
     async update(orderId, statusId, implementer = {}) {
         const statusDetailModel = new StatusDetailModel();
+        
         let updatedBy = '';
         if(implementer.staff_id) {
             updatedBy = `staff_${implementer.staff_id}`;
@@ -164,6 +174,7 @@ class OrderModel {
         }
         await statusDetailModel.add(statusDetail);
     }
+    // cancel order
     async destroy(orderId, implementer = {}) {
         await this.update(orderId, process.env.STATUS_CANCELLED, implementer);
     }

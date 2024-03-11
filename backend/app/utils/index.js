@@ -3,6 +3,7 @@ import extractData from './extractData.util.js';
 import formatDateToString from './formatDateToString.util.js';
 import uploadAvatar from './uploadAvatar.util.js';
 import uploadProductImages from './uploadProductImages.util.js';
+import generateRandomString from './generateRandomString.util.js';
 
 export {
     escapeData,
@@ -10,4 +11,5 @@ export {
     formatDateToString,
     uploadAvatar,
     uploadProductImages,
+    generateRandomString,
 };
