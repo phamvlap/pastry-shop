@@ -117,6 +117,7 @@ class StaffModel {
         return {
             staff: {
                 ...escapeData(staff, ['staff_password', 'staff_deleted_at']),
+                staff_expiresIn: Number(process.env.JWT_EXPIRES_IN.split('h')[0]) * 60 * 60
             },
             token,
         };

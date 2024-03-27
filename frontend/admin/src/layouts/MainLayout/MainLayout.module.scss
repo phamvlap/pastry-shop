@@ -1,0 +1,95 @@
+// Wrapper
+.wrapper {
+    background-color: var(--white-color);
+    height: 100%;
+    // Sidenav
+    .sidenav {
+        padding: 0;
+        position: fixed;
+        height: 100%;
+    }
+    // Content
+    .content {
+        display: flex;
+        flex-direction: column;
+        padding: 0 8px;
+    }
+    .content-body {
+        height: 100%;
+        margin: 8px 0;
+        padding: 8px;
+        border-radius: 8px;
+        background-color: var(--fourth-level-color);
+    }
+}
+
+// Header
+.header {
+    display: flex;
+    padding: 16px;
+    background-color: var(--fourth-level-color);
+    border-radius: 8px;
+    justify-content: space-between;
+    align-items: center;
+    .header-left {
+        font-size: 2.4rem;
+        font-weight: 700;
+    }
+}
+// Footer
+.footer {
+    border-radius: 8px;
+    background-color: var(--fourth-level-color);
+}
+.title {
+    font-size: 2.8rem;
+}
+.custom-dropdown-item {
+    padding: 20px;
+    font-size: 1.6rem;
+}
+// Sidenav
+.sidenav-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    // position: fixed;
+    color: var(--fourth-level-color);
+    background-color: var(--first-level-color);
+    .sidenav-head {
+        border-bottom: 1px solid var(--second-level-color);
+    }
+    .sidenav-head__admin {
+        padding: 20px;
+        font-size: 2.0rem;
+        text-align: center;
+        color: var(--fourth-level-color);
+        font-weight: 700;
+    }
+    .sidenav-list {
+        padding: 8px 0;
+        .sidenav-item {
+            display: block;
+            padding: 16px 8px;
+            border-radius: 8px;
+            &:hover {
+                background-color: var(--second-level-color);
+            }
+            &.active {
+                background-color: var(--second-level-color);
+            }
+        }
+    }
+    .sidenav-footer {
+        padding: 16px 8px;
+        margin-top: auto;
+        margin-bottom: 8px;
+        color: var(--danger-color);
+        font-size: 1.6rem;
+        .sidenav-footer__inner {
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+}

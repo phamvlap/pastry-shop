@@ -13,7 +13,7 @@ class DiscountModel {
             discount_code: {
                 type: String,
                 required: true,
-                between: [5, 20],
+                between: [3, 20],
                 uppercase: true,
             },
             discount_rate: {

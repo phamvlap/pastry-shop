@@ -1,0 +1,18 @@
+// Panel
+.panel {
+    display: flex;
+    justify-content: space-between;
+    .panel-item {
+        .panel-item__period {
+            display: flex;
+            align-items: center;
+        }
+        .panel-item__text {
+            display: inline-block;
+            margin: 0 8px;
+        }
+        .panel-item__button {
+            margin-left: 8px;
+        }
+    }
+}

@@ -1,0 +1,47 @@
+.container {
+    table-layout: fixed;
+    width: 100%;
+    &.rounded-conners {
+        border-spacing: 0;
+        border-collapse: separate;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .head {
+        color: var(--white-color);
+        background-color: var(--second-level-color);
+        &.cell {
+            font-size: 1.8rem;
+            font-weight: 700;
+            white-space: inherit;
+        }
+    }
+    .body {
+        overflow: auto;
+    }
+    .cell {
+        padding: 16px 16px;
+        overflow: hidden;
+        max-width: 0;
+        text-overflow: ellipsis;
+    }
+    .scrollit {
+        overflow: scroll;
+        height: 100%;
+    }
+}
+tr {
+    .th-checkbox {
+        width: 80px;
+        .th-checkbox-input {
+            display: block;
+            margin: auto;
+        }
+    }
+    &:nth-child(odd) {
+        background-color: rgba(0, 0, 0, 0.04);
+    }
+    &:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.08);
+    }
+}

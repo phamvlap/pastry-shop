@@ -1,5 +1,6 @@
 import { unlink } from 'fs/promises';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
@@ -104,14 +105,37 @@ class ProductModel {
         };
     }
     // get all products
-    async getAll() {
-        const [rows] = await connection.execute(`select * from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}'`);
+    async getAll(queryLimit, queryOffset) {
+        let limit = null;
+        let offset = null;
+        let rows = [];
+        if(queryLimit && queryOffset) {
+            limit = queryLimit;
+            offset = queryOffset;
+        }
+        let preparedStmt = '';
+        if(limit && offset) {
+            preparedStmt = `select * from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
+            [rows] = await connection.execute(preparedStmt, {
+                limit: limit,
+                offset: offset,
+            });
+        }
+        else {
+            preparedStmt = `select * from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+            [rows] = await connection.execute(preparedStmt);
+        }
         let products = [];
         for(const row of rows) {
             const itemDetail = await this.getItemDetail(row);
             products.push(itemDetail);
         }
         return products;
+    }
+    // get total products
+    async getCount() {
+        const [rows] = await connection.execute(`select count(*) as count from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}'`);
+        return (rows.length > 0) ? rows[0]['count'] : 0;
     }
     // get item by id
     async get(id) {
@@ -126,6 +150,125 @@ class ProductModel {
             product_created_at: date,
         });
         return (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
+    }
+    // get count of products by category
+    async getCountByCategory(categoryId) {
+        const preparedStmt = `select count(*) as count from ${this.table} where category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+        const [rows] = await connection.execute(preparedStmt, {
+            category_id: categoryId,
+        });
+        return (rows.length > 0) ? rows[0]['count'] : 0;
+    }
+    // get count of product by discount
+    async getCountByDiscount(discountId) {
+        const preparedStmt = `select count(*) as count from ${this.table} where discount_id = :discount_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+        const [rows] = await connection.execute(preparedStmt, {
+            discount_id: discountId,
+        });
+        return (rows.length > 0) ? rows[0]['count'] : 0;
+    }
+    // get count of products by filter
+    async getCountByFilter(status, categoryId) {
+        let preparedStmt = '';
+        let rows = [];
+
+        if(status === 'all') {
+            if(categoryId === 'all') {
+                return await this.getCount();
+            }
+            else {
+                preparedStmt = `select count(*) as count from ${this.table} where category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+                [rows] = await connection.execute(preparedStmt, {
+                    category_id: categoryId,
+                });
+            }
+        }
+        else if(status === 'in-stock') {
+            if(categoryId === 'all') {
+                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity > product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+                [rows] = await connection.execute(preparedStmt);
+            }
+            else {
+                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity > product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+                [rows] = await connection.execute(preparedStmt, {
+                    category_id: categoryId,
+                });
+            }
+        }
+        else if(status === 'out-stock') {
+            if(categoryId === 'all') {
+                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity = product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+                [rows] = await connection.execute(preparedStmt);
+            }
+            else {
+                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity = product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+                [rows] = await connection.execute(preparedStmt, {
+                    category_id: categoryId,
+                });
+            }
+        }
+
+        return (rows.length > 0) ? rows[0]['count'] : 0;
+    }
+    // get products by filter: category and status
+    async getProductsByFilter(status, categoryId, limit, offset) {
+        let preparedStmt = '';
+        let rows = [];
+
+        if(status === 'all') {
+            if(categoryId === 'all') {
+                return await this.getAll(limit, offset);
+            }
+            else {
+                preparedStmt = `select * from ${this.table} where category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
+                [rows] = await connection.execute(preparedStmt, {
+                    category_id: categoryId,
+                    limit: limit,
+                    offset: offset,
+                });
+            }
+        }
+        else if(status === 'in-stock') {
+            if(categoryId === 'all') {
+                preparedStmt = `select * from ${this.table} where product_stock_quantity > product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
+                [rows] = await connection.execute(preparedStmt, {
+                    limit: limit,
+                    offset: offset,
+                });
+            }
+            else {
+                preparedStmt = `select * from ${this.table} where product_stock_quantity > product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
+                [rows] = await connection.execute(preparedStmt, {
+                    category_id: categoryId,
+                    limit: limit,
+                    offset: offset,
+                });
+            }
+        }
+        else if(status === 'out-stock') {
+            if(categoryId === 'all') {
+                preparedStmt = `select * from ${this.table} where product_stock_quantity = product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
+                [rows] = await connection.execute(preparedStmt, {
+                    limit: limit,
+                    offset: offset,
+                });
+            }
+            else {
+                preparedStmt = `select * from ${this.table} where product_stock_quantity = product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
+                [rows] = await connection.execute(preparedStmt, {
+                    category_id: categoryId,
+                    limit: limit,
+                    offset: offset,
+                });
+            }
+        }
+
+        let products = [];
+        for(const row of rows) {
+            const itemDetail = await this.getItemDetail(row);
+            products.push(itemDetail);
+        }
+        return products;
     }
     // create new product
     async store(data) {
@@ -174,11 +317,14 @@ class ProductModel {
         if(product.product_images) {
             const images = oldItem.product_images.split(';');
             images.forEach(imageName => {
-                try {
-                    unlink(path.join(uploadDir, 'products', imageName));
-                }
-                catch(error) {
-                    throw new Error('Failed to remove old images.');
+                const imagePath = path.join(uploadDir, 'products', imageName);
+                if(fs.existsSync(imagePath)) {
+                    try {
+                        unlink(imagePath);
+                    }
+                    catch(error) {
+                        throw new Error('Failed to remove old images.');
+                    }
                 }
             });
         }

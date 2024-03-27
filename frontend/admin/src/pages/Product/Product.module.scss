@@ -1,0 +1,35 @@
+.container {
+    padding: 16px;
+}
+// SearchBar
+.searchbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .select-section {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        .select-section__item {
+            padding: 0 6px;
+        }
+    }
+    .filter-section {
+        display: flex;
+        margin-left: 8px;
+        .filter-section__text {
+            display: inline-block;
+            width: 180px;
+            text-align: center;
+        }
+        .filter-section__item {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+    }
+    .search-section {
+        margin-left: auto;
+    }
+}
+

@@ -1,0 +1,17 @@
+// Wrapper
+.wrapper {
+    background-color: var(--white-color);
+    height: 100%;
+}
+// Content
+.content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px;
+}
+.content-body {
+    height: 100%;
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 8px;
+}

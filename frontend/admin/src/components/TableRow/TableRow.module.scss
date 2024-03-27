@@ -1,0 +1,44 @@
+.rounded-conners {
+    border-spacing: 0;
+    border-collapse: separate;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.head {
+    color: var(--white-color);
+    background-color: var(--secondary-background-color);
+    &.cell {
+        font-size: 1.8rem;
+        font-weight: 700;
+        white-space: inherit;
+    }
+}
+.body {
+
+}
+.cell {
+    padding: 16px 16px;
+    overflow: hidden;
+    max-width: 0;
+    text-overflow: ellipsis;
+    line-height: 1.6;
+    .cell-image {
+        width: 90px;
+        height: 90px;
+    }
+}
+tr {
+    .th-checkbox {
+        width: 80px;
+        .th-checkbox-input {
+            display: block;
+            margin: auto;
+        }
+    }
+    &:nth-child(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    &:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.10);
+    }
+}

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-import bodyParser from 'body-parser';
+// import bodyParser from 'body-parser';
 
 import connectDB from './db/index.js';
 import { errorHandler, notFoundHandler } from './middlewares/index.js';
@@ -18,10 +18,13 @@ import {
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.urlencoded({
-    extended: true,
-}));
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({
+//     extended: true,
+// }));
+// app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 
 // routes
 app.use('/api/v1/categories', categoryRoutes);

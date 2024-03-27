@@ -1,0 +1,20 @@
+.title {
+    font-weight: 700;
+    margin: 8px 4px;
+}
+.image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 8px 4px;
+}
+.row-wrapper {
+    height: auto;
+}
+.control-bar {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
