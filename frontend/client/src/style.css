@@ -1,0 +1,109 @@
+:root {
+    /* colors */
+    --first-level-color: #67729D;
+    --second-level-color: #BB9CC0;
+    --third-level-color: #E7BCDE;
+    --fourth-level-color: #FED9ED;
+    --white-color: #fff;
+    --dark-text-color: #666666;
+    --light-text-color: #f2f6fa;
+    --info-color: #0b5ed7;
+    --danger-color: #BB2D3B;
+    --success-color: #157347;
+    --warning-color: #FFCA2C;
+
+    --secondary-background-color: #008fdb;
+    --primary-background-color: #f6f6f5;
+    --hover-color: #004eaf;
+    --active-color: #004eaf;
+    --error-color: #ff0000;
+    /* font */
+    --font-family: 'OpenSans', sans-serif;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    font-size: 62.5%;
+    height: 100%;
+}
+body {
+    font-family: var(--font-family);
+    font-size: 1.6rem;
+    color: var(--dark-text-color);
+    line-height: 1.5rem;
+    text-rendering: optimizeSpeed;
+    overflow-y: overlay;
+    height: inherit;
+}
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0;
+}
+#root {
+    height: inherit;
+}
+html ::-webkit-scrollbar {
+    border-radius: 0px;
+    width: 8px;
+}
+html *::-webkit-scrollbar {
+    border-radius: 0;
+    width: 8px;
+}
+html ::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(22, 24, 35, 0.2);
+}
+html *::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(22, 24, 35, 0.2);
+}
+html ::-webkit-scrollbar-track {
+    border-radius: 0px;
+    background-color: rgba(0, 0, 0, 0);
+}
+html *::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+button,
+input,
+[tabindex] {
+    border: none;
+    outline: none;
+}
+a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+li {
+    list-style: none;
+}
+/* fonts */
+@font-face {
+    font-family: OpenSans;
+    src: url('/src/assets/fonts/open_sans/OpenSans-Regular.ttf') format('ttf');
+    font-weight: 400;
+}
+@font-face {
+    font-family: OpenSans;
+    src: url('/src/assets/fonts/open_sans/OpenSans-Medium.ttf') format('ttf');
+    font-weight: 500;
+}
+@font-face {
+    font-family: OpenSans;
+    src: url('/src/assets/fonts/open_sans/OpenSans-Bold.ttf') format('ttf');
+    font-weight: 600;
+}
+@font-face {
+    font-family: OpenSans;
+    src: url('/src/assets/fonts/open_sans/OpenSans-ExtraBold.ttf') format('ttf');
+    font-weight: 700;
+}
