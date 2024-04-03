@@ -9,7 +9,17 @@ class ProductController {
     async index(req, res, next) {
         try {
             const productModel = new ProductModel();
-            const products = await productModel.getAll(req.query.limit, req.query.offset);
+            const products = await productModel.getAll(
+                req.query.product_name,
+                req.query.category_id,
+                req.query.supplier_id,
+                req.query.discount_id,
+                req.query.createdAtOrder, // asc, desc
+                req.query.priceOrder, // asc, desc
+                req.query.status, // all, in-stock, out-stock
+                req.query.limit,
+                req.query.offset
+            );
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: products,
@@ -19,10 +29,10 @@ class ProductController {
             next(new BadRequestError(error.message));
         }
     }
-    async get(req, res, next) {
+    async getById(req, res, next) {
         try {
             const productModel = new ProductModel();
-            const product = await productModel.get(req.params.id);
+            const product = await productModel.getById(req.params.id);
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: product,
@@ -35,62 +45,16 @@ class ProductController {
     async getCount(req, res, next) {
         try {
             const productModel = new ProductModel();
-            const count = await productModel.getCount();
+            const count = await productModel.getCount(
+                req.query.product_name,
+                req.query.category_id,
+                req.query.supplier_id,
+                req.query.discount_id,
+                req.query.status, // all, in-stock, out-stock
+            );
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: count,
-            });
-        }
-        catch(error) {
-            next(new BadRequestError(error.message));
-        }
-    }
-    async getCountByCategory(req, res, next) {
-        try {
-            const productModel = new ProductModel();
-            const count = await productModel.getCountByCategory(req.params.categoryId);
-            res.status(StatusCodes.OK).json({
-                status: 'success',
-                data: count,
-            });
-        }
-        catch(error) {
-            next(new BadRequestError(error.message));
-        }
-    }
-    async getCountByDiscount(req, res, next) {
-        try {
-            const productModel = new ProductModel();
-            const count = await productModel.getCountByDiscount(req.params.discountId);
-            res.status(StatusCodes.OK).json({
-                status: 'success',
-                data: count,
-            });
-        }
-        catch(error) {
-            next(new BadRequestError(error.message));
-        }
-    }
-    async getCountByFilter(req, res, next) {
-        try {
-            const productModel = new ProductModel();
-            const count = await productModel.getCountByFilter(req.query.status, req.query.category);
-            res.status(StatusCodes.OK).json({
-                status: 'success',
-                data: count,
-            });
-        }
-        catch(error) {
-            next(new BadRequestError(error.message));
-        }
-    }
-    async getProductsByFilter(req, res, next) {
-        try {
-            const productModel = new ProductModel();
-            const products = await productModel.getProductsByFilter(req.query.status, req.query.category, req.query.limit, req.query.offset);
-            res.status(StatusCodes.OK).json({
-                status: 'success',
-                data: products,
             });
         }
         catch(error) {

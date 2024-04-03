@@ -1,0 +1,81 @@
+.container {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 8px;
+    margin-bottom: 8px;
+    .header {
+        padding: 8px;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        .order-id {
+            display: flex;
+            span {
+                display: inline-block;
+            }
+            span:last-child {
+                margin-left: 4px;
+            }
+        }
+        .order-status {
+
+        }
+    }
+    .body {
+        .order-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .order-item__row {
+            display: flex;
+            align-items: center;
+        }
+        .order-item__info {
+            display: flex;
+            align-items: center;
+            .order-item__info-image {
+                width: 66px;
+                height: 66px;
+                img {
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            .order-item__info-name, .order-item__info-price {
+                padding: 4px 8px;
+                line-height: 1.2;
+            }
+            .order-item__info-name {
+                font-weight: bold;
+            }
+            .order-item__info-price {
+                display: flex;
+                span {
+                    display: inline-block;
+                }
+                span:last-child {
+                    margin-left: 4px;
+                }
+            }
+        }
+        .order-item__subtotal {
+            display: flex;
+            span {
+                display: inline-block;
+            }
+            span:last-child {
+                margin-left: 4px;
+            }
+        }
+    }
+    .footer {
+        padding: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        span:last-child {
+            margin-left: 8px;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+    }
+}

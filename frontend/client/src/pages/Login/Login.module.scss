@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    width: 100%;
+    min-width: 400px;
+    max-width: 580px;
+    background-color: var(--light-text-color);
+    .form-item__forget-password, .form-item__direct-register {
+        padding: 4px 0;
+    }
+    .form-item__direct-register {
+        .form-item__link-register {
+            padding: 4px;
+            color: var(--first-level-color);
+        }
+    }
+}

@@ -1,0 +1,93 @@
+.card-container {
+    background-color: var(--white-color);
+    margin-top: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    .card-image {
+        display: flex;
+        justify-content: center;
+        .card-image__item {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+        }
+    }
+    .card-content {
+        padding: 8px;
+    }
+    .card-title {
+        --max-line: 2;
+        line-height: 1.8rem;
+        height: 3.6rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: var(--max-line);
+    }
+    .card-price {
+        margin-top:12px;
+        font-size: 1.8rem;
+        line-height: 1.9rem;
+        .card-price__original-container {
+            display: flex;
+            justify-content: space-between;
+            .card-price__original {
+                display: flex;
+                align-items: center;
+                text-decoration: line-through;
+                span {
+                    display: block;
+                    &:first-child {
+                        margin-right: 4px;
+                    }
+                }
+            }
+            .card-price__deducted-rate {
+                font-size: 1.4rem;
+                font-weight: 600;
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: var(--first-level-color);
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+        .card-price__current {
+            display: flex;
+            font-weight: 600;
+            color: var(--first-level-color);
+            span {
+                display: block;
+                &:first-child {
+                    margin-right: 4px;
+                }
+            }
+        }
+        .card-price__unit-money {
+            font-size: 1.4rem;
+        }
+    }
+    .card-standout {
+        margin-top:12px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.3rem;
+        .card-standout__rating {
+            display: flex;
+            span {
+                display: block;
+                &:first-child {
+                    color: var(--star-color);
+                    margin-right: 4px;
+                }
+            }
+        }
+        .card-standout__sold {
+            display: flex;
+            span {
+                display: block;
+                &:not(:last-child) {
+                    margin-right: 4px;
+                }
+            }
+        }
+    }
+}

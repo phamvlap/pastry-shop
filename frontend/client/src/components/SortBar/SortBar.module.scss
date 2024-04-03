@@ -1,0 +1,25 @@
+.sort-bar {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.1);
+    .sort-button {
+        padding: 6px 8px;
+        border: none;
+        border-radius: 0;
+        margin-left: 8px;
+        color: var(--dark-text-color);
+        &:hover {
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+    }
+    .sort-select {
+        margin-left: 8px;
+        padding: 3px;
+        .sort-select__order {
+            border: none;
+            border-radius: 0;
+        }
+    }
+}

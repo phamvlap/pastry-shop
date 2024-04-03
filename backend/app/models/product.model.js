@@ -1,16 +1,13 @@
 import { unlink } from 'fs/promises';
-import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
+
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { PriceModel, CategoryModel, SupplierModel, DiscountModel } from './index.js';
+import { PriceModel, CategoryModel, SupplierModel, DiscountModel, ImageModel, RatingModel } from './index.js';
 import { formatDateToString, escapeData, extractData } from './../utils/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
-
-const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 class ProductModel {
     constructor() {
@@ -23,8 +20,7 @@ class ProductModel {
                 min: 3,
                 slug: true,
             },
-            product_images: {
-                type: String,
+            product_images : {
                 required: true,
             },
             product_stock_quantity: {
@@ -67,9 +63,6 @@ class ProductModel {
             }
         });
         const validator = new Validator();
-        if(product.product_images) {
-            product.product_images = validator.convertToImagesString('product_images', product.product_images);
-        }
         let { result, errors } = validator.validate(product, schema);
         if(!data.product_id) {
             result['product_sold_quantity'] = 0;
@@ -88,11 +81,15 @@ class ProductModel {
         const supplierModel = new SupplierModel();
         const discountModel = new DiscountModel();
         const priceModel = new PriceModel();
+        const imageModel = new ImageModel();
+        const ratingModel = new RatingModel();
 
         const category = await categoryModel.get(item.category_id);
-        const supplier = await supplierModel.get(item.supplier_id);
-        const discount = await discountModel.get(item.discount_id);
+        const supplier = await supplierModel.getById(item.supplier_id);
+        const discount = await discountModel.getById(item.discount_id);
         const price = await priceModel.getNewest(item.product_id);
+        const images = await imageModel.getAll('product', item.product_id);
+        const ratings = await ratingModel.getAllRatingForProduct(item.product_id);
 
         return {
             ...escapeData(item, ['category_id', 'discount_id', 'supplier_id', 'product_deleted_at']),
@@ -102,29 +99,68 @@ class ProductModel {
             price: {
                 ...escapeData(price, ['product_id']),
             },
+            ratings: ratings,
+            images: images,
         };
     }
-    // get all products
-    async getAll(queryLimit, queryOffset) {
-        let limit = null;
-        let offset = null;
-        let rows = [];
-        if(queryLimit && queryOffset) {
-            limit = queryLimit;
-            offset = queryOffset;
+    // get all products by filter
+    async getAll(
+        product_name,
+        category_id,
+        supplier_id,
+        discount_id,
+        createdAtOrder, // asc, desc
+        priceOrder, // asc, desc
+        status, // all, in-stock, out-stock
+        limit,
+        offset
+    ) {
+        const parseProductName = product_name ? product_name : '';
+        const parseCategoryId = category_id ? category_id : null;
+        const parseSupplierId = supplier_id ? supplier_id : null;
+        const parseDiscountId = discount_id ? discount_id : null;
+        const parseCreatedAtOrder = createdAtOrder ? createdAtOrder : 'desc';
+        const parsePriceOrder = priceOrder ? priceOrder : 'asc';
+        const parseStatus = status ? status : 'all';
+        const parseLimit = limit ? ('' + limit) : ('' + process.env.MAX_LIMIT);
+        const parseOffset = offset ? ('' + offset) : '0';
+
+        let preparedStmt = `
+            select *
+            from ${this.table} as p join ${process.env.TABLE_PRICES} as prices
+                on p.product_id = prices.product_id
+            where product_deleted_at = '${process.env.TIME_NOT_DELETED}'
+                and p.product_name like :product_name
+                and (:category_id is null or p.category_id = :category_id)
+                and (:supplier_id is null or p.supplier_id = :supplier_id)
+                and (:discount_id is null or p.discount_id = :discount_id)
+        `;
+
+        if(status === 'in-stock') {
+            preparedStmt += ` and p.product_stock_quantity > p.product_sold_quantity`;
         }
-        let preparedStmt = '';
-        if(limit && offset) {
-            preparedStmt = `select * from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
-            [rows] = await connection.execute(preparedStmt, {
-                limit: limit,
-                offset: offset,
-            });
+        else if(status === 'out-stock') {
+            preparedStmt += ` and p.product_stock_quantity = p.product_sold_quantity`;
         }
-        else {
-            preparedStmt = `select * from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-            [rows] = await connection.execute(preparedStmt);
-        }
+
+        preparedStmt += ` order by
+                p.product_created_at ${parseCreatedAtOrder}
+            limit :limit offset :offset;`;
+
+        // preparedStmt += ` order by
+        //         p.product_created_at ${parseCreatedAtOrder},
+        //         prices.price_value ${parsePriceOrder}
+        //     limit :limit offset :offset;`;
+
+        const [rows] = await connection.execute(preparedStmt, {
+            product_name: `%${parseProductName}%`,
+            category_id: parseCategoryId,
+            supplier_id: parseSupplierId,
+            discount_id: parseDiscountId,
+            limit: parseLimit,
+            offset: parseOffset,
+        });
+
         let products = [];
         for(const row of rows) {
             const itemDetail = await this.getItemDetail(row);
@@ -132,146 +168,53 @@ class ProductModel {
         }
         return products;
     }
-    // get total products
-    async getCount() {
-        const [rows] = await connection.execute(`select count(*) as count from ${this.table} where product_deleted_at = '${process.env.TIME_NOT_DELETED}'`);
-        return (rows.length > 0) ? rows[0]['count'] : 0;
+    // get total product with filter
+    async getCount(
+        product_name,
+        category_id,
+        supplier_id,
+        discount_id,
+        status, // all, in-stock, out-stock
+    ) {
+        const products = await this.getAll(
+            product_name,
+            category_id,
+            supplier_id,
+            discount_id,
+            null,
+            null,
+            status,
+            null,
+            null
+        );
+        return products.length;
     }
     // get item by id
-    async get(id) {
-        const [rows] = await connection.execute(`select * from ${this.table} where product_id = :product_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`, {
+    async getById(id) {
+        const [rows] = await connection.execute(`
+            select * from ${this.table}
+            where product_id = :product_id
+                and product_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `, {
             product_id: id
         });
         return (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
     }
     // get product by date
     async getByCreatedDate(date) {
-        const [rows] = await connection.execute(`select * from ${this.table} where product_created_at = :product_created_at and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`, {
+        const [rows] = await connection.execute(`
+            select * from ${this.table}
+            where product_created_at = :product_created_at
+                and product_deleted_at = '${process.env.TIME_NOT_DELETED}'
+        `, {
             product_created_at: date,
         });
         return (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
     }
-    // get count of products by category
-    async getCountByCategory(categoryId) {
-        const preparedStmt = `select count(*) as count from ${this.table} where category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-        const [rows] = await connection.execute(preparedStmt, {
-            category_id: categoryId,
-        });
-        return (rows.length > 0) ? rows[0]['count'] : 0;
-    }
-    // get count of product by discount
-    async getCountByDiscount(discountId) {
-        const preparedStmt = `select count(*) as count from ${this.table} where discount_id = :discount_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-        const [rows] = await connection.execute(preparedStmt, {
-            discount_id: discountId,
-        });
-        return (rows.length > 0) ? rows[0]['count'] : 0;
-    }
-    // get count of products by filter
-    async getCountByFilter(status, categoryId) {
-        let preparedStmt = '';
-        let rows = [];
-
-        if(status === 'all') {
-            if(categoryId === 'all') {
-                return await this.getCount();
-            }
-            else {
-                preparedStmt = `select count(*) as count from ${this.table} where category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-                [rows] = await connection.execute(preparedStmt, {
-                    category_id: categoryId,
-                });
-            }
-        }
-        else if(status === 'in-stock') {
-            if(categoryId === 'all') {
-                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity > product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-                [rows] = await connection.execute(preparedStmt);
-            }
-            else {
-                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity > product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-                [rows] = await connection.execute(preparedStmt, {
-                    category_id: categoryId,
-                });
-            }
-        }
-        else if(status === 'out-stock') {
-            if(categoryId === 'all') {
-                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity = product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-                [rows] = await connection.execute(preparedStmt);
-            }
-            else {
-                preparedStmt = `select count(*) as count from ${this.table} where product_stock_quantity = product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-                [rows] = await connection.execute(preparedStmt, {
-                    category_id: categoryId,
-                });
-            }
-        }
-
-        return (rows.length > 0) ? rows[0]['count'] : 0;
-    }
-    // get products by filter: category and status
-    async getProductsByFilter(status, categoryId, limit, offset) {
-        let preparedStmt = '';
-        let rows = [];
-
-        if(status === 'all') {
-            if(categoryId === 'all') {
-                return await this.getAll(limit, offset);
-            }
-            else {
-                preparedStmt = `select * from ${this.table} where category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
-                [rows] = await connection.execute(preparedStmt, {
-                    category_id: categoryId,
-                    limit: limit,
-                    offset: offset,
-                });
-            }
-        }
-        else if(status === 'in-stock') {
-            if(categoryId === 'all') {
-                preparedStmt = `select * from ${this.table} where product_stock_quantity > product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
-                [rows] = await connection.execute(preparedStmt, {
-                    limit: limit,
-                    offset: offset,
-                });
-            }
-            else {
-                preparedStmt = `select * from ${this.table} where product_stock_quantity > product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
-                [rows] = await connection.execute(preparedStmt, {
-                    category_id: categoryId,
-                    limit: limit,
-                    offset: offset,
-                });
-            }
-        }
-        else if(status === 'out-stock') {
-            if(categoryId === 'all') {
-                preparedStmt = `select * from ${this.table} where product_stock_quantity = product_sold_quantity and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
-                [rows] = await connection.execute(preparedStmt, {
-                    limit: limit,
-                    offset: offset,
-                });
-            }
-            else {
-                preparedStmt = `select * from ${this.table} where product_stock_quantity = product_sold_quantity and category_id = :category_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}' limit :limit offset :offset`;
-                [rows] = await connection.execute(preparedStmt, {
-                    category_id: categoryId,
-                    limit: limit,
-                    offset: offset,
-                });
-            }
-        }
-
-        let products = [];
-        for(const row of rows) {
-            const itemDetail = await this.getItemDetail(row);
-            products.push(itemDetail);
-        }
-        return products;
-    }
     // create new product
     async store(data) {
+        const priceModel = new PriceModel();
+        const imageModel = new ImageModel();
         const { result: product, errors } = this.validateProductData(data);
         if(errors.length > 0) {
             throw new Error(errors.map(error => error.msg).join(' '));
@@ -281,16 +224,37 @@ class ProductModel {
             price_value: product.product_price,
         };
         delete product.product_price;
-        const preparedStmt = `insert into ${this.table} (${Object.keys(product).join(', ')}) values (${Object.keys(product).map(key => `:${key}`).join(', ')})`;
+        const images = product.product_images;
+        delete product.product_images;
+        
+        const preparedStmt = `
+            insert into ${this.table} (${Object.keys(product).join(', ')})
+                values (${Object.keys(product).map(key => `:${key}`).join(', ')});
+        `;
         await connection.execute(preparedStmt, product);
+        
         const addedItem = await this.getByCreatedDate(product.product_created_at);
         price.product_id = addedItem.product_id;
-        const priceModel = new PriceModel();
+        
         await priceModel.add(price);
+
+        if(images) {
+            images.forEach(async image => {
+                const imageData = {
+                    image_url: image.path,
+                    image_target: 'product',
+                    belong_id: parseInt(addedItem.product_id),
+                };
+                await imageModel.store(imageData);
+            });
+        }
     }
     // update product
     async update(id, payload) {
-        const oldItem = await this.get(id);
+        const images = payload.product_images;
+        delete payload.product_images;
+
+        const oldItem = await this.getById(id);
         if(!oldItem) {
             throw new Error('Product not found.');
         }
@@ -313,22 +277,39 @@ class ProductModel {
             priceValue = product.product_price;
             delete product.product_price;
         }
-        const uploadDir = path.join(dirname, '../../public/uploads');
-        if(product.product_images) {
-            const images = oldItem.product_images.split(';');
-            images.forEach(imageName => {
-                const imagePath = path.join(uploadDir, 'products', imageName);
-                if(fs.existsSync(imagePath)) {
-                    try {
-                        unlink(imagePath);
+        if(images) {
+            const imageModel = new ImageModel();
+            const oldImages = await imageModel.getAll('product', oldItem.product_id);
+            
+            if(oldImages.length > 0) {
+                oldImages.forEach(async image => {
+                    if(fs.existsSync(image.image_url)) {
+                        try {
+                            unlink(image.image_url);
+                        }
+                        catch(error) {
+                            throw new Error('Failed to remove old images.');
+                        }
                     }
-                    catch(error) {
-                        throw new Error('Failed to remove old images.');
-                    }
-                }
+                    await imageModel.delete(image.image_id);
+                });
+            }
+
+            images.forEach(async image => {
+                const imageItem = {
+                    image_url: image.path,
+                    image_target: 'product',
+                    belong_id: parseInt(id),
+                };
+                await imageModel.store(imageItem);
             });
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(product).map(key => `${key} = :${key}`).join(', ')} where product_id = :product_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+        const preparedStmt = `
+            update ${this.table}
+            set ${Object.keys(product).map(key => `${key} = :${key}`).join(', ')}
+            where product_id = :product_id
+                and product_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `;
         await connection.execute(preparedStmt, {
             ...product,
             product_id: id,
@@ -349,7 +330,12 @@ class ProductModel {
         if(!oldItem) {
             throw new Error('Product not found.');
         }
-        await connection.execute(`update ${this.table} set product_deleted_at = :deleted_at where product_id = :product_id and product_deleted_at = '${process.env.TIME_NOT_DELETED}'`, {
+        await connection.execute(`
+            update ${this.table}
+            set product_deleted_at = :deleted_at
+            where product_id = :product_id
+                and product_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `, {
             deleted_at: formatDateToString(),
             product_id: id,
         });

@@ -6,7 +6,12 @@ class SupplierController {
     async index(req, res, next) {
         try {
             const supplierModel = new SupplierModel();
-            const suppliers = await supplierModel.getAll();
+            const suppliers = await supplierModel.getAll(
+                req.query.supplier_name,
+                req.query.supplier_address,
+                req.query.limit,
+                req.query.offset
+            );
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: suppliers,
@@ -16,10 +21,10 @@ class SupplierController {
             next(new BadRequestError(error.message));
         }
     }
-    async get(req, res, next) {
+    async getById(req, res, next) {
         try {
             const supplierModel = new SupplierModel();
-            const supplier = await supplierModel.get(req.params.id);
+            const supplier = await supplierModel.getById(req.params.id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: supplier,

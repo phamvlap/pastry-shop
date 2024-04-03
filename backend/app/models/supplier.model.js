@@ -47,18 +47,39 @@ class SupplierModel {
         }
         return { result, errors };
     }
-    // get all
-    async getAll() {
-        const preparedStmt = `select * from ${this.table} where supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}'`;
-        let [rows] = await connection.execute(preparedStmt);
+    // get all by filter
+    async getAll(supplier_name, supplier_address, limit, offset) {
+        const parseSupplierName = supplier_name ? supplier_name : '';
+        const parseSupplierAddress = supplier_address ? supplier_address : '';
+        const parseLimit = limit ? ('' + limit) : ('' + process.env.MAX_LIMIT);
+        const parseOffset= offset ? ('' + offset) : '0';
+        const preparedStmt = `
+            select *
+            from ${this.table}
+            where supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}' 
+                and supplier_name like :supplier_name
+                and supplier_address like :supplier_address
+            limit :limit offset :offset;
+            `;
+        let [rows] = await connection.execute(preparedStmt, {
+            supplier_name: `%${parseSupplierName}%`,
+            supplier_address: `%${parseSupplierAddress}%`,
+            limit: parseLimit,
+            offset: parseOffset,
+        });
         if(rows.length > 0) {
             rows = rows.map(row => escapeData(row, ['supplier_deleted_at']));
         }
         return (rows.length > 0) ? rows : [];
     }
     // get by id
-    async get(id) {
-        const preparedStmt = `select * from ${this.table} where supplier_id = :supplier_id and supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}'`;
+    async getById(id) {
+        const preparedStmt = `
+            select *
+            from ${this.table}
+            where supplier_id = :supplier_id
+                and supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}';
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             supplier_id: id,
         });
@@ -71,7 +92,10 @@ class SupplierModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `insert into ${this.table} (${Object.keys(supplier).join(', ')}) values (${Object.keys(supplier).map(key => `:${key}`).join(', ')})`;
+        const preparedStmt = `
+            insert into ${this.table} (${Object.keys(supplier).join(', ')})
+                values (${Object.keys(supplier).map(key => `:${key}`).join(', ')});
+        `;
         await connection.execute(preparedStmt, supplier);
     }
     // update
@@ -94,7 +118,12 @@ class SupplierModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(supplier).map(key => `${key} = :${key}`).join(', ')} where supplier_id = :supplier_id and supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}'`;
+        const preparedStmt = `
+            update ${this.table}
+            set ${Object.keys(supplier).map(key => `${key} = :${key}`).join(', ')}
+            where supplier_id = :supplier_id
+                and supplier_deleted_at  = '${process.env.TIME_NOT_DELETED}';
+        `;
         await connection.execute(preparedStmt, {
                 ...supplier,
                 supplier_id: id,
@@ -106,7 +135,12 @@ class SupplierModel {
         if(!oldSupplier) {
             throw new Error('Supplier not found.');
         }
-        await connection.execute(`update ${this.table} set supplier_deleted_at = :deleted_at where supplier_id = :supplier_id and supplier_deleted_at = '${process.env.TIME_NOT_DELETED}'`, {
+        await connection.execute(`
+            update ${this.table}
+            set supplier_deleted_at = :deleted_at
+            where supplier_id = :supplier_id
+                and supplier_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `, {
             deleted_at: formatDateToString(),
             supplier_id: id,
         });

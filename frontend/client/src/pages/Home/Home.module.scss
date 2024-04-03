@@ -1,0 +1,13 @@
+// Products List
+.products-list {
+    margin-top: 8px;
+    // background-color: #ddd;
+    .list-title {
+        padding: 8px;
+        font-weight: 700;
+        color: var(--white-color);
+        background-color: var(--first-level-color);
+    }
+    .list-container {
+    }
+}

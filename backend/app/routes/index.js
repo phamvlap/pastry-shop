@@ -5,6 +5,7 @@ import orderRoutes from './orders.route.js';
 import productRoutes from './products.route.js';
 import staffRoutes from './staffs.route.js';
 import supplierRoutes from './suppliers.route.js';
+import accountRoutes from './accounts.route.js';
 
 export {
     categoryRoutes,
@@ -14,4 +15,5 @@ export {
     productRoutes,
     staffRoutes,
     supplierRoutes,
+    accountRoutes,
 };

@@ -7,12 +7,10 @@ import { authorizeStaff, authorizeCustomer } from './../middlewares/index.js';
 const router = express.Router();
 
 router.get('/', authorizeStaff, CustomerController.index);
-router.get('/profile', authorizeCustomer, CustomerController.get);
+router.get('/profile', authorizeCustomer, CustomerController.getProfile);
 router.post('/register', CustomerController.register);
-router.post('/login', CustomerController.login);
 router.patch('/', authorizeCustomer, CustomerController.update);
-router.patch('/password', authorizeCustomer, CustomerController.updatePassword);
-router.delete('/', authorizeCustomer, CustomerController.delete);
+router.delete('/', authorizeStaff, CustomerController.delete);
 
 // cart
 router.get('/cart', authorizeCustomer, CartController.get);

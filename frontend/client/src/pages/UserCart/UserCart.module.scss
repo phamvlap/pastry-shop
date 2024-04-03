@@ -1,0 +1,33 @@
+.cart-wrapper {
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    .cart-title {
+        font-size: 2.4rem;
+        padding: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+    .cart-content {
+    }
+}
+.cart-footer {
+    padding: 8px;
+    .cart-footer__tmp-total, .cart-footer__discount, .cart-footer__total {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+    }
+    .cart-footer__total {
+        font-size: 2.0rem;
+        font-weight: bold;
+    }
+    .cart-footer__button {
+        margin-top: 16px;
+        text-align: center;
+    }
+    .cart-footer__total-label {
+    
+    }
+    .cart-footer__total-value {
+    
+    }
+}

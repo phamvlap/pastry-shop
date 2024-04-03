@@ -12,6 +12,9 @@ import StaffModel from './staff.model.js';
 import StatusModel from './status.model.js';
 import StatusDetailModel from './statusDetail.model.js';
 import SupplierModel from './supplier.model.js';
+import ImageModel from './image.model.js';
+import AccountModel from './account.model.js';
+import RatingModel from './rating.model.js';
 
 export {
     AddressModel,
@@ -28,4 +31,7 @@ export {
     StatusModel,
     StatusDetailModel,
     SupplierModel,
+    ImageModel,
+    AccountModel,
+    RatingModel,
 };

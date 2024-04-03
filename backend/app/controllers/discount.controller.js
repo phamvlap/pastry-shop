@@ -16,10 +16,10 @@ class DiscountController {
             next(new BadRequestError(error.message));
         }
     }
-    async get(req, res, next) {
+    async getById(req, res, next) {
         try {
             const discountModel = new DiscountModel();
-            const discount = await discountModel.get(req.params.id);
+            const discount = await discountModel.getById(req.params.id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: discount,

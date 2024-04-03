@@ -1,0 +1,29 @@
+.address-wrapper {
+    border-left: 1px solid rgba(0, 0, 0, 0.08);
+    .address-title {
+        font-size: 2.4rem;
+        padding: 8px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+    .address-content {
+        padding: 8px;
+        .address-info {
+            padding: 8px;
+            .address-info__item {
+                padding: 8px 0;
+                .address-info__item-row {
+                    display: flex;
+                    align-items: center;
+                }
+            }
+            .address-info__label, .address-info__value {
+                display: inline-block;
+                padding: 4px;
+            }
+            .address-info__item:last-child {
+                margin-top: 16px;
+            }
+        }
+    }
+}

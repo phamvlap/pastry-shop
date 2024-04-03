@@ -1,0 +1,13 @@
+input.input-item {
+    font-size: 1.6rem;
+}
+.input-item__password {
+    position: relative;
+    .input-item__password-toggle {
+        cursor: pointer;
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}

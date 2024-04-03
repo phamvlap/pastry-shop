@@ -27,6 +27,13 @@ class ProductService {
         return (await this.api.get(`/filter?status=${status}&category=${categoryId}&limit=${limit}&offset=${offset}`))
             .data;
     }
+    async getByFilter(categoryId, createdAtOrder, priceOrder, limit, offset) {
+        return (
+            await this.api.get(
+                `/filter?&categoryId=${categoryId}&createdAtOrder=${createdAtOrder}&priceOrder=${priceOrder}&limit=${limit}&offset=${offset}`,
+            )
+        ).data;
+    }
     async create(data) {
         return (await this.api.post('/', data)).data;
     }

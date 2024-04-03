@@ -1,0 +1,24 @@
+.container {
+    background-color: var(--fourth-level-color);
+    border-radius: 8px;
+    padding: 16px;
+    align-items: center;
+    // min-width: 600px;
+    .title {
+        font-size: 2.4rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        text-align: center;
+    }
+    .error {
+        color: var(--error-color);
+        font-size: 1.6rem;
+        margin-bottom: 16px;
+        text-align: center;
+        font-style: italic;
+    }
+    .button {
+        margin-top: 32px;
+        text-align: center;
+    }
+}

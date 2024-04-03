@@ -6,11 +6,7 @@ const router = express.Router();
 
 router.get('/', ProductController.index);
 router.get('/count', ProductController.getCount);
-router.get('/filter/count', ProductController.getCountByFilter);
-router.get('/filter', ProductController.getProductsByFilter);
-router.get('/category/:categoryId', ProductController.getCountByCategory);
-router.get('/discount/:discountId', ProductController.getCountByDiscount);
-router.get('/:id', ProductController.get);
+router.get('/:id', ProductController.getById);
 router.post('/', authorizeStaff, ProductController.create);
 router.patch('/:id', authorizeStaff, ProductController.update);
 router.delete('/:id', authorizeStaff, ProductController.delete);

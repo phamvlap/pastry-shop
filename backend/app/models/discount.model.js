@@ -53,7 +53,7 @@ class DiscountModel {
         return (rows.length > 0) ? rows : [];
     }
     // get by id
-    async get(id) {
+    async getById(id) {
         const preparedStmt = `select * from ${this.table} where discount_id = :discount_id`;
         const [rows] = await connection.execute(preparedStmt, {
             discount_id: id,

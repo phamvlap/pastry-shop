@@ -6,7 +6,7 @@
     "main": "index.js",
     "scripts": {
         "start": "concurrently \"nodemon app/index.js\" \"cd ./../frontend/admin && npm run dev\" \"cd ./../frontend/client && npm run dev\"",
-        "run": "nodemon app/index.js"
+        "dev": "nodemon app/index.js"
     },
     "author": "Pham Van Lap",
     "license": "ISC",
