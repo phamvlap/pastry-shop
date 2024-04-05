@@ -1,4 +1,4 @@
-import createAPIService from "~/services/api.service.js";
+import createAPIService from '~/services/api.service.js';
 
 class StaffService {
     constructor(config = {}) {
@@ -13,21 +13,6 @@ class StaffService {
     }
     async create(data) {
         return (await this.api.post('/', data)).data;
-    }
-    async login(email, password) {
-        const data = {
-            staff_email: email,
-            staff_password: password,
-        }
-        return (await this.api.post('/login', data)).data;
-    }
-    async changePassword(password, newPassword, confirmPassword) {
-        const data = {
-            password,
-            new_password: newPassword,
-            confirm_password: confirmPassword,
-        }
-        return (await this.api.post('/password', data)).data;
     }
     async update(id, data) {
         return (await this.api.patch(`/${id}`, data)).data;

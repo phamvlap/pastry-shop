@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import classNames from 'classnames/bind';
 
 import CategoryList from '~/pages/Category/partials/CategoryList.jsx';
 import CategoryForm from '~/pages/Category/partials/CategoryForm.jsx';
-import { Wrapper } from '~/components/index.js';
 import { CategoryService, ProductService } from '~/services/index.js';
-import ColumnLayout from '~/layouts/ColumnLayout/ColumnLayout.jsx';
+
+import styles from '~/pages/Category/Category.module.scss';
+
+const cx = classNames.bind(styles);
 
 const Category = () => {
     const [category, setCategory] = useState({
@@ -20,7 +23,9 @@ const Category = () => {
 
         let data = [];
         for (const category of response.data) {
-            const response = await productService.getForCateogry(category.category_id);
+            const response = await productService.getCount({
+                category_id: category.category_id,
+            });
             const count = response.data;
             data.push({
                 category_id: category.category_id,
@@ -35,34 +40,14 @@ const Category = () => {
     }, [category]);
 
     return (
-        <Wrapper>
-            <ColumnLayout
-                sides={[
-                    {
-                        columns: 12,
-                        element: (
-                            <ColumnLayout
-                                sides={[
-                                    {
-                                        columns: 6,
-                                        element: (
-                                            <CategoryList
-                                                categoryList={categoryList}
-                                                setCategoryList={setCategoryList}
-                                            />
-                                        ),
-                                    },
-                                    {
-                                        columns: 6,
-                                        element: <CategoryForm category={category} setCategory={setCategory} />,
-                                    },
-                                ]}
-                            />
-                        ),
-                    },
-                ]}
-            />
-        </Wrapper>
+        <div className={cx('row')}>
+            <div className="col col-md-8">
+                <CategoryList categoryList={categoryList} setCategoryList={setCategoryList} />
+            </div>
+            <div className="col col-md-4">
+                <CategoryForm category={category} setCategory={setCategory} />
+            </div>
+        </div>
     );
 };
 

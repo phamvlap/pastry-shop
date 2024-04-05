@@ -29,6 +29,8 @@ const Login = () => {
     const handleSubmitForm = async (event) => {
         event.preventDefault();
 
+        // console.log(form);
+
         const newErrors = validator.validate(form);
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) {
@@ -69,8 +71,8 @@ const Login = () => {
     });
 
     return (
-        <div className={cx('container')}>
-            <div>
+        <div className={cx('form-wrapper')}>
+            <div className={cx('form-container')}>
                 <Form
                     title="Đăng nhập"
                     onSubmit={handleSubmitForm}

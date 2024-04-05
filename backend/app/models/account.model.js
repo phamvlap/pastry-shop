@@ -155,7 +155,6 @@ class AccountModel {
 			const customerModel = new CustomerModel();
 			data = await customerModel.getByUsername(payload.account_username);
 		}
-        console.log(data);
         const token = jwt.sign(data, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
@@ -163,6 +162,7 @@ class AccountModel {
         	accounntId: account.account_id,
             accountRole: account.account_role,
             data,
+            expiresIn: 24 * 60 * 60,
             token,
         };
 	}

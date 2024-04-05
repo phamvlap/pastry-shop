@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind';
 
-import styles from '~/layouts/MainLayout/MainLayout.module.scss';
+import styles from '~/layouts/Layout.module.scss';
 
 const cx = classNames.bind(styles);
 

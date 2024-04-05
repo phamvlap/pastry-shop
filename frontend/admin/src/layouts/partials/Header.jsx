@@ -5,7 +5,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 import { StaffContext } from '~/contexts/StaffContext.jsx';
 import { Button } from '~/components/index.js';
-import styles from '~/layouts/MainLayout/MainLayout.module.scss';
+import styles from '~/layouts/Layout.module.scss';
 
 const cx = classNames.bind(styles);
 

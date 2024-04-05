@@ -41,8 +41,8 @@ const statusOptions = [
 const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [filter, setFilter] = useState({
-        status: 'all',
-        category: 'all',
+        status: null,
+        category_id: null,
     });
 
     const categoryService = new CategoryService();
@@ -71,7 +71,7 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
     const handleChangeFilter = (event) => {
         setFilter({
             ...filter,
-            [event.target.name]: event.target.value,
+            [event.target.name]: event.target.value === 'all' ? null : event.target.value,
         });
     };
     const submitFilter = () => {
@@ -104,7 +104,7 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
                         <span className={cx('filter-section__text')}>Danh mục: </span>
                         <FormSelect
                             options={categoryOptions}
-                            name="category"
+                            name="category_id"
                             onChange={(event) => handleChangeFilter(event)}
                         />
                     </div>

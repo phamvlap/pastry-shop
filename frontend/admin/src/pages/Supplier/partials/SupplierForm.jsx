@@ -1,10 +1,15 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import classNames from 'classnames/bind';
 
 import { Heading, Form, InputGroup, Button } from '~/components/index.js';
 import Validator from '~/utils/validator.js';
 import staffActions from '~/utils/staffActions.js';
 import SupplierService from '~/services/supplier.service.js';
+
+import styles from '~/pages/Supplier/Supplier.module.scss';
+
+const cx = classNames.bind(styles);
 
 const rules = [
     {
@@ -143,9 +148,9 @@ const SupplierForm = ({ supplier, setSupplier }) => {
     }, [supplier]);
 
     return (
-        <div>
+        <div className={cx('supplier-form')}>
             <Heading title={!isUpdating ? 'Thêm nhà cung ứng mới' : 'Cập nhật nhà cung ứng'} />
-            <div className="py-3 mt-3">
+            <div className={cx('supplier-form__body')}>
                 {isUpdating && (
                     <Button primary className="mb-3" onClick={changeActionToAdd}>
                         Thêm mới

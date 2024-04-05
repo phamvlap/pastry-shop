@@ -1,4 +1,4 @@
-import createAPIService from "~/services/api.service.js";
+import createAPIService from '~/services/api.service.js';
 
 class CustomerService {
     constructor(config = {}) {
@@ -8,33 +8,18 @@ class CustomerService {
     async getAll() {
         return (await this.api.get('/')).data;
     }
-    async get() {
+    async getProfile() {
         return (await this.api.get('/profile')).data;
     }
     async register(data) {
         return (await this.api.post('/register', data)).data;
     }
-    async login(username, password) {
-        const data = {
-            customer_username: username,
-            customer_password: password,
-        }
-        return (await this.api.post('/login', data)).data;
-    }
-    async changePassword(password, newPassword, confirmPassword) {
-        const data = {
-            customer_password: password,
-            customer_new_password: newPassword,
-            customer_confirm_password: confirmPassword,
-        }
-        return (await this.api.post('/password', data)).data;
-    }
     async update(data) {
         return (await this.api.patch('/', data)).data;
     }
-    async delete(id) {
-        return (await this.api.delete(`/${id}`)).data;
-    }
+    // async delete(id) {
+    //     return (await this.api.delete(`/${id}`)).data;
+    // }
     // addresses
     async getAddresses() {
         return (await this.api.get('/addresses')).data;

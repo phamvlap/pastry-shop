@@ -127,10 +127,9 @@ class ProductModel {
 
         let preparedStmt = `
             select *
-            from ${this.table} as p join ${process.env.TABLE_PRICES} as prices
-                on p.product_id = prices.product_id
+            from ${this.table} as p
             where product_deleted_at = '${process.env.TIME_NOT_DELETED}'
-                and p.product_name like :product_name
+                and (:product_name is null or p.product_name like :product_name)
                 and (:category_id is null or p.category_id = :category_id)
                 and (:supplier_id is null or p.supplier_id = :supplier_id)
                 and (:discount_id is null or p.discount_id = :discount_id)
@@ -326,7 +325,7 @@ class ProductModel {
     }
     // delete product
     async delete(id) {
-        const oldItem = await this.get(id);
+        const oldItem = await this.getById(id);
         if(!oldItem) {
             throw new Error('Product not found.');
         }

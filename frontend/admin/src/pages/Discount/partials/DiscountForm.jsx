@@ -1,11 +1,15 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
+import classNames from 'classnames/bind';
 
-import ColumnLayout from '~/layouts/ColumnLayout/ColumnLayout.jsx';
 import { Heading, Form, InputGroup, Button } from '~/components/index.js';
 import { staffActions, Validator, formatDate } from '~/utils/index.js';
 import { DiscountService } from '~/services/index.js';
 import discountRules from '~/config/rules/discount.js';
+
+import styles from '~/pages/Discount/Discount.module.scss';
+
+const cx = classNames.bind(styles);
 
 const config = {
     headers: {
@@ -85,9 +89,9 @@ const DiscountForm = ({ discount, setDiscount }) => {
     }, [discount]);
 
     return (
-        <div>
+        <div className={cx('discount-form')}>
             <Heading title={!isUpdating ? 'Thêm mã giảm giá mới' : 'Cập nhật mã giảm giá'} />
-            <div className="py-3 mt-3">
+            <div className={cx('discount-form__body')}>
                 {isUpdating && (
                     <Button primary className="mb-3" onClick={changeActionToAdd}>
                         Thêm mới
@@ -117,66 +121,50 @@ const DiscountForm = ({ discount, setDiscount }) => {
                             onChange={handleOnChange}
                             error={errors['discount_code']}
                         />
-                        <ColumnLayout
-                            sides={[
-                                {
-                                    columns: 6,
-                                    element: (
-                                        <InputGroup
-                                            label="Tỷ lệ giảm giá"
-                                            type="number"
-                                            name="discount_rate"
-                                            value={form['discount_rate']}
-                                            onChange={handleOnChange}
-                                            error={errors['discount_rate']}
-                                        />
-                                    ),
-                                },
-                                {
-                                    columns: 6,
-                                    element: (
-                                        <InputGroup
-                                            label="Số lượng áp dụng"
-                                            type="number"
-                                            name="discount_limit"
-                                            value={form['discount_limit']}
-                                            onChange={handleOnChange}
-                                            error={errors['discount_limit']}
-                                        />
-                                    ),
-                                },
-                            ]}
-                        />
-                        <ColumnLayout
-                            sides={[
-                                {
-                                    columns: 6,
-                                    element: (
-                                        <InputGroup
-                                            label="Ngày bắt đầu"
-                                            type="date"
-                                            name="discount_start"
-                                            value={form['discount_start']}
-                                            onChange={handleOnChange}
-                                            error={errors['discount_start']}
-                                        />
-                                    ),
-                                },
-                                {
-                                    columns: 6,
-                                    element: (
-                                        <InputGroup
-                                            label="Ngày kết thúc"
-                                            type="date"
-                                            name="discount_end"
-                                            value={form['discount_end']}
-                                            onChange={handleOnChange}
-                                            error={errors['discount_end']}
-                                        />
-                                    ),
-                                },
-                            ]}
-                        />
+                        <div className="row">
+                            <div className="col col-md-6">
+                                <InputGroup
+                                    label="Tỷ lệ giảm giá"
+                                    type="number"
+                                    name="discount_rate"
+                                    value={form['discount_rate']}
+                                    onChange={handleOnChange}
+                                    error={errors['discount_rate']}
+                                />
+                            </div>
+                            <div className="col col-md-6">
+                                <InputGroup
+                                    label="Số lượng áp dụng"
+                                    type="number"
+                                    name="discount_limit"
+                                    value={form['discount_limit']}
+                                    onChange={handleOnChange}
+                                    error={errors['discount_limit']}
+                                />
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col col-md-6">
+                                <InputGroup
+                                    label="Ngày bắt đầu"
+                                    type="date"
+                                    name="discount_start"
+                                    value={form['discount_start']}
+                                    onChange={handleOnChange}
+                                    error={errors['discount_start']}
+                                />
+                            </div>
+                            <div className="col col-md-6">
+                                <InputGroup
+                                    label="Ngày kết thúc"
+                                    type="date"
+                                    name="discount_end"
+                                    value={form['discount_end']}
+                                    onChange={handleOnChange}
+                                    error={errors['discount_end']}
+                                />
+                            </div>
+                        </div>
                     </>
                 </Form>
             </div>

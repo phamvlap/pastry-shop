@@ -1,5 +1,10 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import classNames from 'classnames/bind';
+
+import styles from '~/pages/Supplier/Supplier.module.scss';
+
+const cx = classNames.bind(styles);
 
 import { Heading, Table } from '~/components/index.js';
 
@@ -38,9 +43,9 @@ const SupplierList = ({ supplierList, setSupplierList, setSupplier }) => {
     }, [activeRow, setSupplier]);
 
     return (
-        <div>
+        <div className={cx('supplier-list')}>
             <Heading title="Danh sách nhà cung ứng" />
-            <div className="py-3 mt-3">
+            <div className={cx('supplier-list__table')}>
                 <Table
                     entityName="supplier"
                     header={header}

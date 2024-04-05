@@ -19,7 +19,7 @@ import { useContext } from 'react';
 
 import { StaffContext } from '~/contexts/StaffContext.jsx';
 import staffActions from '~/utils/staffActions.js';
-import styles from '~/layouts/MainLayout/MainLayout.module.scss';
+import styles from '~/layouts/Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
