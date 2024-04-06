@@ -2,7 +2,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
-import { Wrapper, Button } from '~/components/index.js';
+import classNames from 'classnames/bind';
+
+import styles from '~/pages/Product/Product.module.scss';
+
+const cx = classNames.bind(styles);
+
+import { Button } from '~/components/index.js';
 
 const ControlPanel = () => {
     const navigate = useNavigate();
@@ -10,11 +16,11 @@ const ControlPanel = () => {
         navigate('/products/add');
     };
     return (
-        <Wrapper padding={16} colorLevel="fourth">
+        <div className={cx('control-panel')}>
             <Button primary leftIcon={<FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>} onClick={toAddProduct}>
                 Thêm sản phẩm mới
             </Button>
-        </Wrapper>
+        </div>
     );
 };
 

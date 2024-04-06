@@ -7,7 +7,6 @@ const router = express.Router();
 router.get('/:id', StaffController.getById);
 router.get('/', authorizeStaff, authorizeAdmin, StaffController.index);
 router.post('/', authorizeStaff, authorizeAdmin, StaffController.create);
-router.patch('/password', authorizeStaff, StaffController.updatePassword);
 router.patch('/:id', authorizeStaff, StaffController.update);
 router.delete('/:id', authorizeStaff, authorizeAdmin, StaffController.delete);
 

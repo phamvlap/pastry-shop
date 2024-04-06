@@ -1,4 +1,4 @@
-import StaffService from '~/services/staff.service.js';
+import AccountService from '~/services/account.service.js';
 
 const getToken = () => {
     const data = JSON.parse(localStorage.getItem(import.meta.env.VITE_LOCAL_STAFF_KEY));
@@ -12,14 +12,15 @@ const getStaff = () => {
 
 const logIn = async (email, password) => {
     try {
-        const staffService = new StaffService();
-        const response = await staffService.login(email, password);
+        const accountService = new AccountService();
+        const response = await accountService.login(email, null, password);
         if (response.status !== 'success') {
+            console.log('error');
             throw new Error('Error while login.');
         }
         const staff = {
             ...response.data.staff,
-            expiredAt: new Date().getTime() + Number(response.data.staff.staff_expiresIn) * 1000,
+            expiredAt: new Date().getTime() + Number(response.data.expiresIn) * 1000,
         };
         const token = response.data.token;
         localStorage.setItem(
@@ -34,6 +35,7 @@ const logIn = async (email, password) => {
             token,
         };
     } catch (error) {
+        console.log('error');
         throw new Error(error.message);
     }
 };

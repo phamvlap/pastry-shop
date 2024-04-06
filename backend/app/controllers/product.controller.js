@@ -14,7 +14,7 @@ class ProductController {
                 req.query.category_id,
                 req.query.supplier_id,
                 req.query.discount_id,
-                req.query.createdAtOrder, // asc, desc
+                req.query.createdAtOrder, // asc, desc  
                 req.query.priceOrder, // asc, desc
                 req.query.status, // all, in-stock, out-stock
                 req.query.limit,

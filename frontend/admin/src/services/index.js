@@ -5,6 +5,7 @@ import OrderService from '~/services/order.service.js';
 import ProductService from '~/services/product.service.js';
 import StaffService from '~/services/staff.service.js';
 import SupplierService from '~/services/supplier.service.js';
+import AccountService from '~/services/account.service.js';
 
 export {
     CategoryService,
@@ -14,4 +15,5 @@ export {
     ProductService,
     StaffService,
     SupplierService,
+    AccountService,
 };

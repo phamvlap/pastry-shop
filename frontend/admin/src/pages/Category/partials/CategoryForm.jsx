@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { Heading, Form, InputGroup } from '~/components/index.js';
+import classNames from 'classnames/bind';
+
+import { Heading, Table } from '~/components/index.js';
+
+import styles from '~/pages/Category/Category.module.scss';
+
+import { Form, InputGroup } from '~/components/index.js';
 import { Validator, staffActions } from '~/utils/index.js';
 import { CategoryService } from '~/services/index.js';
 import categoryRules from '~/config/rules/category.js';
+
+const cx = classNames.bind(styles);
 
 const config = {
     headers: {
@@ -47,9 +55,9 @@ const CategoryForm = ({ category, setCategory }) => {
     };
 
     return (
-        <div>
+        <div className={cx('form-container')}>
             <Heading title="Thêm danh mục mới" />
-            <div className="pt-3 mt-3">
+            <div className={cx('form-content')}>
                 <Form
                     buttons={[
                         {

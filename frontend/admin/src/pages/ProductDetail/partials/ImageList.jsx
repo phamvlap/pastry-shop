@@ -8,12 +8,12 @@ const cx = classNames.bind(styles);
 const ImageList = ({ title, images = [] }) => {
     return (
         <>
-            <h2 className={cx('title')}>{title}</h2>
-            <div className="row">
+            <h2 className={cx('image-section__title')}>{title}</h2>
+            <div className={cx('row', 'image-section__image')}>
                 {images.map((image, index) => {
                     return (
-                        <div className="col col-sm-4" key={index}>
-                            <img src={image.src} alt={image.alt} className={cx('image')} />
+                        <div className={cx('col col-sm-4', 'image-section__item')} key={index}>
+                            <img src={image.src} alt={image.alt} className={cx('image-item')} />
                         </div>
                     );
                 })}

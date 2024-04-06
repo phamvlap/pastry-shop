@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
+import classNames from 'classnames/bind';
 
-import { Wrapper } from '~/components/index.js';
 import SupplierList from '~/pages/Supplier/partials/SupplierList.jsx';
 import SupplierForm from '~/pages/Supplier/partials/SupplierForm.jsx';
 import SupplierService from '~/services/supplier.service.js';
-import ColumnLayout from '~/layouts/ColumnLayout/ColumnLayout.jsx';
+
+import styles from '~/pages/Supplier/Supplier.module.scss';
+
+const cx = classNames.bind(styles);
 
 const Suppllier = () => {
     const [supplier, setSupplier] = useState({});
@@ -37,26 +40,20 @@ const Suppllier = () => {
     }, [supplier]);
 
     return (
-        <Wrapper>
-            <ColumnLayout
-                sides={[
-                    {
-                        columns: 8,
-                        element: (
-                            <SupplierList
-                                supplierList={supplierList}
-                                setSupplierList={setSupplierList}
-                                setSupplier={setSupplier}
-                            />
-                        ),
-                    },
-                    {
-                        columns: 4,
-                        element: <SupplierForm supplier={supplier} setSupplier={setSupplier} />,
-                    },
-                ]}
-            />
-        </Wrapper>
+        <div className={cx('supplier-container')}>
+            <div className="row">
+                <div className={cx('col col-md-8', 'supplier-container__col')}>
+                    <SupplierList
+                        supplierList={supplierList}
+                        setSupplierList={setSupplierList}
+                        setSupplier={setSupplier}
+                    />
+                </div>
+                <div className={cx('col col-md-4', 'supplier-container__col')}>
+                    <SupplierForm supplier={supplier} setSupplier={setSupplier} />
+                </div>
+            </div>
+        </div>
     );
 };
 

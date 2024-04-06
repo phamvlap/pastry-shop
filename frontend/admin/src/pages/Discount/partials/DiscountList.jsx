@@ -1,5 +1,10 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
+import classNames from 'classnames/bind';
+
+import styles from '~/pages/Discount/Discount.module.scss';
+
+const cx = classNames.bind(styles);
 
 import { Heading, Table } from '~/components/index.js';
 
@@ -9,7 +14,7 @@ const header = {
         isModified: false,
     },
     discount_rate: {
-        value: 'Tỉ lệ giảm giá',
+        value: 'Giá trị giảm giá',
         isModified: false,
     },
     discount_limit: {
@@ -46,9 +51,9 @@ const DiscountList = ({ discountList, setDiscountList, setDiscount }) => {
     }, [activeRow, setDiscount]);
 
     return (
-        <div>
+        <div className={cx('discount-list')}>
             <Heading title="Danh sách mã giảm giá" />
-            <div className="py-3 mt-3">
+            <div className={cx('discount-list__table')}>
                 <Table
                     entityName="discount"
                     header={header}

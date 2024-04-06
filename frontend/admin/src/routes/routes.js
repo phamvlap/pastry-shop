@@ -1,6 +1,6 @@
 // layouts
-import MainLayout from '~/layouts/MainLayout/MainLayout.jsx';
-import LoginLayout from '~/layouts/LoginLayout/LoginLayout.jsx';
+import MainLayout from '~/layouts/MainLayout.jsx';
+import NotSidebarLayout from '~/layouts/NotSidebarLayout.jsx';
 
 // pages
 import Home from '~/pages/Home/Home.jsx';
@@ -29,7 +29,7 @@ const routes = [
     {
         path: routesName.login,
         page: Login,
-        layout: LoginLayout,
+        layout: NotSidebarLayout,
     },
     {
         path: routesName.products,
@@ -39,6 +39,11 @@ const routes = [
     {
         path: routesName.productDetail,
         page: ProductDetail,
+        layout: MainLayout,
+    },
+    {
+        path: routesName.productEdit,
+        page: ProductAdd,
         layout: MainLayout,
     },
     {

@@ -88,6 +88,12 @@ ul {
 li {
     list-style: none;
 }
+.row {
+    margin: 0;
+}
+/* .row > .col {
+    padding: 0;
+} */
 /* fonts */
 @font-face {
     font-family: OpenSans;
@@ -111,11 +117,6 @@ li {
 }
 
 /* sweetalert */
-.swal2-popup {
+.swal2-container {
     font-size: 1.6rem;
-    font-family: var(--font-family);
-}
-.swal2-popup .swal2-styled.swal2-cancel {
-    font-size: 2.4rem;
-    font-weight: 600;
 }
