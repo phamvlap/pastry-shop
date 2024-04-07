@@ -22,7 +22,7 @@ class CartController {
             const data = {
                 customer_id: req.customer.customer_id,
                 product_id: req.body.product_id,
-                cart_quantity: req.body.quantity,
+                cart_quantity: req.body.cart_quantity,
             }
             await cartModel.add(data);
             return res.status(StatusCodes.OK).json({
@@ -39,8 +39,8 @@ class CartController {
             const data = {
                 customer_id: req.customer.customer_id,
                 product_id: req.params.itemId,
-                cart_quantity: req.body.quantity,
-                cart_is_selected: req.body.isSelected,
+                cart_quantity: req.body.cart_quantity,
+                cart_is_selected: req.body.cart_is_selected,
             }
             const cartModel = new CartModel();
             await cartModel.update(data);

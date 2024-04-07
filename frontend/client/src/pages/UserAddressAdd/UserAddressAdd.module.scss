@@ -21,22 +21,12 @@
     }
     .address-content {
         padding: 8px;
-        .address-info {
-            padding: 8px;
-            .address-info__item {
-                padding: 8px 0;
-                .address-info__item-row {
-                    display: flex;
-                    align-items: center;
-                }
-            }
-            .address-info__label, .address-info__value {
-                display: inline-block;
-                padding: 4px;
-            }
-            .address-info__item:last-child {
-                margin-top: 16px;
-            }
-        }
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .address-add-form {
+        width: 660px;
+        margin-top: 16px;
     }
 }

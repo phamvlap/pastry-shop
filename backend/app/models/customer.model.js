@@ -71,21 +71,30 @@ class CustomerModel {
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: id,
         });
+        const avatar = await this.getAvatar(id);
         return (rows.length > 0) ? {
             ...rows[0],
-            customer_avatar: await this.getAvatar(id),
+            customer_avatar: avatar,
         } : null;
     }
     // get all infos by username
     async getByUsername(username) {
         const preparedStmt = `
-            select * from ${this.table}
+            select * 
+            from ${this.table}
             where customer_username = :customer_username;
         `;
         const [rows] = await connection.execute(preparedStmt, {
             customer_username: username,
         });
-        return (rows.length > 0) ? rows[0] : null;
+        let avatar = '';
+        if(rows.length > 0) {
+            avatar = await this.getAvatar(rows[0].customer_id);
+        }
+        return (rows.length > 0) ? {
+            ...rows[0],
+            customer_avatar: avatar,
+        } : null;
     }
     // register
     async register(payload) {
@@ -126,6 +135,7 @@ class CustomerModel {
     // update
     async update(id, payload) {
         const imageModel = new ImageModel();
+        const accountModel = new AccountModel();
 
         const oldCustomer = await this.getById(id);
         if(!oldCustomer) {
@@ -157,6 +167,11 @@ class CustomerModel {
                     ...customer,
                     customer_id: id,
                 });
+            if(customer.customer_username) {
+                await accountModel.update(oldCustomer.account_id, {
+                    account_username: customer.customer_username,
+                });
+            }
         }
         // update avatar
         const newAvatar = (payload.customer_avatar) ? payload.customer_avatar[0] : null;

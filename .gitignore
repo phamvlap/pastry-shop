@@ -6,3 +6,7 @@ backend/node_modules/
 backend/.env
 backend/public/
 backend/test.js
+
+# frontend
+frontend/admin/.env
+frontend/client/.env

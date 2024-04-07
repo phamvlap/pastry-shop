@@ -12,11 +12,10 @@ const App = () => {
                     const { path, page, layout } = route;
                     const Layout = layout || Fragment;
                     const Page = page;
-
                     return (
                         <Route
                             key={index}
-                            path={route.path}
+                            path={path}
                             element={
                                 <Layout>
                                     <Page />

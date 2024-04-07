@@ -11,6 +11,8 @@ import SortBar from '~/components/SortBar/SortBar.jsx';
 import AddressItem from '~/components/AddressItem/AddressItem.jsx';
 import OrderItemList from '~/components/OrderItemList/OrderItemList.jsx';
 import OrderReview from '~/components/OrderReview/OrderReview.jsx';
+import Pagination from '~/components/Pagination/Pagination.jsx';
+import InputCheckbox from '~/components/InputCheckbox/InputCheckbox.jsx';
 
 export {
     Button,
@@ -26,4 +28,6 @@ export {
     AddressItem,
     OrderItemList,
     OrderReview,
+    Pagination,
+    InputCheckbox,
 };
