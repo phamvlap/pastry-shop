@@ -16,7 +16,7 @@
     --secondary-background-color: #008fdb;
     --primary-background-color: #f6f6f5;
     --hover-color: #004eaf;
-    --active-color: #004eaf;
+    --active-color: #1494d7;
     --error-color: #ff0000;
     /* font */
     --font-family: 'OpenSans', sans-serif;
@@ -107,4 +107,10 @@ li {
     font-family: OpenSans;
     src: url('/src/assets/fonts/open_sans/OpenSans-ExtraBold.ttf') format('ttf');
     font-weight: 700;
+}
+
+/* active class */
+.active {
+    background-color: var(--active-color);
+    color: var(--white-color);
 }

@@ -8,7 +8,7 @@ connection.config.namedPlaceholders = true;
 class AddressModel {
     constructor() {
         this.table = process.env.TABLE_ADDRESSES;
-        this.fields = ['address_fullname', 'address_phone_number', 'address_detail', 'customer_id'];
+        this.fields = ['address_fullname', 'address_phone_number', 'address_detail', 'customer_id', 'address_is_default'];
         this.schema = {
             address_fullname: {
                 type: String,
@@ -24,6 +24,9 @@ class AddressModel {
                 type: String,
                 required: true,
                 min: 5,
+            },
+            address_is_default: {
+                toInt: true,
             },
             customer_id: {
                 required: true,
@@ -68,7 +71,17 @@ class AddressModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `insert into ${this.table} (${Object.keys(address).map(key => `${key}`).join(', ')}) values (${Object.keys(address).map(key => `:${key}`)})`;
+        if(address.address_is_default) {
+            const preparedStmt = `
+                update ${this.table}
+                set address_is_default = 0
+            `;
+            await connection.execute(preparedStmt);
+        }
+        const preparedStmt = `
+            insert into ${this.table} (${Object.keys(address).map(key => `${key}`).join(', ')})
+                values (${Object.keys(address).map(key => `:${key}`)})
+        `;
         await connection.execute(preparedStmt, address);
     }
     async update(addressId, payload) {
@@ -87,11 +100,41 @@ class AddressModel {
             const errorMessage = errors.map(error => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        const preparedStmt = `update ${this.table} set ${Object.keys(address).map(key => `${key} = :${key}`).join(', ')} where address_id = :address_id and address_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+        if(address.address_is_default) {
+            const preparedStmt = `
+                update ${this.table}
+                set address_is_default = 0
+            `;
+            await connection.execute(preparedStmt);
+        }
+        const preparedStmt = `
+            update ${this.table}
+            set ${Object.keys(address).map(key => `${key} = :${key}`).join(', ')}
+            where address_id = :address_id
+                and address_deleted_at = '${process.env.TIME_NOT_DELETED}'
+        `;
         await connection.execute(preparedStmt, {
                 ...address,
                 address_id: addressId,
             });
+    }
+    // set default address
+    async setDefault(addressId) {
+        let preparedStmt = `
+            update ${this.table}
+            set address_is_default = 0
+            where address_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `;
+        await connection.execute(preparedStmt);
+        preparedStmt = `
+            update ${this.table}
+            set address_is_default = 1
+            where address_id = :address_id
+                and address_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `;
+        await connection.execute(preparedStmt, {
+            address_id: addressId,
+        });
     }
     // delete
     async delete(addressId) {

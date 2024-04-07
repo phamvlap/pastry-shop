@@ -44,7 +44,7 @@ class CartModel {
     // get info of item in cart
     async getInfoCartItem(cartItem) {
         const productModel = new ProductModel();
-        const item = await productModel.get(cartItem.product_id);
+        const item = await productModel.getById(cartItem.product_id);
         return {
             quantityInCart: cartItem.cart_quantity,
             statusItem: cartItem.cart_is_selected,
@@ -119,7 +119,13 @@ class CartModel {
         const updatedContent = {
             ...extractData(cart, ['cart_quantity', 'cart_is_selected']),
         };
-        const preparedStmt = `update ${this.table} set ${Object.keys(updatedContent).map(key => `${key} = :${key}`).join(', ')} where customer_id = :customer_id and product_id = :product_id`;
+        console.log(updatedContent);
+        const preparedStmt = `
+            update ${this.table}
+            set ${Object.keys(updatedContent).map(key => `${key} = :${key}`).join(', ')}
+            where customer_id = :customer_id
+                and product_id = :product_id
+        `;
         await connection.execute(preparedStmt, cart);
     }
     // delete

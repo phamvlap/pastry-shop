@@ -21,6 +21,7 @@ router.delete('/cart/:itemId', authorizeCustomer, CartController.delete);
 // address
 router.get('/addresses/', authorizeCustomer, AddressController.get);
 router.post('/addresses/', authorizeCustomer, AddressController.create);
+router.patch('/addresses/:addressId/default', authorizeCustomer, AddressController.setDefault);
 router.patch('/addresses/:addressId', authorizeCustomer, AddressController.update);
 router.delete('/addresses/:addressId', authorizeCustomer, AddressController.delete);
 

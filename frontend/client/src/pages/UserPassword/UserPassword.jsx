@@ -1,13 +1,17 @@
+import { useContext } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 
 import { Button, InputItem } from '~/components/index.js';
+import { UserContext } from '~/contexts/UserContext.jsx';
 import styles from '~/pages/UserPassword/UserPassword.module.scss';
 
 const cx = classNames.bind(styles);
 
 const UserPassword = () => {
+    const { user } = useContext(UserContext);
+    console.log(user);
     return (
         <div className={cx('change-password-wrapper')}>
             <h3 className={cx('change-password-title')}>Đổi mật khẩu</h3>

@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import InputItem from '~/components/InputItem/InputItem.jsx';
-import FormSelect from '~/components/FormSelect/FormSelect.jsx';
-import InputTextarea from '~/components/InputTextarea/InputTextarea.jsx';
 import styles from '~/components/InputGroup/InputGroup.module.scss';
+
+import { FormSelect, InputTextarea, InputItem, InputCheckbox } from '~/components/index.js';
 
 const cx = classNames.bind(styles);
 
@@ -25,10 +24,11 @@ const InputGroup = ({
     disabled = false,
     defaultOption = {},
     multiple = false,
+    checked,
 }) => {
     return (
         <div className={containerClass}>
-            {label && <label className={labelClass}>{label}:</label>}
+            {label && type !== 'checkbox' && <label className={labelClass}>{label}:</label>}
             {type === 'select' ? (
                 <FormSelect
                     name={name}
@@ -47,6 +47,16 @@ const InputGroup = ({
                     onChange={onChange}
                     className={inputClass}
                     placeholder={placeholder}
+                    disabled={disabled}
+                />
+            ) : type === 'checkbox' ? (
+                <InputCheckbox
+                    label={label}
+                    name={name}
+                    value={value}
+                    checked={checked}
+                    onChange={onChange}
+                    className={inputClass}
                     disabled={disabled}
                 />
             ) : (
@@ -79,6 +89,7 @@ InputGroup.propTypes = {
     disabled: PropTypes.bool,
     defaultOption: PropTypes.object,
     multiple: PropTypes.bool,
+    checked: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
 };
 
 export default InputGroup;

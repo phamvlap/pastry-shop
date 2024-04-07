@@ -28,6 +28,14 @@
     
     }
     .cart-footer__total-value {
-    
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        span {
+            display: inline-block;
+        }
+        span:first-child {
+            margin-right: 8px;
+        }
     }
 }

@@ -5,6 +5,7 @@ const routes = {
     productDetail: '/product/:id',
     userProfile: '/user/profile',
     userAddress: '/user/address',
+    userAddressAdd: '/user/address/add',
     userPassword: '/user/password',
     userOrder: '/user/order',
     userCart: '/user/cart',

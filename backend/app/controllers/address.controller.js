@@ -46,6 +46,19 @@ class AddressController {
             next(new BadRequestError(error.message));
         }
     }
+    async setDefault(req, res, next) {
+        try {
+            const addressModel = new AddressModel();
+            await addressModel.setDefault(req.params.addressId);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                message: 'Address is updated successfully.',
+            });
+        }
+        catch(error) {
+            next(new BadRequestError(error.message));
+        }
+    }
     async delete(req, res, next) {
         try {
             const addressModel = new AddressModel();

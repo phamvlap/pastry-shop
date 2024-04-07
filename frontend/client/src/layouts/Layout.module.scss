@@ -67,6 +67,7 @@
                         width: 100%;
                         padding: 8px;
                         &:hover {
+                            cursor: pointer;
                             background-color: rgba(0, 0, 0, 0.08);
                         }
                     }
@@ -143,7 +144,7 @@
     margin-top: 8px;
     background-color: var(--first-level-color);
 }
-// user nav
+// User Nav
 .user-nav-wrapper {
     border-radius: 4px;
     .user-nav-header {
@@ -151,10 +152,19 @@
         font-size: 1.8rem;
         display: flex;
         justify-content: center;
+        align-items: center;
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         .user-nav-header__avatar, .user-nav-header__name {
             display: inline-block;
             padding: 4px;
+        }
+        .user-nav-header__avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 40%;
+        }
+        .user-nav-header__name {
+            font-weight: 700;
         }
     }
     .user-nav-list {
@@ -168,6 +178,9 @@
                 cursor: pointer;
                 background-color: var(--fourth-level-color);
             }
+        }
+        .user-nav-list__item-active {
+            background-color: var(--third-level-color);
         }
     }
 }

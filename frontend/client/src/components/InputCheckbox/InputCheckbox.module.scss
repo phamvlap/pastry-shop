@@ -1,0 +1,15 @@
+input.form-check__input {
+    font-size: 1.6rem;
+}
+.form-check-container {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    .form-check__input, .form-check-label {
+        display: block;
+    }
+    .form-check-label {
+        font-size: 1.6rem;
+        margin-left: 8px;
+    }
+}

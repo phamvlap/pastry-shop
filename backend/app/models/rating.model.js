@@ -7,7 +7,7 @@ connection.config.namedPlaceholders = true;
 
 class RatingModel {
     constructor() {
-        this.table = process.env.TABLE_CARTS;
+        this.table = process.env.TABLE_RATINGS;
         this.fields = ['customer_id', 'product_id', 'rating_created_at', 'rating_content', 'rating_star'];
         this.schema = {
             customer_id: {

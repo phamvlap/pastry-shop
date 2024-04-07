@@ -155,6 +155,9 @@ class AccountModel {
 			const customerModel = new CustomerModel();
 			data = await customerModel.getByUsername(payload.account_username);
 		}
+        if(!data) {
+            throw new Error('Invalid information.');
+        }
         const token = jwt.sign(data, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
@@ -166,6 +169,25 @@ class AccountModel {
             token,
         };
 	}
+    async update(id, data) {
+        let newAccount = {};
+        if(data.account_email) {
+            newAccount['account_email'] = data.account_email;
+        }
+        else if(data.account_username) {
+            newAccount['account_username'] = data.account_username;
+        }
+        const preparedStmt = `
+            update ${this.table}
+            set ${Object.keys(newAccount).map(key => `${key} = :${key}`).join(', ')}
+            where account_id = :account_id
+                and account_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `;
+        await connection.execute(preparedStmt, {
+            ...newAccount,
+            account_id: id,
+        });
+    }
 	async changePassword(id, data) {
 		const account = await this.getById(id);
         if(!data.cur_password || !data.new_password || !data.confirm_password) {

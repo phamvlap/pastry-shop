@@ -9,6 +9,7 @@ import Home from '~/pages/Home/Home.jsx';
 import ProductDetail from '~/pages/ProductDetail/ProductDetail.jsx';
 import UserProfile from '~/pages/UserProfile/UserProfile.jsx';
 import UserAddress from '~/pages/UserAddress/UserAddress.jsx';
+import UserAddressAdd from '~/pages/UserAddressAdd/UserAddressAdd.jsx';
 import UserPassword from '~/pages/UserPassword/UserPassword.jsx';
 import UserOrder from '~/pages/UserOrder/UserOrder.jsx';
 import UserCart from '~/pages/UserCart/UserCart.jsx';
@@ -48,6 +49,11 @@ const routes = [
     {
         path: routesName.userAddress,
         page: UserAddress,
+        layout: UserLayout,
+    },
+    {
+        path: routesName.userAddressAdd,
+        page: UserAddressAdd,
         layout: UserLayout,
     },
     {
