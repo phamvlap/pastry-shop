@@ -1,9 +1,10 @@
-import classNames from 'classnames/bind';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import classNames from 'classnames/bind';
 
 import { SortBar, CardItem, Pagination } from '~/components/index.js';
 import { ProductService } from '~/services/index.js';
+import Sidebar from '~/layouts/partials/Sidebar.jsx';
 
 import styles from '~/pages/Home/Home.module.scss';
 
@@ -28,7 +29,7 @@ const Home = () => {
     const [recordOffset, setRecordOffset] = useState(null);
     const [recordsPerPage, setRecordsPerPage] = useState(Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE));
     const [currentPage, setCurrentPage] = useState(1);
-    const [currentFilter, setCurrentFilter] = useState({});
+    const [filter, setFilter] = useState({});
 
     const productService = new ProductService();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -36,17 +37,14 @@ const Home = () => {
     const fetchProductData = async (options) => {
         let filter = {};
         let response = null;
-
         for (const key of filterOptions) {
             if (options[key]) {
                 filter[key] = options[key];
             }
         }
-
         if (filter.limit && !filter.offset) {
             filter.offset = 0;
         }
-
         response = await productService.getCount(filter);
         if (response.status === 'success') {
             setTotalRecords(response.data);
@@ -54,7 +52,6 @@ const Home = () => {
                 Math.ceil(response.data / (filter.limit || Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE))),
             );
         }
-
         response = await productService.getAll(filter);
         let data = [];
         if (response.status === 'success') {
@@ -91,50 +88,65 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        fetchProductData({
-            status: currentFilter.status,
-            category_id: currentFilter.category_id,
-            limit: recordsPerPage,
-            offset: recordOffset,
-        });
+        fetchProductData(filter);
         setTotalPages(Math.ceil(totalRecords / recordsPerPage));
         setRecordOffset((currentPage - 1) * recordsPerPage);
         setSearchParams({
-            status: currentFilter.status,
-            category_id: currentFilter.category_id,
-            page: currentPage,
-            limit: recordsPerPage,
+            ...filter,
         });
-    }, [currentPage, recordOffset, recordsPerPage, currentFilter.status, currentFilter.category_id]);
+    }, [filter, currentPage, recordsPerPage, recordOffset]);
 
-    // console.log(productList);
     return (
-        <div className={cx('container')}>
-            <SortBar />
-            <div className={cx('products-list')}>
-                <h2 className={cx('list-title')}>Dành cho bạn</h2>
-                <div className={cx('list-container')}>
-                    <div className="row">
-                        {productList.map((product) => {
-                            return (
-                                <div className="col-3" key={product.product_id}>
-                                    <CardItem product={product} />
-                                </div>
-                            );
-                        })}
-                    </div>
+        <div>
+            <div className="container">
+                <div className={cx('breadcrumb-wrapper')}>
+                    <ul className={cx('breadcrumb')}>
+                        <li className={cx('breadcrumb-item')}>Trang chủ</li>
+                        <span className={cx('breadcrumb-seperate')}>/</span>
+                        <li className={cx('breadcrumb-item')}>Danh muc</li>
+                        <span className={cx('breadcrumb-seperate')}>/</span>
+                        <li className={cx('breadcrumb-item')}>Do uong</li>
+                    </ul>
                 </div>
             </div>
-            <div className={cx('products-pagination')}>
-                <Pagination
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    recordsPerPage={recordsPerPage}
-                    setRecordsPerPage={setRecordsPerPage}
-                    recordOffset={recordOffset}
-                    setRecordsOffset={setRecordOffset}
-                />
+            <div className="container">
+                <div className={cx('content-wrapper')}>
+                    <div className="row">
+                        <div className="col-md-3">
+                            <Sidebar setFilter={setFilter} />
+                        </div>
+                        <div className="col-md-9">
+                            <div className={cx('container')}>
+                                <SortBar filter={filter} setFilter={setFilter} />
+                                <div className={cx('products-list')}>
+                                    <h2 className={cx('list-title')}>Dành cho bạn</h2>
+                                    <div className={cx('list-container')}>
+                                        <div className="row">
+                                            {productList.map((product) => {
+                                                return (
+                                                    <div className="col-3" key={product.product_id}>
+                                                        <CardItem product={product} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={cx('products-pagination')}>
+                                    <Pagination
+                                        totalPages={totalPages}
+                                        currentPage={currentPage}
+                                        setCurrentPage={setCurrentPage}
+                                        recordsPerPage={recordsPerPage}
+                                        setRecordsPerPage={setRecordsPerPage}
+                                        recordOffset={recordOffset}
+                                        setRecordsOffset={setRecordOffset}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

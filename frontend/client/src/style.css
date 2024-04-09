@@ -111,6 +111,6 @@ li {
 
 /* active class */
 .active {
-    background-color: var(--active-color);
+    background-color: var(--first-level-color);
     color: var(--white-color);
 }

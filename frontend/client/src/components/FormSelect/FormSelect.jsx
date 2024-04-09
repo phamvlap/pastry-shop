@@ -10,13 +10,17 @@ const FormSelect = ({ name, value, onChange, disabled, options, defaultOption = 
     return (
         <select name={name} value={value} onChange={onChange} disabled={disabled} className={classes}>
             {Object.keys(defaultOption).length > 0 && (
-                <option value={defaultOption.value} className={cx('item')}>
+                <option
+                    value={defaultOption.value}
+                    className={cx('item')}
+                    defaultValue={defaultOption.selected || false}
+                >
                     {defaultOption.name}
                 </option>
             )}
             {options.map((item, index) => {
                 return (
-                    <option key={index} value={item.value} className={cx('item')}>
+                    <option key={index} value={item.value} className={cx('item')} defaultValue={item.selected || false}>
                         {item.name}
                     </option>
                 );

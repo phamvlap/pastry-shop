@@ -1,12 +1,13 @@
 import { useState, useContext } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen, faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import FormData from 'form-data';
 
 import { Button, InputItem } from '~/components/index.js';
 import UserActions from '~/utils/userActions.js';
 import Validator from '~/utils/validator.js';
+import Helper from '~/utils/helper.js';
 import registerRules from '~/config/rules/registerRules.js';
 import { CustomerService } from '~/services/index.js';
 import { UserContext } from '~/contexts/UserContext.jsx';
@@ -25,6 +26,7 @@ const UserProfile = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const { user, setUser } = useContext(UserContext);
     const [avatar, setAvatar] = useState(null);
+    const [isShowSaveBtn, setIsShowSaveBtn] = useState(false);
 
     const configApi = {
         headers: {
@@ -36,9 +38,7 @@ const UserProfile = () => {
     const currentUser = UserActions.getUser();
     const validator = new Validator(rules);
     const customerService = new CustomerService(configApi);
-    const srcAvatar = form.customer_avatar
-        ? `${import.meta.env.VITE_UPLOADED_DIR}${form.customer_avatar.image_url.split('/uploads/')[1]}`
-        : '';
+    const srcAvatar = Helper.formatImageUrl(form.customer_avatar.image_url);
 
     const handleOnChange = (event) => {
         if (event.target.type !== 'file') {
@@ -48,6 +48,7 @@ const UserProfile = () => {
             });
         } else if (event.target.type === 'file') {
             setAvatar(event.target.files[0]);
+            setIsShowSaveBtn(true);
         }
     };
     const handleTransferUpdate = (event) => {
@@ -111,6 +112,7 @@ const UserProfile = () => {
     const handleCancelAvatar = (event) => {
         event.preventDefault();
         setAvatar(null);
+        setIsShowSaveBtn(false);
     };
 
     return (
@@ -214,21 +216,29 @@ const UserProfile = () => {
                                         />
                                     )}
                                 </div>
-                                <InputItem
-                                    type="file"
-                                    name="customer_avatar"
-                                    error={errors.customer_avatar}
-                                    onChange={(event) => handleOnChange(event)}
-                                    className={cx('account-info__value')}
-                                />
-                                <div className={cx('account-avatar__button')}>
-                                    <Button success onClick={(event) => handleUpdateAvatar(event)}>
-                                        <span>Lưu</span>
-                                    </Button>
-                                    <Button danger onClick={(event) => handleCancelAvatar(event)}>
-                                        <span> Hủy</span>
-                                    </Button>
+                                <div className={cx('account-avatar__input')}>
+                                    <input
+                                        type="file"
+                                        name="customer_avatar"
+                                        id="customer_avatar"
+                                        onChange={(event) => handleOnChange(event)}
+                                        className={cx('account-info__value')}
+                                        hidden
+                                    />
+                                    <label htmlFor="customer_avatar" className={cx('account-info__value-label')}>
+                                        Chọn ảnh
+                                    </label>
                                 </div>
+                                {isShowSaveBtn && (
+                                    <div className={cx('account-avatar__button')}>
+                                        <Button success onClick={(event) => handleUpdateAvatar(event)}>
+                                            <span>Lưu</span>
+                                        </Button>
+                                        <Button danger onClick={(event) => handleCancelAvatar(event)}>
+                                            <span> Hủy</span>
+                                        </Button>
+                                    </div>
+                                )}
                             </form>
                         </div>
                     </div>

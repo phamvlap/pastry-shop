@@ -1,4 +1,4 @@
-import createAPIService from "~/services/api.service.js";
+import createAPIService from '~/services/api.service.js';
 
 class OrderService {
     constructor(config = {}) {

@@ -4,8 +4,9 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-import AddressItem from '~/components/AddressItem/AddressItem.jsx';
+import { AddressItem } from '~/components/index.js';
 import addressActions from '~/utils/addressActions.js';
+
 import styles from '~/pages/UserAddress/UserAddress.module.scss';
 
 const cx = classNames.bind(styles);
@@ -29,7 +30,7 @@ const UserAddress = () => {
                 <Link to="/user/address/add" className={cx('address-add')}>
                     <span>
                         <FontAwesomeIcon icon={faPlus} />
-                        <span>Thêm địa chỉ mới</span>
+                        <span className={cx('address-add__title')}>Thêm địa chỉ mới</span>
                     </span>
                 </Link>
             </h3>

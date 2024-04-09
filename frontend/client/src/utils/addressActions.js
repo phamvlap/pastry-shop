@@ -14,6 +14,12 @@ class AddressActions {
         return addresses;
     }
 
+    static async getDefaultAddress() {
+        const customerService = new CustomerService(configApi);
+        const response = await customerService.getDefaultAddress();
+        return response;
+    }
+
     static async addAddress(data) {
         const address = {
             address_fullname: data.address_fullname,

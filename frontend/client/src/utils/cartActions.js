@@ -8,9 +8,9 @@ const configApi = {
 };
 
 class CartActions {
-    static async getCart() {
+    static async getCart(isSelected) {
         const customerService = new CustomerService(configApi);
-        const cart = await customerService.getCart();
+        const cart = await customerService.getCart(isSelected);
         return cart;
     }
 

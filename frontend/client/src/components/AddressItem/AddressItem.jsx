@@ -72,15 +72,15 @@ const AddressItem = ({ address, setAddressList }) => {
                     <div className={cx('address-action')}>
                         <div className={cx('address-action__row')}>
                             <Button outline onClick={() => handleSetDefault()}>
-                                Thiết lập mặc định
+                                <span>Thiết lập mặc định</span>
                             </Button>
                         </div>
                         <div className={cx('address-action__row')}>
                             <Button outline onClick={() => transferToUpdate()}>
-                                Sửa
+                                <span>Sửa</span>
                             </Button>
                             <Button outline onClick={() => handleDelete()}>
-                                Xóa
+                                <span>Xóa</span>
                             </Button>
                         </div>
                     </div>

@@ -21,7 +21,8 @@
             }
             .address-info__contact-default {
                 margin: auto;
-                border: 1px solid #ccc;
+                color: var(--first-level-color);
+                border: 1px solid var(--first-level-color);
                 padding: 4px;
             }
         }

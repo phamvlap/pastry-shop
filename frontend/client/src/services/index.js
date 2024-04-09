@@ -6,6 +6,8 @@ import ProductService from '~/services/product.service.js';
 import StaffService from '~/services/staff.service.js';
 import SupplierService from '~/services/supplier.service.js';
 import AccountService from '~/services/account.service.js';
+import PaymentService from '~/services/payment.service.js';
+import VNPAYService from '~/services/vnpay.service.js';
 
 export {
     CategoryService,
@@ -16,4 +18,6 @@ export {
     StaffService,
     SupplierService,
     AccountService,
+    PaymentService,
+    VNPAYService,
 };

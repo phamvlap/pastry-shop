@@ -24,7 +24,7 @@ const routes = [
     {
         path: routesName.home,
         page: Home,
-        layout: MainLayout,
+        layout: EmptyLayout,
     },
     {
         path: routesName.login,

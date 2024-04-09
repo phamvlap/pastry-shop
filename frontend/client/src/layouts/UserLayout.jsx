@@ -11,7 +11,7 @@ const cx = classNames.bind(styles);
 
 const UserLayout = ({ children }) => {
     return (
-        <div>
+        <div className={cx('user-layout-container')}>
             <Header />
             <div className="container">
                 <div className={cx('breadcrumb-wrapper')}>
@@ -24,7 +24,7 @@ const UserLayout = ({ children }) => {
                     </ul>
                 </div>
             </div>
-            <div className="container">
+            <div className={cx('container', 'user-layout-body')}>
                 <div className={cx('content-wrapper')}>
                     <div className="row">
                         <div className="col-md-2">
@@ -34,7 +34,7 @@ const UserLayout = ({ children }) => {
                     </div>
                 </div>
             </div>
-            <Footer />
+            <Footer className={cx('user-layout-footer')} />
         </div>
     );
 };

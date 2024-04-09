@@ -146,11 +146,6 @@ class ProductModel {
                 p.product_created_at ${parseCreatedAtOrder}
             limit :limit offset :offset;`;
 
-        // preparedStmt += ` order by
-        //         p.product_created_at ${parseCreatedAtOrder},
-        //         prices.price_value ${parsePriceOrder}
-        //     limit :limit offset :offset;`;
-
         const [rows] = await connection.execute(preparedStmt, {
             product_name: `%${parseProductName}%`,
             category_id: parseCategoryId,
@@ -164,6 +159,14 @@ class ProductModel {
         for(const row of rows) {
             const itemDetail = await this.getItemDetail(row);
             products.push(itemDetail);
+        }
+        if(priceOrder) {
+            products.sort((a, b) => {
+                if(priceOrder === 'asc') {
+                    return a.price.price_value - b.price.price_value;
+                }
+                return b.price.price_value - a.price.price_value;
+            });
         }
         return products;
     }

@@ -13,7 +13,9 @@ import {
     productRoutes,
     staffRoutes,
     supplierRoutes,
-    accountRoutes
+    accountRoutes,
+    paymentMethodRoutes,
+    vnpayRoutes,
 } from './routes/index.js';
 
 const app = express();
@@ -32,6 +34,8 @@ app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/staffs', staffRoutes);
 app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/payment-methods', paymentMethodRoutes);
+app.use('/api/v1/payment/vnpay', vnpayRoutes);
 
 // error handlers
 app.use(errorHandler);

@@ -49,6 +49,20 @@ class AddressModel {
         }
         return { result, errors };
     }
+    // get default address
+    async getDefault(customerId) {
+        const preparedStmt = `
+            select *
+            from ${this.table}
+            where address_is_default = 1
+                and customer_id = :customer_id
+                and address_deleted_at = '${process.env.TIME_NOT_DELETED}'
+        `;
+        const [rows] = await connection.execute(preparedStmt, {
+            customer_id: customerId,
+        });
+        return (rows.length > 0) ? escapeData(rows[0], ['address_deleted_at', 'customer_id']) : null;
+    }
     // get all addresses of customer
     async get(customerId) {
         const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and address_deleted_at = '${process.env.TIME_NOT_DELETED}'`;

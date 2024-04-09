@@ -1,0 +1,6 @@
+{
+	"vnpay_TmnCode": "PDW7LAX2",
+	"vnpay_HashSecret": "WJKQUZNVAVIDWFSPYVCDOBLQOAJNJSRQ",
+	"vnpay_Url": "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
+	"vnpay_ReturnUrl": "http://127.0.0.1:4042/vnpay/return",
+}

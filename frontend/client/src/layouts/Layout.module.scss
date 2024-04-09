@@ -60,7 +60,6 @@
                     z-index: 1;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                     .tooltip-user__list {
-
                     }
                     .tooltip-user__item {
                         display: block;
@@ -76,10 +75,15 @@
         }
         .action-cart {
             font-size: 2.2rem;
-            padding: 4px;
+            padding: 8px;
+            &:hover {
+                cursor: pointer;
+                opacity: 0.8;
+            }
         }
     }
 }
+
 // Breadcrumb
 .breadcrumb-wrapper {
     margin-top: 8px;
@@ -176,7 +180,11 @@
             }
             &:hover {
                 cursor: pointer;
-                background-color: var(--fourth-level-color);
+                opacity: 0.9;
+            }
+            span {
+                display: inline-block;
+                margin-left: 8px;
             }
         }
         .user-nav-list__item-active {
@@ -187,4 +195,16 @@
 // no column layout
 .wrapper {
     margin-top: 8px;
+}
+// User Layout
+.user-layout-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .user-layout-body {
+        flex: 1;
+    }
+    .user-layout-footer {
+        margin-top: auto;
+    }
 }
