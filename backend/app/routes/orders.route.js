@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', authorizeStaff, OrderController.index);
 router.get('/:id/detail', authorizeStaffOrCustomer, OrderController.get);
-router.get('/user', authorizeCustomer, OrderController.getUserOrders);
+router.get('/user/:statusId', authorizeCustomer, OrderController.getUserOrders);
 router.post('/', authorizeCustomer, OrderController.create);
 router.patch('/:id', authorizeStaffOrCustomer, OrderController.update);
 router.delete('/:id', authorizeStaffOrCustomer, OrderController.delete);

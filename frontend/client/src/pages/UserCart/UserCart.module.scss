@@ -9,6 +9,14 @@
     .cart-content {
     }
 }
+.cart-empty {
+    display: flex;
+    justify-content: center;
+    .cart-empty__image {
+        width: 200px;
+        height: 200px;
+    }
+}
 .cart-footer {
     padding: 8px;
     .cart-footer__tmp-total, .cart-footer__discount, .cart-footer__total {

@@ -1,10 +1,12 @@
 import className from 'classnames/bind';
+import PropTypes from 'prop-types';
 
+import { OrderItem } from '~/components/index.js';
 import styles from '~/components/OrderItemList/OrderItemList.module.scss';
 
 const cx = className.bind(styles);
 
-const OrderItemList = () => {
+const OrderItemList = ({ itemList }) => {
     return (
         <>
             <h2 className={cx('title')}>Chi tiết đơn hàng</h2>
@@ -18,66 +20,16 @@ const OrderItemList = () => {
                         <div className={cx('col col-md-2', 'content-row__column')}>Thành tiền</div>
                     </div>
                 </div>
-                <div className={cx('content-row')}>
-                    <div className="row">
-                        <div className={cx('col col-md-1', 'content-row__column')}>1</div>
-                        <div className={cx('col col-md-5', 'content-row__column')}>
-                            <div className={cx('item-info')}>
-                                <img
-                                    src="https://via.placeholder.com/100"
-                                    alt="product"
-                                    className={cx('item-info__image')}
-                                />
-                                <span className={cx('item-info__name')}>Tên sản phẩm</span>
-                            </div>
-                        </div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>45000</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>2</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>90000</div>
-                    </div>
-                </div>
-                <div className={cx('content-row')}>
-                    <div className="row">
-                        <div className={cx('col col-md-1', 'content-row__column')}>2</div>
-                        <div className={cx('col col-md-5', 'content-row__column')}>
-                            <div className={cx('item-info')}>
-                                <img
-                                    src="https://via.placeholder.com/100"
-                                    alt="product"
-                                    className={cx('item-info__image')}
-                                />
-                                <span className={cx('item-info__name')}>Tên sản phẩm 2</span>
-                            </div>
-                        </div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>45000</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>2</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>90000</div>
-                    </div>
-                </div>
-                <div className={cx('content-row')}>
-                    <div className="row">
-                        <div className={cx('col col-md-1', 'content-row__column')}>3</div>
-                        <div className={cx('col col-md-5', 'content-row__column')}>
-                            <div className={cx('item-info')}>
-                                <img
-                                    src="https://via.placeholder.com/100"
-                                    alt="product"
-                                    className={cx('item-info__image')}
-                                />
-                                <span className={cx('item-info__name')}>
-                                    Tên sản phẩm 3Tên sản phẩm 3Tên sản phẩm 3Tên sản phẩm 3Tên sản phẩm 3Tên sản phẩm
-                                    3Tên sản phẩm 3Tên sản phẩm 3Tên sản phẩm 3
-                                </span>
-                            </div>
-                        </div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>45000</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>2</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>90000</div>
-                    </div>
-                </div>
+                {itemList.map((item, index) => (
+                    <OrderItem key={index} item={item} />
+                ))}
             </div>
         </>
     );
+};
+
+OrderItemList.propTypes = {
+    itemList: PropTypes.array,
 };
 
 export default OrderItemList;

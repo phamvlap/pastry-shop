@@ -1,29 +1,79 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { OrderReview } from '~/components/index.js';
+import OrderActions from '~/utils/orderActions.js';
+import { StatusService } from '~/services/index.js';
+
 import styles from '~/pages/UserOrder/UserOrder.module.scss';
 
 const cx = classNames.bind(styles);
 
 const UserOrder = () => {
+    const [orders, setOrders] = useState([]);
+    const [statusList, setStatusList] = useState([]);
+    const [activeFilter, setActiveFilter] = useState('all');
+
+    const statusService = new StatusService();
+    const navigate = useNavigate();
+
+    const fetchOrders = async () => {
+        const response = await OrderActions.getUserOrders(activeFilter);
+        if (response.status === 'success') {
+            setOrders(response.data);
+        }
+    };
+    const handleChangeActiveFilter = (event) => {
+        setActiveFilter(event.target.id.split('-')[2]);
+    };
+    const fetchStatusList = async () => {
+        const response = await statusService.getAll();
+        if (response.status === 'success') {
+            setStatusList(response.data);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+        fetchStatusList();
+    }, []);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [activeFilter]);
+
     return (
         <div className={cx('order-wrapper')}>
             <h3 className={cx('order-title')}>Danh sách đơn hàng</h3>
             <div className={cx('order-content')}>
                 <div className={cx('order-filter')}>
-                    <span className={cx('order-filter__item')}>Tất cả đơn hàng</span>
-                    <span className={cx('order-filter__item')}>Đang chờ duyệt</span>
-                    <span className={cx('order-filter__item')}>Đã duyệt</span>
-                    <span className={cx('order-filter__item')}>Đang giao hàng</span>
-                    <span className={cx('order-filter__item')}>Đã nhận</span>
-                    <span className={cx('order-filter__item')}>Đã hủy</span>
+                    <div
+                        className={cx('order-filter__item', {
+                            'order-filter__item-active': activeFilter === 'all',
+                        })}
+                        id="order-filter-all"
+                        onClick={(event) => handleChangeActiveFilter(event)}
+                    >
+                        Tất cả đơn hàng
+                    </div>
+                    {statusList.map((status) => (
+                        <div
+                            key={status.status_id}
+                            className={cx('order-filter__item', {
+                                'order-filter__item-active': activeFilter === status.status_id.toString(),
+                            })}
+                            id={`order-filter-${status.status_id}`}
+                            onClick={(event) => handleChangeActiveFilter(event)}
+                        >
+                            {status.vn_status_name}
+                        </div>
+                    ))}
                 </div>
                 <div className={cx('order-list')}>
-                    <OrderReview />
-                    <OrderReview />
-                    <OrderReview />
-                    <OrderReview />
-                    <OrderReview />
+                    {orders.map((order) => (
+                        <OrderReview key={order.order_id} order={order} />
+                    ))}
                 </div>
             </div>
         </div>

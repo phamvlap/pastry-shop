@@ -52,11 +52,21 @@ class CartModel {
         };
     }
     // get all products in cart of customer
-    async get(customerId) {
-        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id`;
-        const [rows] = await connection.execute(preparedStmt, {
-            customer_id: customerId,
-        });
+    async get(customerId, isSelected) {
+        let rows = [];
+        if(!isSelected) {
+            const preparedStmt = `select * from ${this.table} where customer_id = :customer_id`;
+            [rows] = await connection.execute(preparedStmt, {
+                customer_id: customerId,
+            });
+
+        }
+        if(isSelected) {
+            const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and cart_is_selected = 1`;
+            [rows] = await connection.execute(preparedStmt, {
+                customer_id: customerId,
+            });
+        }
         let products = [];
         if(rows.length > 0) {
             for(const row of rows) {
@@ -119,7 +129,6 @@ class CartModel {
         const updatedContent = {
             ...extractData(cart, ['cart_quantity', 'cart_is_selected']),
         };
-        console.log(updatedContent);
         const preparedStmt = `
             update ${this.table}
             set ${Object.keys(updatedContent).map(key => `${key} = :${key}`).join(', ')}

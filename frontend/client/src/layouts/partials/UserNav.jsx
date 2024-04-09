@@ -1,6 +1,8 @@
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserTag, faLocation, faKey, faReceipt, faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
 import UserActions from '~/utils/userActions.js';
 import Helper from '~/utils/helper.js';
@@ -14,26 +16,31 @@ const optionList = [
         id: 1,
         name: 'Tài khoản',
         path: '/user/profile',
+        icon: faUserTag,
     },
     {
         id: 2,
         name: 'Địa chỉ',
         path: '/user/address',
+        icon: faLocation,
     },
     {
         id: 3,
         name: 'Đổi mật khẩu',
         path: '/user/password',
+        icon: faKey,
     },
     {
         id: 4,
         name: 'Đơn hàng',
         path: '/user/order',
+        icon: faReceipt,
     },
     {
         id: 5,
         name: 'Giỏ hàng',
         path: '/user/cart',
+        icon: faCartShopping,
     },
 ];
 
@@ -44,7 +51,7 @@ const UserNav = () => {
 
     useEffect(() => {
         const path = window.location.pathname;
-        const active = optionList.find((option) => option.path === path);
+        const active = optionList.find((option) => path.startsWith(option.path));
         setActiveOption(active);
     });
     return (
@@ -65,7 +72,8 @@ const UserNav = () => {
                                     active: activeOption && activeOption.path === option.path,
                                 })}
                             >
-                                {option.name}
+                                <FontAwesomeIcon icon={option.icon} />
+                                <span>{option.name}</span>
                             </Link>
                         </li>
                     );

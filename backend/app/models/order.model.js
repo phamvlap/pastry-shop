@@ -6,6 +6,7 @@ import {
     AddressModel,
     PaymentMethodModel,
     StatusDetailModel,
+    ProductModel,
 } from './index.js';
 import { formatDateToString, escapeData, extractData } from './../utils/index.js';
 
@@ -93,11 +94,25 @@ class OrderModel {
         return orderDetail;
     }
     // get all orders of an user
-    async getUserOrders(customerId) {
+    async getUserOrders(customerId, orderStatusId) {
+        orderStatusId = Number(orderStatusId);
+        if(isNaN(orderStatusId)) {
+            orderStatusId = null;
+        }
         const addressTable = process.env.TABLE_ADDRESSES;
-        const preparedStmt = `select * from ${this.table} join ${addressTable} on ${this.table}.address_id = ${addressTable}.address_id where ${addressTable}.customer_id = :customer_id`;
+        const statusDetailsTable = process.env.TABLE_STATUS_DETAILS;
+        const preparedStmt = `
+            select *
+            from ${this.table} join ${addressTable}
+                on ${this.table}.address_id = ${addressTable}.address_id
+            join ${statusDetailsTable}
+                on ${this.table}.order_id = ${statusDetailsTable}.order_id
+            where ${addressTable}.customer_id = :customer_id
+                and (:order_status_id is null or ${statusDetailsTable}.status_id = :order_status_id);
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: customerId,
+            order_status_id: orderStatusId,
         });
         const orders = [];
         if(rows.length > 0) {
@@ -116,6 +131,7 @@ class OrderModel {
         const cartModel = new CartModel();
         const orderDetailModel = new OrderDetailModel();
         const statusDetailModel = new StatusDetailModel();
+        const productModel = new ProductModel();
 
         const currentDate = formatDateToString(new Date());
 
@@ -123,18 +139,16 @@ class OrderModel {
         if(selectedList.length === 0) {
             throw new Error('No product selected.');
         }
-        console.log('>>> debug: selectedList', selectedList);
-        const total = selectedList.reduce((oldTotal, currItem) => oldTotal + currItem.detail.price.price_value * currItem.quantityInCart, 0);
-        const data = {
-            ...payload,
-            order_total: total,
-        };
-        const { result: order, errors } = this.validateOrderData(data);
+        // console.log('>>> debug: selectedList', selectedList);
+        const { result: order, errors } = this.validateOrderData(payload);
         if(errors.length > 0) {
             throw new Error(errors.map(error => error.msg).join(' '));
         }
         order['order_date'] = currentDate;
-        const preparedStmt = `insert into ${this.table} (${Object.keys(order).map(field => field).join(', ')}) values (${Object.keys(order).map(field => `:${field}`).join(', ')})`;
+        const preparedStmt = `
+            insert into ${this.table} (${Object.keys(order).map(field => field).join(', ')})
+                values (${Object.keys(order).map(field => `:${field}`).join(', ')})
+        `;
         await connection.execute(preparedStmt, order);
 
         const justAddedOrder = await this.getByDate(order.order_date);
@@ -142,6 +156,11 @@ class OrderModel {
             for(const item of selectedList) {
                 await orderDetailModel.add(justAddedOrder.order_id, item.detail.product_id, item.quantityInCart);
                 await cartModel.delete(customerId, item.detail.product_id);
+
+                const newQuantity = Number(item.quantityInCart) + Number(item.detail.product_sold_quantity);
+                await productModel.update(item.detail.product_id, {
+                    product_sold_quantity: newQuantity,
+                });
             }
             const statusDetail = {
                 status_id: process.env.STATUS_WAITING_FOR_CONFIRMATION,

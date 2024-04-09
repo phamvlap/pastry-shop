@@ -69,36 +69,44 @@ const UserCart = () => {
                 </div>
             </div>
             <div className="row">
-                <div className="col offset-md-6">
-                    <div className={cx('cart-footer')}>
-                        <div className={cx('cart-footer__tmp-total')}>
-                            <span className={cx('cart-footer__total-label')}>Tổng tạm thời:</span>
-                            <span className={cx('cart-footer__total-value')}>
-                                <span>{Helper.formatMoney(subTotal)}</span>
-                                <span>VNĐ</span>
-                            </span>
-                        </div>
-                        <div className={cx('cart-footer__discount')}>
-                            <span className={cx('cart-footer__total-label')}>Giảm giá:</span>
-                            <span className={cx('cart-footer__total-value')}>
-                                <span>{Helper.formatMoney(discount)}</span>
-                                <span>VNĐ</span>
-                            </span>
-                        </div>
-                        <div className={cx('cart-footer__total')}>
-                            <span className={cx('cart-footer__total-label')}>Tổng thanh toán:</span>
-                            <span className={cx('cart-footer__total-value')}>
-                                <span>{Helper.formatMoney(total)}</span>
-                                <span>VNĐ</span>
-                            </span>
-                        </div>
-                        <div className={cx('cart-footer__button')}>
-                            <Button primary to="/user/checkout">
-                                Mua hàng
-                            </Button>
+                {cart.length === 0 ? (
+                    <div className="col col-md-12">
+                        <div className={cx('cart-empty')}>
+                            <img src="/src/assets/images/empty_cart.png" alt="" className={cx('cart-empty__image')} />
                         </div>
                     </div>
-                </div>
+                ) : (
+                    <div className="colcol-md-6 offset-md-6">
+                        <div className={cx('cart-footer')}>
+                            <div className={cx('cart-footer__tmp-total')}>
+                                <span className={cx('cart-footer__total-label')}>Tổng tạm thời:</span>
+                                <span className={cx('cart-footer__total-value')}>
+                                    <span>{Helper.formatMoney(subTotal)}</span>
+                                    <span>VNĐ</span>
+                                </span>
+                            </div>
+                            <div className={cx('cart-footer__discount')}>
+                                <span className={cx('cart-footer__total-label')}>Giảm giá:</span>
+                                <span className={cx('cart-footer__total-value')}>
+                                    <span>{Helper.formatMoney(discount)}</span>
+                                    <span>VNĐ</span>
+                                </span>
+                            </div>
+                            <div className={cx('cart-footer__total')}>
+                                <span className={cx('cart-footer__total-label')}>Tổng thanh toán:</span>
+                                <span className={cx('cart-footer__total-value')}>
+                                    <span>{Helper.formatMoney(total)}</span>
+                                    <span>VNĐ</span>
+                                </span>
+                            </div>
+                            <div className={cx('cart-footer__button')}>
+                                <Button primary to="/user/checkout">
+                                    Mua hàng
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

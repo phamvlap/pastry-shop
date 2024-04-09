@@ -6,7 +6,7 @@ class CartController {
     async get(req, res, next) {
         try {
             const cartModel = new CartModel();
-            const cart = await cartModel.get(req.customer.customer_id);
+            const cart = await cartModel.get(req.customer.customer_id, req.query.cart_is_selected);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: cart,

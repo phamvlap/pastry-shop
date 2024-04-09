@@ -191,19 +191,19 @@ class AccountModel {
 	async changePassword(id, data) {
 		const account = await this.getById(id);
         if(!data.cur_password || !data.new_password || !data.confirm_password) {
-            throw new Error('Please provide current password, new password and confirm password.');
+            throw new Error('NOTENOUGH: Please provide current password, new password and confirm password.');
         }
         data.cur_password = data.cur_password.trim();
         data.new_password = data.new_password.trim();
         data.confirm_password = data.confirm_password.trim();
         if(!bcrypt.compareSync(data.cur_password, account.account_password)) {
-            throw new Error('Invalid password.');
+            throw new Error('NOTMATCH: Not matched password.');
         }
         const validator = new Validator();
         validator.validateUpdatePassword('account_password', data.new_password, data.confirm_password);
         if(validator.getErrors().length > 0) {
             const errorMessage = validator.getErrors().map(error => error.msg).join(' ');
-            throw new Error(errorMessage);
+            throw new Error(`INVALID: ${errorMessage}`);
         }
         const salt = bcrypt.genSaltSync(Number(process.env.SALT_ROUNDS));
         const hashNewPassword = bcrypt.hashSync(data.new_password, salt);

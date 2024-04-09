@@ -6,6 +6,9 @@ import productRoutes from './products.route.js';
 import staffRoutes from './staffs.route.js';
 import supplierRoutes from './suppliers.route.js';
 import accountRoutes from './accounts.route.js';
+import paymentMethodRoutes from './paymentMethods.route.js';
+import vnpayRoutes from './vnpay.route.js';
+import statusRoutes from './status.route.js';
 
 export {
     categoryRoutes,
@@ -16,4 +19,7 @@ export {
     staffRoutes,
     supplierRoutes,
     accountRoutes,
+    paymentMethodRoutes,
+    vnpayRoutes,
+    statusRoutes,
 };

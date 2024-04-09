@@ -39,9 +39,25 @@
                     border-radius: 50%;
                 }
             }
+            .account-avatar__input {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 8px 0;
+            }
             .account-avatar__button {
                 margin-top: 16px;
                 text-align: center;
+            }
+            .account-info__value-label {
+                padding: 8px 16px;
+                color: var(--white-color);
+                background-color: var(--first-level-color);
+                border-radius: 2px;
+                &:hover {
+                    cursor: pointer;
+                    opacity: 0.9;
+                }
             }
         }
     }

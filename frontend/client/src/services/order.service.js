@@ -1,4 +1,4 @@
-import createAPIService from "~/services/api.service.js";
+import createAPIService from '~/services/api.service.js';
 
 class OrderService {
     constructor(config = {}) {
@@ -11,8 +11,8 @@ class OrderService {
     async get(id) {
         return (await this.api.get(`/${id}/detail`)).data;
     }
-    async getForUser() {
-        return (await this.api.get('/user')).data;
+    async getForUser(statusId) {
+        return (await this.api.get(`/user/${statusId}`)).data;
     }
     async create(data) {
         return (await this.api.post('/', data)).data;

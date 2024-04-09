@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
@@ -9,9 +10,19 @@ import styles from '~/layouts/Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
-const Sidebar = () => {
+const Sidebar = ({ setFilter }) => {
     const [active, setActive] = useState(-1);
     const [cateogries, setCategories] = useState([]);
+
+    const handleChangeCategory = (id) => {
+        setActive(id);
+        setFilter((prevFilter) => {
+            return {
+                ...prevFilter,
+                category_id: id,
+            };
+        });
+    };
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -39,7 +50,7 @@ const Sidebar = () => {
                         <li
                             key={category.category_id}
                             className={classes}
-                            onClick={() => setActive(category.category_id)}
+                            onClick={() => handleChangeCategory(category.category_id)}
                         >
                             {category.category_name}
                         </li>
@@ -48,6 +59,10 @@ const Sidebar = () => {
             </ul>
         </div>
     );
+};
+
+Sidebar.propTypes = {
+    setFilter: PropTypes.func.isRequired,
 };
 
 export default Sidebar;

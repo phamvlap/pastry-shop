@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,10 +9,22 @@ import styles from '~/components/InputItem/InputItem.module.scss';
 const cx = classNames.bind(styles);
 
 const InputItem = ({ type = 'text', name, value, onChange, placeholder = '', disabled = false, multiple }) => {
+    const [currentIcon, setCurrentIcon] = useState(faEyeSlash);
+    const [typeOfInput, setTypeOfInput] = useState(type);
+
+    const handleChangeVisible = () => {
+        if (typeOfInput === 'password') {
+            setTypeOfInput('text');
+            setCurrentIcon(faEye);
+        } else {
+            setTypeOfInput('password');
+            setCurrentIcon(faEyeSlash);
+        }
+    };
     return type === 'password' ? (
         <div className={cx('input-item__password')}>
             <input
-                type={type}
+                type={typeOfInput}
                 value={value}
                 name={name}
                 onChange={onChange}
@@ -21,8 +34,9 @@ const InputItem = ({ type = 'text', name, value, onChange, placeholder = '', dis
                 multiple={multiple}
             />
             <span className={cx('input-item__password-toggle')}>
-                {/* <FontAwesomeIcon icon={faEye} /> */}
-                <FontAwesomeIcon icon={faEyeSlash} />
+                <span onClick={() => handleChangeVisible()}>
+                    <FontAwesomeIcon icon={currentIcon} />
+                </span>
             </span>
         </div>
     ) : (

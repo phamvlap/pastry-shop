@@ -13,6 +13,7 @@ import OrderItemList from '~/components/OrderItemList/OrderItemList.jsx';
 import OrderReview from '~/components/OrderReview/OrderReview.jsx';
 import Pagination from '~/components/Pagination/Pagination.jsx';
 import InputCheckbox from '~/components/InputCheckbox/InputCheckbox.jsx';
+import OrderItem from '~/components/OrderItem/OrderItem.jsx';
 
 export {
     Button,
@@ -30,4 +31,5 @@ export {
     OrderReview,
     Pagination,
     InputCheckbox,
+    OrderItem,
 };

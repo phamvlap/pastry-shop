@@ -24,6 +24,9 @@ class CustomerService {
     async getAddresses() {
         return (await this.api.get('/addresses')).data;
     }
+    async getDefaultAddress() {
+        return (await this.api.get('/addresses/default')).data;
+    }
     async addAddress(data) {
         return (await this.api.post('/addresses', data)).data;
     }
@@ -37,8 +40,11 @@ class CustomerService {
         return (await this.api.delete(`/addresses/${id}`)).data;
     }
     // cart
-    async getCart() {
-        return (await this.api.get('/cart')).data;
+    async getCart(isSelected) {
+        if (!isSelected) {
+            return (await this.api.get('/cart')).data;
+        }
+        return (await this.api.get(`/cart?cart_is_selected=${isSelected}`)).data;
     }
     async addToCart(data) {
         return (await this.api.post('/cart', data)).data;

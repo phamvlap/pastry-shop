@@ -72,10 +72,17 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        span:last-child {
+        span:first-child {
+            font-weight: lighter;
+        }
+        span:not(first-child) {
             margin-left: 8px;
             font-size: 1.8rem;
             font-weight: bold;
+        }
+        .order-total {
+            // font-size: 1.8rem;
+            // font-weight: bold;
         }
     }
 }
