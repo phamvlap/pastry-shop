@@ -5,6 +5,16 @@
         padding: 8px;
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         text-align: center;
+        position: relative;
+        .order-back {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            .order-back-btn {
+                padding: 6px;
+            }
+        }
     }
     .order-content {
         padding: 8px;

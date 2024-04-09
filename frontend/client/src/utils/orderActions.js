@@ -8,9 +8,9 @@ const configApi = {
 };
 
 class OrderActions {
-    static async getOrders() {
+    static async getUserOrders(statusId) {
         const orderService = new OrderService(configApi);
-        const response = await orderService.getAll();
+        const response = await orderService.getForUser(statusId);
         return response;
     }
 

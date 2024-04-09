@@ -8,6 +8,7 @@ import supplierRoutes from './suppliers.route.js';
 import accountRoutes from './accounts.route.js';
 import paymentMethodRoutes from './paymentMethods.route.js';
 import vnpayRoutes from './vnpay.route.js';
+import statusRoutes from './status.route.js';
 
 export {
     categoryRoutes,
@@ -20,4 +21,5 @@ export {
     accountRoutes,
     paymentMethodRoutes,
     vnpayRoutes,
+    statusRoutes,
 };

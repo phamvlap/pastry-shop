@@ -24,6 +24,18 @@ const UserCheckout = () => {
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState({});
 
     const navigate = useNavigate();
+    const orderItemList = itemList.map((item, index) => {
+        const priceValue =
+            Number(item.detail.price.price_value) -
+            Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate);
+        return {
+            index: index + 1,
+            imageSrc: Helper.formatImageUrl(item.detail.images[0].image_url),
+            name: item.detail.product_name,
+            price: priceValue,
+            quantity: item.quantityInCart,
+        };
+    });
 
     const calculateTotal = () => {
         const subTotal = itemList.reduce((total, item) => {
@@ -127,7 +139,7 @@ const UserCheckout = () => {
                 </div>
 
                 <div className={cx('checkout-list')}>
-                    <OrderItemList itemList={itemList} />
+                    <OrderItemList itemList={orderItemList} />
                 </div>
 
                 <div className={cx('checkout-payment')}>

@@ -3,6 +3,7 @@ import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as faFilledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar } from '@fortawesome/free-regular-svg-icons';
+import { Link } from 'react-router-dom';
 
 import { Button } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
@@ -36,10 +37,14 @@ const CardItem = ({ product }) => {
     return (
         <div className={cx('card-container')}>
             <div className={cx('card-image')}>
-                <img className={cx('card-image__item')} src={product.product_images[0].image_url} alt="product" />
+                <Link to={`/product/${product.product_id}`}>
+                    <img className={cx('card-image__item')} src={product.product_images[0].image_url} alt="product" />
+                </Link>
             </div>
             <div className={cx('card-content')}>
-                <h3 className={cx('card-title')}>{product.product_name}</h3>
+                <Link to={`/product/${product.product_id}`}>
+                    <h3 className={cx('card-title')}>{product.product_name}</h3>
+                </Link>
                 <div className={cx('card-price')}>
                     <div className={cx('card-price__original-container')}>
                         <p className={cx('card-price__original')}>

@@ -32,7 +32,7 @@ class OrderController {
     async getUserOrders(req, res, next) {
         try {
             const orderModel = new OrderModel();
-            const orders = await orderModel.getUserOrders(req.customer.customer_id);
+            const orders = await orderModel.getUserOrders(req.customer.customer_id, req.params.statusId);
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: orders,

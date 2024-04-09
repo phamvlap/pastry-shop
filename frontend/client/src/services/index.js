@@ -8,6 +8,7 @@ import SupplierService from '~/services/supplier.service.js';
 import AccountService from '~/services/account.service.js';
 import PaymentService from '~/services/payment.service.js';
 import VNPAYService from '~/services/vnpay.service.js';
+import StatusService from '~/services/status.service.js';
 
 export {
     CategoryService,
@@ -20,4 +21,5 @@ export {
     AccountService,
     PaymentService,
     VNPAYService,
+    StatusService,
 };

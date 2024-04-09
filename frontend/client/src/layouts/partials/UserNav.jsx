@@ -51,7 +51,7 @@ const UserNav = () => {
 
     useEffect(() => {
         const path = window.location.pathname;
-        const active = optionList.find((option) => option.path === path);
+        const active = optionList.find((option) => path.startsWith(option.path));
         setActiveOption(active);
     });
     return (

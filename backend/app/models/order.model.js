@@ -94,16 +94,25 @@ class OrderModel {
         return orderDetail;
     }
     // get all orders of an user
-    async getUserOrders(customerId) {
+    async getUserOrders(customerId, orderStatusId) {
+        orderStatusId = Number(orderStatusId);
+        if(isNaN(orderStatusId)) {
+            orderStatusId = null;
+        }
         const addressTable = process.env.TABLE_ADDRESSES;
+        const statusDetailsTable = process.env.TABLE_STATUS_DETAILS;
         const preparedStmt = `
             select *
             from ${this.table} join ${addressTable}
                 on ${this.table}.address_id = ${addressTable}.address_id
+            join ${statusDetailsTable}
+                on ${this.table}.order_id = ${statusDetailsTable}.order_id
             where ${addressTable}.customer_id = :customer_id
+                and (:order_status_id is null or ${statusDetailsTable}.status_id = :order_status_id);
         `;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: customerId,
+            order_status_id: orderStatusId,
         });
         const orders = [];
         if(rows.length > 0) {

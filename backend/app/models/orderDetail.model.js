@@ -35,7 +35,7 @@ class OrderDetailModel {
         let items = [];
         if(rows.length > 0) {
             for(const row of rows) {
-                const item = await productModel.get(row.product_id);
+                const item = await productModel.getById(row.product_id);
                 items.push({
                     ...escapeData(row, ['product_id']),
                     detail: item,

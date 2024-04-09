@@ -16,11 +16,17 @@
             .order-filter__item {
                 display: inline-block;
                 padding: 8px;
+                text-align: center;
+                width: 100%;
                 cursor: pointer;
                 &.active {
                     font-weight: bold;
                     border-bottom: 2px solid #000;
                 }
+            }
+            .order-filter__item-active {
+                color: var(--white-color);
+                background-color: var(--first-level-color);
             }
         }
         .order-list {

@@ -7,8 +7,19 @@ class StatusModel {
     constructor() {
         this.table = process.env.TABLE_STATUS;
     }
+    async getAll() {
+        const [rows] = await connection.execute(`
+            select *
+            from ${this.table}
+        `);
+        return rows;
+    }
     async get(id) {
-        const [rows] = await connection.execute(`select * from ${this.table} where status_id = :status_id`, {
+        const [rows] = await connection.execute(`
+            select *
+            from ${this.table}
+            where status_id = :status_id
+        `, {
             status_id: id,
         });
         return (rows.length > 0) ? rows[0] : null;
