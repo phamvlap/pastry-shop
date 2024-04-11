@@ -4,7 +4,7 @@ import classNames from 'classnames/bind';
 
 import { ProductService } from '~/services/index.js';
 
-import { Heading, Pagination, Table } from '~/components/index.js';
+import { Pagination, Table } from '~/components/index.js';
 import SearchBar from '~/pages/Product/partials/SearchBar.jsx';
 import ControlPanel from '~/pages/Product/partials/ControlPanel.jsx';
 
@@ -150,7 +150,7 @@ const Product = () => {
 
     return (
         <div className={cx('product-container')}>
-            <Heading title="Danh sách sản phẩm" />
+            <h2 className={cx('product-title')}>Danh sách sản phẩm</h2>
             <ControlPanel />
             <SearchBar setRecordsPerPage={setRecordsPerPage} setCurrentFilter={setCurrentFilter} />
             <div className="mt-3">

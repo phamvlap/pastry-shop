@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import classNames from 'classnames/bind';
 
-import { Heading, Table } from '~/components/index.js';
+import { Table } from '~/components/index.js';
 
 import styles from '~/pages/Category/Category.module.scss';
 
@@ -37,7 +37,7 @@ const CategoryList = ({ categoryList, setCategoryList }) => {
 
     return (
         <div className={cx('list-container')}>
-            <Heading title="Danh sách danh mục sản phẩm" />
+            <h2 className={cx('list-title')}>Danh sách danh mục sản phẩm</h2>
             <div className={cx('list-table')}>
                 <Table
                     entityName="category"

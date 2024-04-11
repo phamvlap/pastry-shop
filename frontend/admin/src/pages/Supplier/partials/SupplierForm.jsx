@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 
-import { Heading, Form, InputGroup, Button } from '~/components/index.js';
+import { Form, InputGroup, Button } from '~/components/index.js';
 import Validator from '~/utils/validator.js';
 import staffActions from '~/utils/staffActions.js';
 import SupplierService from '~/services/supplier.service.js';
@@ -149,7 +149,7 @@ const SupplierForm = ({ supplier, setSupplier }) => {
 
     return (
         <div className={cx('supplier-form')}>
-            <Heading title={!isUpdating ? 'Thêm nhà cung ứng mới' : 'Cập nhật nhà cung ứng'} />
+            <h2 className={cx('supplier-title')}>{!isUpdating ? 'Thêm nhà cung ứng mới' : 'Cập nhật nhà cung ứng'} </h2>
             <div className={cx('supplier-form__body')}>
                 {isUpdating && (
                     <Button primary className="mb-3" onClick={changeActionToAdd}>

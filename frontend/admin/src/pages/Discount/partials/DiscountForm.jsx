@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 
-import { Heading, Form, InputGroup, Button } from '~/components/index.js';
+import { Form, InputGroup, Button } from '~/components/index.js';
 import { staffActions, Validator, formatDate } from '~/utils/index.js';
 import { DiscountService } from '~/services/index.js';
 import discountRules from '~/config/rules/discount.js';
@@ -90,7 +90,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
 
     return (
         <div className={cx('discount-form')}>
-            <Heading title={!isUpdating ? 'Thêm mã giảm giá mới' : 'Cập nhật mã giảm giá'} />
+            <h2 className={cx('discount-title')}>{!isUpdating ? 'Thêm mã giảm giá mới' : 'Cập nhật mã giảm giá'}</h2>
             <div className={cx('discount-form__body')}>
                 {isUpdating && (
                     <Button primary className="mb-3" onClick={changeActionToAdd}>
@@ -117,12 +117,13 @@ const DiscountForm = ({ discount, setDiscount }) => {
                             label="Mã code của mã giảm giá"
                             type="text"
                             name="discount_code"
+                            className={cx('discount-container__col')}
                             value={form['discount_code']}
                             onChange={handleOnChange}
                             error={errors['discount_code']}
                         />
                         <div className="row">
-                            <div className="col col-md-6">
+                            <div className={cx('col col-md-6', 'discount-container__col')}>
                                 <InputGroup
                                     label="Tỷ lệ giảm giá"
                                     type="number"
@@ -132,7 +133,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
                                     error={errors['discount_rate']}
                                 />
                             </div>
-                            <div className="col col-md-6">
+                            <div className={cx('col col-md-6', 'discount-container__col')}>
                                 <InputGroup
                                     label="Số lượng áp dụng"
                                     type="number"
@@ -144,7 +145,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
                             </div>
                         </div>
                         <div className="row">
-                            <div className="col col-md-6">
+                            <div className={cx('col col-md-6', 'discount-container__col')}>
                                 <InputGroup
                                     label="Ngày bắt đầu"
                                     type="date"
@@ -154,7 +155,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
                                     error={errors['discount_start']}
                                 />
                             </div>
-                            <div className="col col-md-6">
+                            <div className={cx('col col-md-6', 'discount-container__col')}>
                                 <InputGroup
                                     label="Ngày kết thúc"
                                     type="date"

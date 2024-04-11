@@ -1,5 +1,10 @@
+// product common
 .product-container {
     padding: 4px;
+    .product-title {
+        padding: 4px;
+        text-align: center;
+    }
     .control-panel  {
         display: flex;
         align-items: center;
@@ -13,9 +18,12 @@
 
 // SearchBar
 .searchbar-container {
+    padding: 4px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: var(--fourth-level-color);
+    border-radius: 2px;
     .select-section {
         display: flex;
         align-items: center;
@@ -36,6 +44,9 @@
             display: flex;
             align-items: center;
             margin-right: 8px;
+        }
+        .filter-section__btn {
+            padding: 5.5px 8px;
         }
     }
     .search-section {

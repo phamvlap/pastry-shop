@@ -5,7 +5,7 @@ import classNames from 'classnames/bind';
 import { useParams } from 'react-router-dom';
 
 import AddForm from '~/pages/ProductAdd/partials/AddForm.jsx';
-import { Heading, Button } from '~/components/index.js';
+import { Button } from '~/components/index.js';
 
 import { staffActions, formatDate } from '~/utils/index.js';
 import { CategoryService, DiscountService, SupplierService, ProductService } from '~/services/index.js';
@@ -25,7 +25,7 @@ const ProductAdd = () => {
     const [discounts, setDiscounts] = useState([]);
     const [product, setProduct] = useState({});
 
-    const { productId } = useParams();
+    const { id: productId } = useParams();
 
     const categoryService = new CategoryService();
     const discountService = new DiscountService();
@@ -84,7 +84,7 @@ const ProductAdd = () => {
 
     return (
         <div className={cx('container')}>
-            <Heading title={productId > 0 ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'} />
+            <h2 className={cx('product-add-title')}>{productId > 0 ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</h2>
             <div className="mt-3">
                 <div style={{ marginTop: '8px', marginBottom: '8px' }}>
                     <Button to="/products" outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>

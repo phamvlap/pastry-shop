@@ -2,21 +2,21 @@
 import MainLayout from '~/layouts/MainLayout.jsx';
 import NotSidebarLayout from '~/layouts/NotSidebarLayout.jsx';
 
-// pages
-import Home from '~/pages/Home/Home.jsx';
-import Login from '~/pages/Login/Login.jsx';
-import Product from '~/pages/Product/Product.jsx';
-import ProductDetail from '~/pages/ProductDetail/ProductDetail.jsx';
-import ProductEdit from '~/pages/ProductEdit/ProductEdit.jsx';
-import ProductAdd from '~/pages/ProductAdd/ProductAdd.jsx';
-import Category from '~/pages/Category/Category.jsx';
-import Discount from '~/pages/Discount/Discount.jsx';
-import Supplier from '~/pages/Supplier/Supplier.jsx';
-import Order from '~/pages/Order/Order.jsx';
-import Customer from '~/pages/Customer/Customer.jsx';
-import Statistics from '~/pages/Statistics/Statistics';
-import Setting from '~/pages/Setting/Setting.jsx';
-import Staff from '~/pages/Staff/Staff.jsx';
+import {
+    Home,
+    Login,
+    Product,
+    ProductDetail,
+    ProductAdd,
+    Category,
+    Discount,
+    Supplier,
+    Order,
+    Customer,
+    Staff,
+    Statistics,
+    Setting,
+} from '~/pages/index.js';
 
 import routesName from '~/config/routes.js';
 
@@ -42,17 +42,12 @@ const routes = [
         layout: MainLayout,
     },
     {
-        path: routesName.productEdit,
+        path: routesName.productAdd,
         page: ProductAdd,
         layout: MainLayout,
     },
     {
         path: routesName.productEdit,
-        page: ProductEdit,
-        layout: MainLayout,
-    },
-    {
-        path: routesName.productAdd,
         page: ProductAdd,
         layout: MainLayout,
     },

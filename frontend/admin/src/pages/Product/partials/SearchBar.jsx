@@ -2,7 +2,7 @@ import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 
-import { Wrapper, FormSelect, InputSearch, Button } from '~/components/index.js';
+import { FormSelect, InputSearch, Button } from '~/components/index.js';
 import { CategoryService } from '~/services/index.js';
 
 import styles from '~/pages/Product/Product.module.scss';
@@ -79,46 +79,40 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
     };
 
     return (
-        <Wrapper padding={8} colorLevel="fourth">
-            <div className={cx('searchbar-container')}>
-                <div className={cx('select-section')}>
-                    <div className={cx('select-section__item')}>Hiển thị</div>
-                    <div className={cx('select-section__item')}>
-                        <FormSelect
-                            options={recordsPerPageOptions}
-                            onChange={(event) => handleChangeRecordsPerPage(event)}
-                        />
-                    </div>
-                    <div className={cx('select-section__item')}>sản phẩm</div>
+        <div className={cx('searchbar-container')}>
+            <div className={cx('select-section')}>
+                <div className={cx('select-section__item')}>Hiển thị</div>
+                <div className={cx('select-section__item')}>
+                    <FormSelect
+                        options={recordsPerPageOptions}
+                        onChange={(event) => handleChangeRecordsPerPage(event)}
+                    />
                 </div>
-                <div className={cx('filter-section')}>
-                    <div className={cx('filter-section__item')}>
-                        <span className={cx('filter-section__text')}>Trạng thái: </span>
-                        <FormSelect
-                            options={statusOptions}
-                            name="status"
-                            onChange={(event) => handleChangeFilter(event)}
-                        />
-                    </div>
-                    <div className={cx('filter-section__item')}>
-                        <span className={cx('filter-section__text')}>Danh mục: </span>
-                        <FormSelect
-                            options={categoryOptions}
-                            name="category_id"
-                            onChange={(event) => handleChangeFilter(event)}
-                        />
-                    </div>
-                    <div className={cx('filter-section__item')}>
-                        <Button primary onClick={() => submitFilter()}>
-                            Lọc
-                        </Button>
-                    </div>
+                <div className={cx('select-section__item')}>sản phẩm</div>
+            </div>
+            <div className={cx('filter-section')}>
+                <div className={cx('filter-section__item')}>
+                    <span className={cx('filter-section__text')}>Trạng thái: </span>
+                    <FormSelect options={statusOptions} name="status" onChange={(event) => handleChangeFilter(event)} />
                 </div>
-                <div className={cx('col col-sm-4', 'search-section')}>
-                    <InputSearch />
+                <div className={cx('filter-section__item')}>
+                    <span className={cx('filter-section__text')}>Danh mục: </span>
+                    <FormSelect
+                        options={categoryOptions}
+                        name="category_id"
+                        onChange={(event) => handleChangeFilter(event)}
+                    />
+                </div>
+                <div className={cx('filter-section__item')}>
+                    <Button primary className={cx('filter-section__btn')} onClick={() => submitFilter()}>
+                        Lọc
+                    </Button>
                 </div>
             </div>
-        </Wrapper>
+            <div className={cx('col col-sm-4', 'search-section')}>
+                <InputSearch />
+            </div>
+        </div>
     );
 };
 

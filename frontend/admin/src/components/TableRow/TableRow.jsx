@@ -7,7 +7,7 @@ import { Button, InputItem, Modal } from '~/components/index.js';
 import { staffActions, getButton } from '~/utils/index.js';
 import { CategoryService, ProductService, DiscountService, SupplierService } from '~/services/index.js';
 
-import styles from '~/components/TableRow/TableRow.module.scss';
+import styles from './TableRow.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -157,10 +157,11 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                             ),
                             footer: (
                                 <>
-                                    <Button primary data-bs-dismiss="modal">
+                                    <Button className={cx('table-row__btn')} primary data-bs-dismiss="modal">
                                         Hủy
                                     </Button>
                                     <Button
+                                        className={cx('table-row__btn')}
                                         danger
                                         onClick={() => handleDeleteRow(row[`${entity}_id`])}
                                         data-bs-dismiss="modal"
@@ -199,7 +200,7 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                                     button['data-bs-target'] = `#${entity}-${row[`${entity}_id`]}`;
                                 }
                                 return (
-                                    <Button key={index} {...button}>
+                                    <Button className={cx('table-row__btn')} key={index} {...button}>
                                         {actions[action].value}
                                     </Button>
                                 );
@@ -207,10 +208,14 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                         </div>
                     ) : (
                         <>
-                            <Button success onClick={(event) => handleUpdateRow(event)}>
+                            <Button
+                                className={cx('table-row__btn')}
+                                success
+                                onClick={(event) => handleUpdateRow(event)}
+                            >
                                 Áp dụng
                             </Button>
-                            <Button danger onClick={() => setActiveAction({})}>
+                            <Button className={cx('table-row__btn')} danger onClick={() => setActiveAction({})}>
                                 Hủy
                             </Button>
                         </>

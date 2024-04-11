@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import TableRow from '~/components/TableRow/TableRow.jsx';
+import { TableRow } from '~/components/index.js';
 
-import styles from '~/components/Table/Table.module.scss';
+import styles from './Table.module.scss';
 
 const cx = classNames.bind(styles);
 

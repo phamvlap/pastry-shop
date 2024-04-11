@@ -6,7 +6,7 @@ import styles from '~/pages/Supplier/Supplier.module.scss';
 
 const cx = classNames.bind(styles);
 
-import { Heading, Table } from '~/components/index.js';
+import { Table } from '~/components/index.js';
 
 const header = {
     supplier_name: {
@@ -44,7 +44,7 @@ const SupplierList = ({ supplierList, setSupplierList, setSupplier }) => {
 
     return (
         <div className={cx('supplier-list')}>
-            <Heading title="Danh sách nhà cung ứng" />
+            <h2 className={cx('supplier-title')}>Danh sách nhà cung ứng</h2>
             <div className={cx('supplier-list__table')}>
                 <Table
                     entityName="supplier"

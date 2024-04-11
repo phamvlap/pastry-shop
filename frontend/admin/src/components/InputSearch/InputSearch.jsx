@@ -1,9 +1,8 @@
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
 
-import InputItem from '~/components/InputItem/InputItem.jsx';
-import Button from '~/components/Button/Button.jsx';
+import { InputItem, Button } from '~/components/index.js';
 
 const InputSearch = ({ placeholder }) => {
     return (

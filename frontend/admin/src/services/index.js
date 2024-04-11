@@ -1,19 +1,8 @@
-import CategoryService from '~/services/category.service.js';
-import CustomerService from '~/services/customer.service.js';
-import DiscountService from '~/services/discount.service.js';
-import OrderService from '~/services/order.service.js';
-import ProductService from '~/services/product.service.js';
-import StaffService from '~/services/staff.service.js';
-import SupplierService from '~/services/supplier.service.js';
-import AccountService from '~/services/account.service.js';
-
-export {
-    CategoryService,
-    CustomerService,
-    DiscountService,
-    OrderService,
-    ProductService,
-    StaffService,
-    SupplierService,
-    AccountService,
-};
+export { default as CategoryService } from './category.service.js';
+export { default as CustomerService } from './customer.service.js';
+export { default as DiscountService } from './discount.service.js';
+export { default as OrderService } from './order.service.js';
+export { default as ProductService } from './product.service.js';
+export { default as StaffService } from './staff.service.js';
+export { default as SupplierService } from './supplier.service.js';
+export { default as AccountService } from './account.service.js';

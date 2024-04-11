@@ -1,9 +1,8 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useState } from 'react';
 import FormData from 'form-data';
 import Swal from 'sweetalert2';
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { Form, InputGroup } from '~/components/index.js';
 import productRules from '~/config/rules/product.js';

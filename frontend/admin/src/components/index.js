@@ -1,32 +1,12 @@
-// import all file .jsx in src/components into index.js
-import Button from '~/components/Button/Button.jsx';
-import Form from '~/components/Form/Form.jsx';
-import FormSelect from '~/components/FormSelect/FormSelect.jsx';
-import Heading from '~/components/Heading/Heading.jsx';
-import InputGroup from '~/components/InputGroup/InputGroup.jsx';
-import InputItem from '~/components/InputItem/InputItem.jsx';
-import InputSearch from '~/components/InputSearch/InputSearch.jsx';
-import InputTextarea from '~/components/InputTextarea/InputTextarea.jsx';
-import Modal from '~/components/Modal/Modal.jsx';
-import Pagination from '~/components/Pagination/Pagination.jsx';
-import Paragraph from '~/components/Paragraph/Paragraph.jsx';
-import Table from '~/components/Table/Table.jsx';
-import TableRow from '~/components/TableRow/TableRow.jsx';
-import Wrapper from '~/components/Wrapper/Wrapper.jsx';
-
-export {
-    Button,
-    Form,
-    FormSelect,
-    Heading,
-    InputGroup,
-    InputItem,
-    InputSearch,
-    InputTextarea,
-    Modal,
-    Pagination,
-    Paragraph,
-    Table,
-    TableRow,
-    Wrapper,
-};
+export { default as Button } from './Button/Button.jsx';
+export { default as Form } from './Form/Form.jsx';
+export { default as FormSelect } from './FormSelect/FormSelect.jsx';
+export { default as InputGroup } from './InputGroup/InputGroup.jsx';
+export { default as InputItem } from './InputItem/InputItem.jsx';
+export { default as InputSearch } from './InputSearch/InputSearch.jsx';
+export { default as InputTextarea } from './InputTextarea/InputTextarea.jsx';
+export { default as Modal } from './Modal/Modal.jsx';
+export { default as Pagination } from './Pagination/Pagination.jsx';
+export { default as Paragraph } from './Paragraph/Paragraph.jsx';
+export { default as Table } from './Table/Table.jsx';
+export { default as TableRow } from './TableRow/TableRow.jsx';

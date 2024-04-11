@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { formatDate, staffActions } from '~/utils/index.js';
 import { ProductService } from '~/services/index.js';
 import ImageList from '~/pages/ProductDetail/partials/ImageList.jsx';
-import { Heading, Button, Paragraph } from '~/components/index.js';
+import { Button, Paragraph } from '~/components/index.js';
 
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 
@@ -26,7 +26,7 @@ const ProductDetail = () => {
     const [product, setProduct] = useState({});
     const [images, setImages] = useState([]);
 
-    const { productId } = useParams();
+    const { id: productId } = useParams();
     const navigate = useNavigate();
     const productService = new ProductService(configApi);
 
@@ -90,7 +90,7 @@ const ProductDetail = () => {
 
     return (
         <div className={cx('wrapper')}>
-            <Heading title="Chi tiết sản phẩm" />
+            <h2 className={cx('product-title')}>Chi tiết sản phẩm</h2>
             <div className="mt-3">
                 <div className={cx('control-bar')}>
                     <Button to="/products" outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>

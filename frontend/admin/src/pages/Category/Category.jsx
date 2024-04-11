@@ -3,6 +3,7 @@ import classNames from 'classnames/bind';
 
 import CategoryList from '~/pages/Category/partials/CategoryList.jsx';
 import CategoryForm from '~/pages/Category/partials/CategoryForm.jsx';
+
 import { CategoryService, ProductService } from '~/services/index.js';
 
 import styles from '~/pages/Category/Category.module.scss';
@@ -10,9 +11,7 @@ import styles from '~/pages/Category/Category.module.scss';
 const cx = classNames.bind(styles);
 
 const Category = () => {
-    const [category, setCategory] = useState({
-        category_name: '',
-    });
+    const [category, setCategory] = useState();
     const [categoryList, setCategoryList] = useState([]);
 
     const categoryService = new CategoryService();
@@ -21,31 +20,35 @@ const Category = () => {
     const fetchCategory = async () => {
         const response = await categoryService.getAll();
 
-        let data = [];
-        for (const category of response.data) {
-            const response = await productService.getCount({
-                category_id: category.category_id,
-            });
-            const count = response.data;
-            data.push({
-                category_id: category.category_id,
-                category_name: category.category_name,
-                productCount: count,
-            });
+        if (response.status === 'success') {
+            let data = [];
+            for (const category of response.data) {
+                const response = await productService.getCount({
+                    category_id: category.category_id,
+                });
+                const count = response.data;
+                data.push({
+                    category_id: category.category_id,
+                    category_name: category.category_name,
+                    productCount: count,
+                });
+            }
+            setCategoryList(data);
         }
-        setCategoryList(data);
     };
     useEffect(() => {
         fetchCategory();
     }, [category]);
 
     return (
-        <div className={cx('row')}>
-            <div className="col col-md-8">
-                <CategoryList categoryList={categoryList} setCategoryList={setCategoryList} />
-            </div>
-            <div className="col col-md-4">
-                <CategoryForm category={category} setCategory={setCategory} />
+        <div className={cx('category-container')}>
+            <div className={cx('row', 'container-row')}>
+                <div className={cx('col col-md-8', 'container-col')}>
+                    <CategoryList categoryList={categoryList} setCategoryList={setCategoryList} />
+                </div>
+                <div className={cx('col col-md-4', 'container-col')}>
+                    <CategoryForm category={category} setCategory={setCategory} />
+                </div>
             </div>
         </div>
     );

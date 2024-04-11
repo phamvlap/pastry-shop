@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import Button from '~/components/Button/Button.jsx';
-import styles from '~/components/Form/Form.module.scss';
+import { Button } from '~/components/index.js';
+
+import styles from './Form.module.scss';
 
 const cx = classNames.bind(styles);
 

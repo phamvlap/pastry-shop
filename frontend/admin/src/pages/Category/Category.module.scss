@@ -1,9 +1,24 @@
+// category common
+.category-container {
+    .container-row {
+        padding: 0;
+    }
+    .container-col {
+        padding: 0;
+    }
+}
+.list-title, .form-title {
+    padding: 4px;
+    text-align: center;
+}
+// category list
 .list-container, .form-container {
     padding: 4px;
 }
 .list-table {
     margin-top: 4px;
 }
+// category form
 .form-content {
     margin-top: 4px;
 }

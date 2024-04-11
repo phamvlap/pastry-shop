@@ -6,7 +6,7 @@ import styles from '~/pages/Discount/Discount.module.scss';
 
 const cx = classNames.bind(styles);
 
-import { Heading, Table } from '~/components/index.js';
+import { Table } from '~/components/index.js';
 
 const header = {
     discount_code: {
@@ -52,7 +52,7 @@ const DiscountList = ({ discountList, setDiscountList, setDiscount }) => {
 
     return (
         <div className={cx('discount-list')}>
-            <Heading title="Danh sách mã giảm giá" />
+            <h2 className={cx('discount-title')}>Danh sách mã giảm giá</h2>
             <div className={cx('discount-list__table')}>
                 <Table
                     entityName="discount"
