@@ -17,6 +17,7 @@ import {
     paymentMethodRoutes,
     vnpayRoutes,
     statusRoutes,
+    ratingsRoutes
 } from './routes/index.js';
 
 const app = express();
@@ -37,7 +38,9 @@ app.use('/api/v1/customers', customerRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/payment-methods', paymentMethodRoutes);
 app.use('/api/v1/status', statusRoutes);
+app.use('/api/v1/ratings', ratingsRoutes);
 
+// not work
 app.use('/api/v1/payment/vnpay', vnpayRoutes);
 
 // error handlers

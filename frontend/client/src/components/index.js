@@ -14,6 +14,8 @@ import OrderReview from '~/components/OrderReview/OrderReview.jsx';
 import Pagination from '~/components/Pagination/Pagination.jsx';
 import InputCheckbox from '~/components/InputCheckbox/InputCheckbox.jsx';
 import OrderItem from '~/components/OrderItem/OrderItem.jsx';
+import ReviewItem from '~/components/ReviewItem/ReviewItem.jsx';
+import ReviewForm from '~/components/ReviewForm/ReviewForm.jsx';
 
 export {
     Button,
@@ -32,4 +34,6 @@ export {
     Pagination,
     InputCheckbox,
     OrderItem,
+    ReviewItem,
+    ReviewForm,
 };
