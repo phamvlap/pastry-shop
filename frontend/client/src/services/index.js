@@ -9,6 +9,7 @@ import AccountService from '~/services/account.service.js';
 import PaymentService from '~/services/payment.service.js';
 import VNPAYService from '~/services/vnpay.service.js';
 import StatusService from '~/services/status.service.js';
+import RatingService from '~/services/rating.service.js';
 
 export {
     CategoryService,
@@ -22,4 +23,5 @@ export {
     PaymentService,
     VNPAYService,
     StatusService,
+    RatingService,
 };

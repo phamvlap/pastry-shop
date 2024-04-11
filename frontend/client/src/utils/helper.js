@@ -33,9 +33,18 @@ class Helper {
         return `${date.getHours() < 10 ? `0${date.getHours()}` : date.getHours()}:${
             date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes()
         } ${date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()}-${
-            date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth()
+            date.getMonth() < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1
         }-${date.getFullYear()}`;
     }
+    // extract object with exceptions
+    static extractObject(object, keys) {
+        const extractedObject = {};
+        for (const key in object) {
+            if (keys.includes(key)) {
+                extractedObject[key] = object[key];
+            }
+        }
+        return extractedObject;
+    }
 }
-
 export default Helper;

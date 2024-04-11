@@ -76,7 +76,7 @@ const UserCart = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className="colcol-md-6 offset-md-6">
+                    <div className="col col-md-6 offset-md-6">
                         <div className={cx('cart-footer')}>
                             <div className={cx('cart-footer__tmp-total')}>
                                 <span className={cx('cart-footer__total-label')}>Tổng tạm thời:</span>

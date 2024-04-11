@@ -9,6 +9,7 @@ import accountRoutes from './accounts.route.js';
 import paymentMethodRoutes from './paymentMethods.route.js';
 import vnpayRoutes from './vnpay.route.js';
 import statusRoutes from './status.route.js';
+import ratingsRoutes from './ratings.route.js';
 
 export {
     categoryRoutes,
@@ -22,4 +23,5 @@ export {
     paymentMethodRoutes,
     vnpayRoutes,
     statusRoutes,
+    ratingsRoutes
 };

@@ -1,63 +1,105 @@
-// import PropTypes from 'prop-types';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faFilledStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-regular-svg-icons';
 
-import Button from '~/components/Button/Button.jsx';
+import Helper from '~/utils/helper.js';
+import CartActions from '~/utils/cartActions.js';
+import { Button } from '~/components/index.js';
 import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
 
 const cx = classNames.bind(styles);
 
-const ProductInfo = () => {
+const ProductInfo = ({ item }) => {
+    const [selectdQuantity, setSelectedQuantity] = useState(0);
+
+    const currentPrice =
+        Number(item.price.price_value) - Number(item.price.price_value) * Number(item.discount.discount_rate);
+    const ratingValue = Helper.averageRating(item.ratings);
+    let starIcons = [];
+    for (let i = 0; i < 5; i++) {
+        if (i < ratingValue) {
+            starIcons.push(<FontAwesomeIcon key={i} icon={faFilledStar} />);
+        } else {
+            starIcons.push(<FontAwesomeIcon key={i} icon={faStar} />);
+        }
+    }
+
+    const handleIncreaseQuantity = () => {
+        setSelectedQuantity(selectdQuantity + 1);
+    };
+    const handleDecreaseQuantity = () => {
+        if (selectdQuantity > 0) {
+            setSelectedQuantity(selectdQuantity - 1);
+        }
+    };
+    const handleAddToCart = async () => {
+        const data = {
+            product_id: item.product_id,
+            cart_quantity: selectdQuantity,
+            cart_is_selected: 0,
+        };
+        await CartActions.addItem(data);
+    };
+    // const handleToCheckout = () => {};
     return (
         <div className={cx('info-wrapper')}>
-            <h2 className={cx('info-title')}>Bánh trái cây tươi</h2>
+            <h2 className={cx('info-title')}>{item.product_name}</h2>
             <div className={cx('info-rating')}>
                 <span className={cx('info-rating__icon')}>
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
-                    <FontAwesomeIcon icon={faStar} />
+                    {starIcons.map((icon) => {
+                        return icon;
+                    })}
                 </span>
-                <span className={cx('info-rating__value')}>4.5</span>
+                <span className={cx('info-rating__value')}>{ratingValue}</span>
             </div>
             <div className={cx('info-category')}>
                 <span>Danh mục: </span>
-                <span>Bánh trái cây</span>
+                <span>{item.category.category_name}</span>
             </div>
             <div className={cx('info-price')}>
                 <div className={cx('info-price__old')}>
-                    <span>120000</span>
+                    <span>{Helper.formatMoney(Number(item.price.price_value))}</span>
                     <span>VNĐ</span>
                 </div>
                 <div className={cx('info-price__current')}>
-                    <span>100000</span>
+                    <span>{Helper.formatMoney(currentPrice)}</span>
                     <span>VNĐ</span>
                 </div>
                 <div className={cx('info-price__discount')}>
-                    <span>20</span>
+                    <span>-</span>
+                    <span>{Number(item.discount.discount_rate) * 100}</span>
                     <span>%</span>
                 </div>
             </div>
             <div className={cx('info-quantity')}>
                 <span className={cx('info-quantity__label')}>Số lượng: </span>
                 <div className={cx('info-quantity__buttons')}>
-                    <button>-</button>
-                    <input type="text" value="2" onChange={() => {}} />
-                    <button>+</button>
+                    <button onClick={() => handleDecreaseQuantity()}>-</button>
+                    <input type="text" value={selectdQuantity} readOnly />
+                    <button onClick={() => handleIncreaseQuantity()}>+</button>
                 </div>
                 <div className={cx('info-quantity__avaiable')}>
-                    <span>10</span>
+                    <span>{item.product_stock_quantity}</span>
                     <span>sản phẩm có sẵn</span>
                 </div>
             </div>
             <div className={cx('info-order')}>
-                <Button primary>Thêm vào giỏ hàng</Button>
-                <Button primary>Đặt hàng</Button>
+                <Button outline onClick={() => handleAddToCart()}>
+                    Thêm vào giỏ hàng
+                </Button>
+                {/* <Button primary onClick={() => handleToCheckout()}>
+                    Đặt hàng
+                </Button> */}
             </div>
         </div>
     );
+};
+
+ProductInfo.propTypes = {
+    item: PropTypes.object,
 };
 
 export default ProductInfo;

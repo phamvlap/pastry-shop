@@ -200,7 +200,8 @@ class ProductModel {
         `, {
             product_id: id
         });
-        return (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
+        const product = (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
+        return product;
     }
     // get product by date
     async getByCreatedDate(date) {

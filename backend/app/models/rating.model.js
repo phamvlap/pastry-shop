@@ -1,6 +1,7 @@
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { extractData } from './../utils/index.js';
+import { extractData, formatDateToString, escapeData } from './../utils/index.js';
+import { CustomerModel } from './index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -8,7 +9,7 @@ connection.config.namedPlaceholders = true;
 class RatingModel {
     constructor() {
         this.table = process.env.TABLE_RATINGS;
-        this.fields = ['customer_id', 'product_id', 'rating_created_at', 'rating_content', 'rating_star'];
+        this.fields = ['customer_id', 'product_id', 'rating_content', 'rating_star'];
         this.schema = {
             customer_id: {
                 required: true,
@@ -17,10 +18,6 @@ class RatingModel {
             product_id: {
                 required: true,
                 toInt: true,
-            },
-            rating_created_at: {
-                type: Date,
-                required: true,
             },
             rating_content: {
                 type: String,
@@ -34,7 +31,18 @@ class RatingModel {
     validateRatingData(data) {
         const rating = extractData(data, this.fields);
         const validator = new Validator();
-        return validator.validate(rating, this.schema);
+        const {result, errors} = validator.validate(rating, this.schema);
+        result['rating_created_at'] = formatDateToString(new Date());
+        return {result, errors};
+    }
+    // get all ratings
+    async getAll() {
+        const preparedStmt = `
+            select *
+            from ${this.table};
+        `;
+        const [rows] = await connection.execute(preparedStmt);
+        return (rows.length > 0) ? rows : [];
     }
     // get one rating for product and customer
     async getOne(customerId, productId) {
@@ -51,6 +59,7 @@ class RatingModel {
     }
     // get all rating of product
     async getAllRatingForProduct(productId) {
+        const customerModel = new CustomerModel();
         const preparedStmt = `
             select *
             from ${this.table}
@@ -59,7 +68,17 @@ class RatingModel {
         const [rows] = await connection.execute(preparedStmt, {
             product_id: productId,
         });
-        return (rows.length > 0) ? rows : [];
+        let ratings = [];
+        if(rows.length > 0) {
+            for(let i = 0; i < rows.length; i++) {
+                const customer = await customerModel.getById(rows[i].customer_id);
+                ratings.push({
+                    ...escapeData(rows[i], ['customer_id']),
+                    customer,
+                });
+            }
+        }
+        return ratings;
     }
     // add one rating for product
     async add(data) {

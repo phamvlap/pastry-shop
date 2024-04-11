@@ -1,5 +1,19 @@
 .detail-wrapper {
     margin-top: 8px;
+    .detail-back {
+        span:last-child {
+            margin-left: 4px;
+        }
+    }
+}
+.detail-title {
+    font-size: 2.4rem;
+}
+.detail-loading {
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 // product image
 .image-wrapper {
@@ -25,7 +39,7 @@
         align-items: center;
         padding: 8px 0;
         .curr-image {
-            width: auto;
+            max-width: 460px;
             height: 280px;
             object-fit: cover;
         }
@@ -155,4 +169,9 @@
         margin-top: 8px;
         line-height: 1.8;
     }
+}
+// product review
+.detail-review {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 8px;
 }

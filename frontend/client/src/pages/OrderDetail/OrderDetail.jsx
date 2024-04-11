@@ -64,7 +64,9 @@ const OrderDetail = () => {
                         primary
                         className={cx('order-back-btn')}
                         leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}
-                    ></Button>
+                    >
+                        Quay lại
+                    </Button>
                 </div>
                 <span>Chi tiết đơn hàng</span>
             </h3>
