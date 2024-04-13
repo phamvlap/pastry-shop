@@ -14,6 +14,7 @@ const cx = classNames.bind(styles);
 const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, row = {}, setData, actions }) => {
     const [activeAction, setActiveAction] = useState({});
     const [newValue, setNewValue] = useState({});
+
     const navigate = useNavigate();
     let instanceService = null;
 
@@ -92,6 +93,9 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                     break;
                 case 'supplier':
                     directTo = 'suppliers';
+                    break;
+                case 'order':
+                    directTo = 'orders';
                     break;
             }
             navigate(`/${directTo}/${row[`${entity}_id`]}/${activeAction.name}`);

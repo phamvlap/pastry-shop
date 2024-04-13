@@ -13,21 +13,23 @@ const Form = ({ title, buttons, onSubmit, errors, children, enctype = 'applicati
             {title && <h2 className={cx('title')}>{title}</h2>}
             {errors.form && <p className={cx('error')}>{errors.form}</p>}
             {children}
-            <div className={cx('button')}>
-                {buttons.map((button, index) => {
-                    let attributes = {
-                        [button.type]: true,
-                    };
-                    if (button.onClick) {
-                        attributes['onClick'] = button.onClick;
-                    }
-                    return (
-                        <Button key={index} {...attributes}>
-                            {button.name}
-                        </Button>
-                    );
-                })}
-            </div>
+            {buttons && (
+                <div className={cx('button')}>
+                    {buttons.map((button, index) => {
+                        let attributes = {
+                            [button.type]: true,
+                        };
+                        if (button.onClick) {
+                            attributes['onClick'] = button.onClick;
+                        }
+                        return (
+                            <Button key={index} {...attributes}>
+                                {button.name}
+                            </Button>
+                        );
+                    })}
+                </div>
+            )}
         </form>
     );
 };

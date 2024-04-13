@@ -6,3 +6,4 @@ export { default as ProductService } from './product.service.js';
 export { default as StaffService } from './staff.service.js';
 export { default as SupplierService } from './supplier.service.js';
 export { default as AccountService } from './account.service.js';
+export { default as StatusService } from './status.service.js';

@@ -10,3 +10,5 @@ export { default as Pagination } from './Pagination/Pagination.jsx';
 export { default as Paragraph } from './Paragraph/Paragraph.jsx';
 export { default as Table } from './Table/Table.jsx';
 export { default as TableRow } from './TableRow/TableRow.jsx';
+export { default as OrderItem } from './OrderItem/OrderItem.jsx';
+export { default as OrderItemList } from './OrderItemList/OrderItemList.jsx';

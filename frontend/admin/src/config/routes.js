@@ -9,6 +9,7 @@ const routes = {
     discounts: '/discounts',
     suppliers: '/suppliers',
     orders: '/orders',
+    orderDetail: '/orders/:id/detail',
     customers: '/customers',
     staffs: '/staffs',
     statistics: '/statistics',

@@ -6,7 +6,15 @@ class OrderController {
     async index(req, res, next) {
         try {
             const orderModel = new OrderModel();
-            const orders = await orderModel.getAll();
+            const filter = {
+                status_id: req.query.status_id,
+                start_date: req.query.start_date,
+                end_date: req.query.end_date,
+                order_total: req.query.order_total,
+                limit: req.query.limit,
+                offset: req.query.offset,
+            }
+            const orders = await orderModel.getAll(filter);
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: orders,
@@ -62,7 +70,7 @@ class OrderController {
             if(req.activePerson) {
                 implementer = { ...req.activePerson };
             }
-            await orderModel.update(req.params.id, req.body.statusId, implementer);
+            await orderModel.update(req.params.id, req.body.status_id, implementer);
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Order updated successfully',

@@ -4,10 +4,10 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { InputItem, Button } from '~/components/index.js';
 
-const InputSearch = ({ placeholder }) => {
+const InputSearch = ({ placeholder, name, value, onChange }) => {
     return (
         <div className="input-group">
-            <InputItem type="text" placeholder={placeholder} />
+            <InputItem name={name} value={value} onChange={onChange} type="text" placeholder={placeholder} />
             <Button primary>
                 <FontAwesomeIcon icon={faSearch} />
             </Button>
@@ -17,6 +17,9 @@ const InputSearch = ({ placeholder }) => {
 
 InputSearch.propTypes = {
     placeholder: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.string,
+    onChange: PropTypes.func,
 };
 
 export default InputSearch;

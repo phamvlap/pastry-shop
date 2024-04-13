@@ -1,0 +1,52 @@
+// Order common
+.order-detail-container {
+    padding: 4px;
+}
+.order-detail-title {
+    padding: 4px;
+    text-align: center;
+}
+.control-bar {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+.order-section__title {
+    font-weight: 700;
+    margin: 8px 4px;
+}
+.order-info__item {
+    padding: 8px;
+}
+.order-info__item-label {
+    font-weight: 700;
+}
+.order-section__info {
+
+}
+.order-section__customer {
+
+}
+.order-section__total {
+    display: flex;
+    justify-content: end;
+    padding: 8px;
+    .order-section__total-total {
+        font-weight: 700;
+        font-size: 2.2rem;
+    }
+}
+.update-status-modal {
+    .update-status-modal__title {
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .current-status {
+        margin-bottom: 16px;
+    }
+    .input-group-label {
+        font-size: 1.6rem;
+    }
+}

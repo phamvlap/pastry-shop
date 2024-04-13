@@ -7,6 +7,7 @@ export { default as Category } from './Category/Category.jsx';
 export { default as Discount } from './Discount/Discount.jsx';
 export { default as Supplier } from './Supplier/Supplier.jsx';
 export { default as Order } from './Order/Order.jsx';
+export { default as OrderDetail } from './OrderDetail/OrderDetail.jsx';
 export { default as Customer } from './Customer/Customer.jsx';
 export { default as Statistics } from './Statistics/Statistics.jsx';
 export { default as Setting } from './Setting/Setting.jsx';

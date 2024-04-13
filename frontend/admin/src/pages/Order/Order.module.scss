@@ -8,7 +8,6 @@
 }
 // Panel
 .control-panel {
-    justify-content: space-between;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -16,17 +15,21 @@
     margin: 4px 0px;
     background-color: var(--fourth-level-color);
     border-radius: 4px;
+    .control-panel__filter {
+        display: flex;
+        align-items: center;
+    }
     .panel-item {
-        .panel-item__period {
-            display: flex;
-            align-items: center;
-        }
-        .panel-item__text {
+        display: flex;
+        align-items: center;
+        margin-right: 4px;
+        .panel-item__label {
             display: inline-block;
-            margin: 0 8px;
+            width: 120px;
+            text-align: center;
         }
         .panel-item__button {
-            margin-left: 8px;
+            padding: 5px 6px;
         }
     }
 }

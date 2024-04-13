@@ -12,6 +12,7 @@ import {
     Discount,
     Supplier,
     Order,
+    OrderDetail,
     Customer,
     Staff,
     Statistics,
@@ -69,6 +70,11 @@ const routes = [
     {
         path: routesName.orders,
         page: Order,
+        layout: MainLayout,
+    },
+    {
+        path: routesName.orderDetail,
+        page: OrderDetail,
         layout: MainLayout,
     },
     {
