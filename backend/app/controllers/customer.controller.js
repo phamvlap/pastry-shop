@@ -14,8 +14,7 @@ class CustomerController {
                 status: 'success',
                 data: customers,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -27,8 +26,7 @@ class CustomerController {
                 status: 'success',
                 data: customer,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -40,37 +38,33 @@ class CustomerController {
                 status: 'success',
                 data: customer,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
     async update(req, res, next) {
-        uploadAvatar(req, res, async err => {
-            if(err instanceof multer.MulterError) {
-                if(req.file) {
+        uploadAvatar(req, res, async (err) => {
+            if (err instanceof multer.MulterError) {
+                if (req.file) {
                     try {
                         await unlink(req.file.path);
+                    } catch (err) {
+                        return next(new BadRequestError(err.message));
                     }
-                    catch(err) {
+                }
+                return next(new BadRequestError(err.message));
+            } else if (err) {
+                if (req.file) {
+                    try {
+                        await unlink(req.file.path);
+                    } catch (err) {
                         return next(new BadRequestError(err.message));
                     }
                 }
                 return next(new BadRequestError(err.message));
             }
-            else if(err) {
-                if(req.file) {
-                    try {
-                        await unlink(req.file.path);
-                    }
-                    catch(err) {
-                        return next(new BadRequestError(err.message));
-                    }
-                }
-                return next(new BadRequestError(err.message));
-            }
-            if(req.file) {
-                req.body['customer_avatar'] = [ req.file ];
+            if (req.file) {
+                req.body['customer_avatar'] = [req.file];
             }
             try {
                 const customerModel = new CustomerModel();
@@ -79,13 +73,11 @@ class CustomerController {
                     status: 'success',
                     message: 'Customer updated successfully',
                 });
-            }
-            catch(error) {
-                if(req.file) {
+            } catch (error) {
+                if (req.file) {
                     try {
                         await unlink(req.file.path);
-                    }
-                    catch(err) {
+                    } catch (err) {
                         return next(new BadRequestError(err.message));
                     }
                 }
@@ -101,8 +93,7 @@ class CustomerController {
                 status: 'success',
                 message: 'Customer deleted successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

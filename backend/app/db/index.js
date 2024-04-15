@@ -9,8 +9,7 @@ export default async () => {
             database: process.env.DB_NAME,
         });
         return connection;
-    }   
-    catch(error){
+    } catch (error) {
         console.log(error);
     }
-}
+};

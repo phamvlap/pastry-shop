@@ -13,14 +13,13 @@ class OrderController {
                 order_total: req.query.order_total,
                 limit: req.query.limit,
                 offset: req.query.offset,
-            }
+            };
             const orders = await orderModel.getAll(filter);
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: orders,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -32,8 +31,7 @@ class OrderController {
                 status: 'success',
                 data: order,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -45,8 +43,7 @@ class OrderController {
                 status: 'success',
                 data: orders,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -58,8 +55,7 @@ class OrderController {
                 status: 'success',
                 message: 'Order created successfully',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -67,7 +63,7 @@ class OrderController {
         try {
             const orderModel = new OrderModel();
             let implementer = {};
-            if(req.activePerson) {
+            if (req.activePerson) {
                 implementer = { ...req.activePerson };
             }
             await orderModel.update(req.params.id, req.body.status_id, implementer);
@@ -75,8 +71,7 @@ class OrderController {
                 status: 'success',
                 message: 'Order updated successfully',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -84,7 +79,7 @@ class OrderController {
         try {
             const orderModel = new OrderModel();
             let implementer = {};
-            if(req.activePerson) {
+            if (req.activePerson) {
                 implementer = { ...req.activePerson };
             }
             await orderModel.destroy(req.params.id, implementer);
@@ -92,8 +87,7 @@ class OrderController {
                 status: 'success',
                 message: 'Order destroyed successfully',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

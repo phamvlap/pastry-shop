@@ -82,7 +82,7 @@ const OrderDetail = () => {
                     </div>
                     <div className={cx('order-review__item')}>
                         <span>Hình thức thanh toán:</span>
-                        <span>{order.paymentMethod.pm_name}</span>
+                        <span>{order.paymentMethod.vn_pm_name}</span>
                     </div>
                     <div className={cx('order-review__item')}>
                         <span>Đặt hàng lúc:</span>

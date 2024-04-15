@@ -11,8 +11,7 @@ class DiscountController {
                 status: 'success',
                 data: discounts,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -24,8 +23,7 @@ class DiscountController {
                 status: 'success',
                 data: discount,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -37,8 +35,7 @@ class DiscountController {
                 status: 'success',
                 message: 'Discount created successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -50,8 +47,7 @@ class DiscountController {
                 status: 'success',
                 message: 'Discount updated successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -64,8 +60,7 @@ class DiscountController {
                 status: 'success',
                 message: 'Discount deleted successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

@@ -6,7 +6,7 @@ const connection = await connectDB();
 connection.config.namedPlaceholders = true;
 
 class ImageModel {
-	constructor() {
+    constructor() {
         this.table = process.env.TABLE_IMAGES;
         this.fields = ['image_url', 'image_target', 'belong_id'];
         this.schema = {
@@ -27,8 +27,8 @@ class ImageModel {
     validateImageData(data, exceptions = []) {
         const image = extractData(data, this.fields);
         const schema = {};
-        Object.keys(this.schema).map(key => {
-            if(!exceptions.includes(key)) {
+        Object.keys(this.schema).map((key) => {
+            if (!exceptions.includes(key)) {
                 schema[key] = this.schema[key];
             }
         });
@@ -39,10 +39,10 @@ class ImageModel {
     // get all images for target
     async getAll(target, belong_id) {
         try {
-            if(!target || !belong_id) {
+            if (!target || !belong_id) {
                 return [];
             }
-            if(target === 'product'){
+            if (target === 'product') {
                 const preparedStmt = `
                     select *
                     from ${this.table}
@@ -52,9 +52,8 @@ class ImageModel {
                 const [rows] = await connection.execute(preparedStmt, {
                     belong_id: belong_id,
                 });
-                return (rows.length > 0) ? rows : [];
-            }
-            else if(target === 'customer'){
+                return rows.length > 0 ? rows : [];
+            } else if (target === 'customer') {
                 const preparedStmt = `
                     select *
                     from ${this.table}
@@ -64,10 +63,9 @@ class ImageModel {
                 const [rows] = await connection.execute(preparedStmt, {
                     belong_id: belong_id,
                 });
-                return (rows.length > 0) ? rows : [];
+                return rows.length > 0 ? rows : [];
             }
-        }
-        catch(err) {
+        } catch (err) {
             console.log(err);
         }
     }
@@ -82,22 +80,23 @@ class ImageModel {
             const [rows] = await connection.execute(preparedStmt, {
                 image_id: id,
             });
-            return (rows.length > 0) ? rows[0] : null;
-        }
-        catch(err) {
+            return rows.length > 0 ? rows[0] : null;
+        } catch (err) {
             console.log(err);
         }
     }
     // store image
     async store(data) {
         const { result: image, errors } = this.validateImageData(data);
-        if(errors.length > 0) {
-            const errorMessage = errors.map(error => error.msg).join(' ');
+        if (errors.length > 0) {
+            const errorMessage = errors.map((error) => error.msg).join(' ');
             throw new Error(errorMessage);
         }
         const preparedStmt = `
             insert into ${this.table} (${Object.keys(image).join(', ')})
-                values (${Object.keys(image).map(key => `:${key}`).join(', ')})
+                values (${Object.keys(image)
+                    .map((key) => `:${key}`)
+                    .join(', ')})
         `;
         await connection.execute(preparedStmt, image);
     }
@@ -105,7 +104,7 @@ class ImageModel {
     async update(id, data) {
         try {
             const oldImage = await this.getById(id);
-            if(!oldImage) {
+            if (!oldImage) {
                 throw new Error('Image not found.');
             }
             const { result: image, errors } = this.validateImageData({
@@ -113,21 +112,22 @@ class ImageModel {
                 image_target: oldImage.image_target,
                 belong_id: oldImage.belong_id,
             });
-            if(errors.length > 0) {
-                const errorMessage = errors.map(error => error.msg).join(' ');
+            if (errors.length > 0) {
+                const errorMessage = errors.map((error) => error.msg).join(' ');
                 throw new Error(errorMessage);
             }
             const preparedStmt = `
                 update ${this.table}
-                set ${Object.keys(image).map(key => `${key} = :${key}`).join(', ')}
+                set ${Object.keys(image)
+                    .map((key) => `${key} = :${key}`)
+                    .join(', ')}
                 where image_id = :image_id;
             `;
             await connection.execute(preparedStmt, {
                 image_id: id,
                 ...image,
             });
-        }
-        catch(err) {
+        } catch (err) {
             console.log(err);
         }
     }
@@ -135,7 +135,7 @@ class ImageModel {
     async delete(id) {
         try {
             const oldImage = this.getById(id);
-            if(!oldImage) {
+            if (!oldImage) {
                 throw new Error('Image not found.');
             }
             const preparedStmt = `
@@ -145,8 +145,7 @@ class ImageModel {
             await connection.execute(preparedStmt, {
                 image_id: id,
             });
-        }
-        catch(err) {
+        } catch (err) {
             console.log(err);
         }
     }

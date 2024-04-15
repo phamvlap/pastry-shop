@@ -10,14 +10,13 @@ class SupplierController {
                 req.query.supplier_name,
                 req.query.supplier_address,
                 req.query.limit,
-                req.query.offset
+                req.query.offset,
             );
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: suppliers,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -29,8 +28,7 @@ class SupplierController {
                 status: 'success',
                 data: supplier,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -42,8 +40,7 @@ class SupplierController {
                 status: 'success',
                 message: 'Supplier created successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -55,8 +52,7 @@ class SupplierController {
                 status: 'success',
                 message: 'Supplier updated successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -68,8 +64,7 @@ class SupplierController {
                 status: 'success',
                 message: 'Supplier deleted successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

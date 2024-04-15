@@ -1,37 +1,17 @@
-import AddressModel from './address.model.js';
-import CartModel from './cart.model.js';
-import CategoryModel from './category.model.js';
-import CustomerModel from './customer.model.js';
-import DiscountModel from './discount.model.js';
-import OrderModel from './order.model.js';
-import OrderDetailModel from './orderDetail.model.js';
-import PaymentMethodModel from './paymentMethod.model.js';
-import PriceModel from './price.model.js';
-import ProductModel from './product.model.js';
-import StaffModel from './staff.model.js';
-import StatusModel from './status.model.js';
-import StatusDetailModel from './statusDetail.model.js';
-import SupplierModel from './supplier.model.js';
-import ImageModel from './image.model.js';
-import AccountModel from './account.model.js';
-import RatingModel from './rating.model.js';
-
-export {
-    AddressModel,
-    CartModel,
-    CategoryModel,
-    CustomerModel,
-    DiscountModel,
-    OrderModel,
-    OrderDetailModel,
-    PaymentMethodModel,
-    PriceModel,
-    ProductModel,
-    StaffModel,
-    StatusModel,
-    StatusDetailModel,
-    SupplierModel,
-    ImageModel,
-    AccountModel,
-    RatingModel,
-};
+export { default as AddressModel } from './address.model.js';
+export { default as CartModel } from './cart.model.js';
+export { default as CategoryModel } from './category.model.js';
+export { default as CustomerModel } from './customer.model.js';
+export { default as DiscountModel } from './discount.model.js';
+export { default as OrderModel } from './order.model.js';
+export { default as OrderDetailModel } from './orderDetail.model.js';
+export { default as PaymentMethodModel } from './paymentMethod.model.js';
+export { default as PriceModel } from './price.model.js';
+export { default as ProductModel } from './product.model.js';
+export { default as StaffModel } from './staff.model.js';
+export { default as StatusModel } from './status.model.js';
+export { default as StatusDetailModel } from './statusDetail.model.js';
+export { default as SupplierModel } from './supplier.model.js';
+export { default as ImageModel } from './image.model.js';
+export { default as AccountModel } from './account.model.js';
+export { default as RatingModel } from './rating.model.js';

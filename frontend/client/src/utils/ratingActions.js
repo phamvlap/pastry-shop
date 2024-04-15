@@ -8,9 +8,9 @@ const configApi = {
 };
 
 class RatingActions {
-    static async getAll() {
+    static async getAll(filter = {}) {
         const ratingService = new RatingService(configApi);
-        return await ratingService.getAll();
+        return await ratingService.getAll(filter);
     }
 
     static async get(productId) {

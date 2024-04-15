@@ -14,18 +14,17 @@ class ProductController {
                 req.query.category_id,
                 req.query.supplier_id,
                 req.query.discount_id,
-                req.query.createdAtOrder, // asc, desc  
+                req.query.createdAtOrder, // asc, desc
                 req.query.priceOrder, // asc, desc
                 req.query.status, // all, in-stock, out-stock
                 req.query.limit,
-                req.query.offset
+                req.query.offset,
             );
             res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: products,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -37,8 +36,7 @@ class ProductController {
                 status: 'success',
                 data: product,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -56,39 +54,35 @@ class ProductController {
                 status: 'success',
                 data: count,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
     async create(req, res, next) {
-        uploadProductImages(req, res, async err => {
-            if(err instanceof multer.MulterError) {
-                if(req.files?.length > 0) {
-                    req.files.forEach(async file => {
+        uploadProductImages(req, res, async (err) => {
+            if (err instanceof multer.MulterError) {
+                if (req.files?.length > 0) {
+                    req.files.forEach(async (file) => {
                         try {
                             await unlink(file.path);
-                        }
-                        catch(err) {
+                        } catch (err) {
                             return next(new BadRequestError(err.message));
                         }
                     });
                 }
                 return next(new BadRequestError(err.message));
-            }
-            else if(err) {
-                req.files.forEach(async file => {
+            } else if (err) {
+                req.files.forEach(async (file) => {
                     try {
                         await unlink(file.path);
-                    }
-                    catch(err) {
+                    } catch (err) {
                         return next(new BadRequestError(err.message));
                     }
                 });
                 return next(new BadRequestError(err.message));
             }
-            if(req.files?.length > 0) {
-                req.body['product_images'] = [ ...req.files ];
+            if (req.files?.length > 0) {
+                req.body['product_images'] = [...req.files];
             }
             try {
                 const productModel = new ProductModel();
@@ -97,14 +91,12 @@ class ProductController {
                     status: 'success',
                     message: 'Product created successfully',
                 });
-            }
-            catch(error) {
-                if(req.files?.length > 0) {
-                    req.files.forEach(async file => {
+            } catch (error) {
+                if (req.files?.length > 0) {
+                    req.files.forEach(async (file) => {
                         try {
                             await unlink(file.path);
-                        }
-                        catch(err) {
+                        } catch (err) {
                             return next(new BadRequestError(err.message));
                         }
                     });
@@ -114,33 +106,30 @@ class ProductController {
         });
     }
     async update(req, res, next) {
-        uploadProductImages(req, res, async err => {
-            if(err instanceof multer.MulterError) {
-                if(req.files?.length > 0) {
-                    req.files.forEach(async file => {
+        uploadProductImages(req, res, async (err) => {
+            if (err instanceof multer.MulterError) {
+                if (req.files?.length > 0) {
+                    req.files.forEach(async (file) => {
                         try {
                             await unlink(file.path);
-                        }
-                        catch(err) {
+                        } catch (err) {
                             return next(new BadRequestError(err.message));
                         }
                     });
                 }
                 return next(new BadRequestError(err.message));
-            }
-            else if(err) {
-                req.files.forEach(async file => {
+            } else if (err) {
+                req.files.forEach(async (file) => {
                     try {
                         await unlink(file.path);
-                    }
-                    catch(err) {
+                    } catch (err) {
                         return next(new BadRequestError(err.message));
                     }
                 });
                 return next(new BadRequestError(err.message));
             }
-            if(req.files?.length > 0) {
-                req.body['product_images'] = [ ...req.files ];
+            if (req.files?.length > 0) {
+                req.body['product_images'] = [...req.files];
             }
             try {
                 const productModel = new ProductModel();
@@ -149,14 +138,12 @@ class ProductController {
                     status: 'success',
                     message: 'Product updated successfully',
                 });
-            }
-            catch(error) {
-                if(req.files?.length > 0) {
-                    req.files.forEach(async file => {
+            } catch (error) {
+                if (req.files?.length > 0) {
+                    req.files.forEach(async (file) => {
                         try {
                             await unlink(file.path);
-                        }
-                        catch(err) {
+                        } catch (err) {
                             return next(new BadRequestError(err.message));
                         }
                     });
@@ -173,8 +160,7 @@ class ProductController {
                 status: 'success',
                 message: 'Product deleted successfully',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

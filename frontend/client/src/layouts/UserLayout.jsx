@@ -13,7 +13,7 @@ const UserLayout = ({ children }) => {
     return (
         <div className={cx('user-layout-container')}>
             <Header />
-            <div className="container">
+            {/* <div className="container">
                 <div className={cx('breadcrumb-wrapper')}>
                     <ul className={cx('breadcrumb')}>
                         <li className={cx('breadcrumb-item')}>Trang chủ</li>
@@ -23,7 +23,7 @@ const UserLayout = ({ children }) => {
                         <li className={cx('breadcrumb-item')}>Do uong</li>
                     </ul>
                 </div>
-            </div>
+            </div> */}
             <div className={cx('container', 'user-layout-body')}>
                 <div className={cx('content-wrapper')}>
                     <div className="row">

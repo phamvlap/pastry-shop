@@ -1,39 +1,18 @@
-import Button from '~/components/Button/Button.jsx';
-import CardItem from '~/components/CardItem/CardItem.jsx';
-import CartItem from '~/components/CartItem/CartItem.jsx';
-import Form from '~/components/Form/Form.jsx';
-import FormSelect from '~/components/FormSelect/FormSelect.jsx';
-import InputGroup from '~/components/InputGroup/InputGroup.jsx';
-import InputItem from '~/components/InputItem/InputItem.jsx';
-import InputSearch from '~/components/InputSearch/InputSearch.jsx';
-import InputTextarea from '~/components/InputTextarea/InputTextarea.jsx';
-import SortBar from '~/components/SortBar/SortBar.jsx';
-import AddressItem from '~/components/AddressItem/AddressItem.jsx';
-import OrderItemList from '~/components/OrderItemList/OrderItemList.jsx';
-import OrderReview from '~/components/OrderReview/OrderReview.jsx';
-import Pagination from '~/components/Pagination/Pagination.jsx';
-import InputCheckbox from '~/components/InputCheckbox/InputCheckbox.jsx';
-import OrderItem from '~/components/OrderItem/OrderItem.jsx';
-import ReviewItem from '~/components/ReviewItem/ReviewItem.jsx';
-import ReviewForm from '~/components/ReviewForm/ReviewForm.jsx';
-
-export {
-    Button,
-    InputItem,
-    InputSearch,
-    SortBar,
-    FormSelect,
-    CardItem,
-    CartItem,
-    Form,
-    InputGroup,
-    InputTextarea,
-    AddressItem,
-    OrderItemList,
-    OrderReview,
-    Pagination,
-    InputCheckbox,
-    OrderItem,
-    ReviewItem,
-    ReviewForm,
-};
+export { default as Button } from './Button/Button.jsx';
+export { default as CardItem } from './CardItem/CardItem.jsx';
+export { default as CartItem } from './CartItem/CartItem.jsx';
+export { default as Form } from './Form/Form.jsx';
+export { default as FormSelect } from './FormSelect/FormSelect.jsx';
+export { default as InputGroup } from './InputGroup/InputGroup.jsx';
+export { default as InputItem } from './InputItem/InputItem.jsx';
+export { default as InputSearch } from './InputSearch/InputSearch.jsx';
+export { default as InputTextarea } from './InputTextarea/InputTextarea.jsx';
+export { default as SortBar } from './SortBar/SortBar.jsx';
+export { default as AddressItem } from './AddressItem/AddressItem.jsx';
+export { default as OrderItemList } from './OrderItemList/OrderItemList.jsx';
+export { default as OrderReview } from './OrderReview/OrderReview.jsx';
+export { default as Pagination } from './Pagination/Pagination.jsx';
+export { default as InputCheckbox } from './InputCheckbox/InputCheckbox.jsx';
+export { default as OrderItem } from './OrderItem/OrderItem.jsx';
+export { default as ReviewItem } from './ReviewItem/ReviewItem.jsx';
+export { default as ReviewForm } from './ReviewForm/ReviewForm.jsx';

@@ -39,10 +39,9 @@ class StatusDetailModel {
 
         const status = await statusModel.get(statusDetail.status_id);
         let implementer = {};
-        if(statusDetail.status_updated_by.toLowerCase().startsWith('staff_')) {
+        if (statusDetail.status_updated_by.toLowerCase().startsWith('staff_')) {
             implementer = await staffModel.getById(statusDetail.status_updated_by.split('_')[1]);
-        }
-        else if(statusDetail.status_updated_by.toLowerCase().startsWith('customer_')) {
+        } else if (statusDetail.status_updated_by.toLowerCase().startsWith('customer_')) {
             implementer = await customerModel.getById(statusDetail.status_updated_by.split('_')[1]);
         }
         return {
@@ -51,19 +50,23 @@ class StatusDetailModel {
             implementer: {
                 role: statusDetail.status_updated_by.toLowerCase().split('_')[0],
                 ...implementer,
-            }
-        }
+            },
+        };
     }
     // get all status of an order
     async getAll(orderId) {
-        const preparedStmt = `select * from ${this.table} where order_id = :order_id`;
+        const preparedStmt = `
+            select * 
+            from ${this.table} 
+            where order_id = :order_id
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             order_id: orderId,
         });
 
         let statusList = [];
-        if(rows.length > 0) {
-            for(const row of rows) {
+        if (rows.length > 0) {
+            for (const row of rows) {
                 const infoStatus = await this.getOneStatusDetail(row);
                 statusList.push(infoStatus);
             }
@@ -72,23 +75,37 @@ class StatusDetailModel {
     }
     // get the latest status of an order
     async getLatestStatus(orderId) {
-        const preparedStmt = `select * from ${this.table} where order_id = :order_id order by status_updated_at desc limit 1`;
+        const preparedStmt = `
+            select * 
+            from ${this.table} 
+            where order_id = :order_id 
+            order by status_updated_at desc 
+            limit 1
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             order_id: orderId,
         });
-        return (rows.length > 0) ? await this.getOneStatusDetail(rows[0]) : {};
+        return rows.length > 0 ? await this.getOneStatusDetail(rows[0]) : {};
     }
     // add new status of order
     async add(payload) {
         const { result: statusDetail, errors } = this.validateStatusDetailData(payload);
-        if(errors.length > 0) {
-            throw new Error(errors.map(error => error.msg).join(' '));
+        if (errors.length > 0) {
+            throw new Error(errors.map((error) => error.msg).join(' '));
         }
-        if(!(statusDetail.status_updated_by.toLowerCase().startsWith('staff_') || statusDetail.status_updated_by.toLowerCase().startsWith('customer_'))) {
+        if (
+            !(
+                statusDetail.status_updated_by.toLowerCase().startsWith('staff_') ||
+                statusDetail.status_updated_by.toLowerCase().startsWith('customer_')
+            )
+        ) {
             throw new Error('Format of status_updated_by: STAFF_<ID> | CUSTOMER_<ID>');
         }
-        statusDetail['status_updated_at'] = formatDateToString();        
-        const preparedStmt = `insert into ${this.table} (${this.fields.join(', ')}) values (${this.fields.map(field => `:${field}`).join(', ')})`;
+        statusDetail['status_updated_at'] = formatDateToString();
+        const preparedStmt = `
+            insert into ${this.table} (${this.fields.join(', ')})
+                values (${this.fields.map((field) => `:${field}`).join(', ')})
+        `;
         await connection.execute(preparedStmt, statusDetail);
     }
 }

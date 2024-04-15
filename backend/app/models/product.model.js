@@ -12,7 +12,21 @@ connection.config.namedPlaceholders = true;
 class ProductModel {
     constructor() {
         this.table = process.env.TABLE_PRODUCTS;
-        this.fields = ['product_name', 'product_images', 'product_stock_quantity', 'product_description', 'product_expire_date', 'category_id', 'discount_id', 'supplier_id', 'product_sold_quantity', 'product_created_at', 'product_updated_at', 'product_deleted_at', 'product_price'];
+        this.fields = [
+            'product_name',
+            'product_images',
+            'product_stock_quantity',
+            'product_description',
+            'product_expire_date',
+            'category_id',
+            'discount_id',
+            'supplier_id',
+            'product_sold_quantity',
+            'product_created_at',
+            'product_updated_at',
+            'product_deleted_at',
+            'product_price',
+        ];
         this.schema = {
             product_name: {
                 type: String,
@@ -20,7 +34,7 @@ class ProductModel {
                 min: 3,
                 slug: true,
             },
-            product_images : {
+            product_images: {
                 required: true,
             },
             product_stock_quantity: {
@@ -57,20 +71,19 @@ class ProductModel {
     validateProductData(data, exceptions = []) {
         const product = extractData(data, this.fields);
         const schema = {};
-        Object.keys(this.schema).map(key => {
-            if(!exceptions.includes(key)) {
+        Object.keys(this.schema).map((key) => {
+            if (!exceptions.includes(key)) {
                 schema[key] = this.schema[key];
             }
         });
         const validator = new Validator();
         let { result, errors } = validator.validate(product, schema);
-        if(!data.product_id) {
+        if (!data.product_id) {
             result['product_sold_quantity'] = 0;
             result['product_created_at'] = formatDateToString(new Date());
             result['product_updated_at'] = formatDateToString(new Date());
             result['product_deleted_at'] = process.env.TIME_NOT_DELETED;
-        }
-        else {
+        } else {
             result['product_updated_at'] = formatDateToString();
         }
         return { result, errors };
@@ -113,7 +126,7 @@ class ProductModel {
         priceOrder, // asc, desc
         status, // all, in-stock, out-stock
         limit,
-        offset
+        offset,
     ) {
         const parseProductName = product_name ? product_name : '';
         const parseCategoryId = category_id ? category_id : null;
@@ -122,8 +135,8 @@ class ProductModel {
         const parseCreatedAtOrder = createdAtOrder ? createdAtOrder : 'desc';
         const parsePriceOrder = priceOrder ? priceOrder : 'asc';
         const parseStatus = status ? status : 'all';
-        const parseLimit = limit ? ('' + limit) : ('' + process.env.MAX_LIMIT);
-        const parseOffset = offset ? ('' + offset) : '0';
+        const parseLimit = limit ? '' + limit : '' + process.env.MAX_LIMIT;
+        const parseOffset = offset ? '' + offset : '0';
 
         let preparedStmt = `
             select *
@@ -135,17 +148,16 @@ class ProductModel {
                 and (:discount_id is null or p.discount_id = :discount_id)
         `;
 
-        if(status === 'in-stock') {
+        if (status === 'in-stock') {
             preparedStmt += ` and p.product_stock_quantity > p.product_sold_quantity`;
-        }
-        else if(status === 'out-stock') {
+        } else if (status === 'out-stock') {
             preparedStmt += ` and p.product_stock_quantity = p.product_sold_quantity`;
         }
 
         preparedStmt += ` order by
                 p.product_created_at ${parseCreatedAtOrder}
-            limit :limit offset :offset;`;
-
+            limit :limit offset :offset;
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             product_name: `%${parseProductName}%`,
             category_id: parseCategoryId,
@@ -156,13 +168,13 @@ class ProductModel {
         });
 
         let products = [];
-        for(const row of rows) {
+        for (const row of rows) {
             const itemDetail = await this.getItemDetail(row);
             products.push(itemDetail);
         }
-        if(priceOrder) {
+        if (priceOrder) {
             products.sort((a, b) => {
-                if(priceOrder === 'asc') {
+                if (priceOrder === 'asc') {
                     return a.price.price_value - b.price.price_value;
                 }
                 return b.price.price_value - a.price.price_value;
@@ -187,40 +199,46 @@ class ProductModel {
             null,
             status,
             null,
-            null
+            null,
         );
         return products.length;
     }
     // get item by id
     async getById(id) {
-        const [rows] = await connection.execute(`
+        const [rows] = await connection.execute(
+            `
             select * from ${this.table}
             where product_id = :product_id
                 and product_deleted_at = '${process.env.TIME_NOT_DELETED}';
-        `, {
-            product_id: id
-        });
-        const product = (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
+        `,
+            {
+                product_id: id,
+            },
+        );
+        const product = rows.length > 0 ? await this.getItemDetail(rows[0]) : null;
         return product;
     }
     // get product by date
     async getByCreatedDate(date) {
-        const [rows] = await connection.execute(`
+        const [rows] = await connection.execute(
+            `
             select * from ${this.table}
             where product_created_at = :product_created_at
                 and product_deleted_at = '${process.env.TIME_NOT_DELETED}'
-        `, {
-            product_created_at: date,
-        });
-        return (rows.length > 0) ? await this.getItemDetail(rows[0]) : null;
+        `,
+            {
+                product_created_at: date,
+            },
+        );
+        return rows.length > 0 ? await this.getItemDetail(rows[0]) : null;
     }
     // create new product
     async store(data) {
         const priceModel = new PriceModel();
         const imageModel = new ImageModel();
         const { result: product, errors } = this.validateProductData(data);
-        if(errors.length > 0) {
-            throw new Error(errors.map(error => error.msg).join(' '));
+        if (errors.length > 0) {
+            throw new Error(errors.map((error) => error.msg).join(' '));
         }
         const price = {
             price_applied_date: product.product_created_at,
@@ -229,20 +247,22 @@ class ProductModel {
         delete product.product_price;
         const images = product.product_images;
         delete product.product_images;
-        
+
         const preparedStmt = `
             insert into ${this.table} (${Object.keys(product).join(', ')})
-                values (${Object.keys(product).map(key => `:${key}`).join(', ')});
+                values (${Object.keys(product)
+                    .map((key) => `:${key}`)
+                    .join(', ')});
         `;
         await connection.execute(preparedStmt, product);
-        
+
         const addedItem = await this.getByCreatedDate(product.product_created_at);
         price.product_id = addedItem.product_id;
-        
+
         await priceModel.add(price);
 
-        if(images) {
-            images.forEach(async image => {
+        if (images) {
+            images.forEach(async (image) => {
                 const imageData = {
                     image_url: image.path,
                     image_target: 'product',
@@ -258,39 +278,41 @@ class ProductModel {
         delete payload.product_images;
 
         const oldItem = await this.getById(id);
-        if(!oldItem) {
+        if (!oldItem) {
             throw new Error('Product not found.');
         }
-        let exceptions= [];
+        let exceptions = [];
         payload = Object.assign({}, payload);
-        Object.keys(this.schema).forEach(key => {
-            if(!payload.hasOwnProperty(key)) {
+        Object.keys(this.schema).forEach((key) => {
+            if (!payload.hasOwnProperty(key)) {
                 exceptions.push(key);
             }
         });
-        const { result: product, errors } = this.validateProductData({
-            ...payload,
-            product_id: id,
-        }, exceptions);
-        if(errors.length > 0) {
-            throw new Error(errors.map(error => error.msg).join(' '));
+        const { result: product, errors } = this.validateProductData(
+            {
+                ...payload,
+                product_id: id,
+            },
+            exceptions,
+        );
+        if (errors.length > 0) {
+            throw new Error(errors.map((error) => error.msg).join(' '));
         }
         let priceValue = -1;
-        if(product.product_price) {
+        if (product.product_price) {
             priceValue = product.product_price;
             delete product.product_price;
         }
-        if(images) {
+        if (images) {
             const imageModel = new ImageModel();
             const oldImages = await imageModel.getAll('product', oldItem.product_id);
-            
-            if(oldImages.length > 0) {
-                oldImages.forEach(async image => {
-                    if(fs.existsSync(image.image_url)) {
+
+            if (oldImages.length > 0) {
+                oldImages.forEach(async (image) => {
+                    if (fs.existsSync(image.image_url)) {
                         try {
                             unlink(image.image_url);
-                        }
-                        catch(error) {
+                        } catch (error) {
                             throw new Error('Failed to remove old images.');
                         }
                     }
@@ -298,7 +320,7 @@ class ProductModel {
                 });
             }
 
-            images.forEach(async image => {
+            images.forEach(async (image) => {
                 const imageItem = {
                     image_url: image.path,
                     image_target: 'product',
@@ -309,7 +331,9 @@ class ProductModel {
         }
         const preparedStmt = `
             update ${this.table}
-            set ${Object.keys(product).map(key => `${key} = :${key}`).join(', ')}
+            set ${Object.keys(product)
+                .map((key) => `${key} = :${key}`)
+                .join(', ')}
             where product_id = :product_id
                 and product_deleted_at = '${process.env.TIME_NOT_DELETED}';
         `;
@@ -317,7 +341,7 @@ class ProductModel {
             ...product,
             product_id: id,
         });
-        if(priceValue !== -1) {
+        if (priceValue !== -1) {
             const price = {
                 product_id: id,
                 price_applied_date: product.product_updated_at,
@@ -330,18 +354,21 @@ class ProductModel {
     // delete product
     async delete(id) {
         const oldItem = await this.getById(id);
-        if(!oldItem) {
+        if (!oldItem) {
             throw new Error('Product not found.');
         }
-        await connection.execute(`
+        await connection.execute(
+            `
             update ${this.table}
             set product_deleted_at = :deleted_at
             where product_id = :product_id
                 and product_deleted_at = '${process.env.TIME_NOT_DELETED}';
-        `, {
-            deleted_at: formatDateToString(),
-            product_id: id,
-        });
+        `,
+            {
+                deleted_at: formatDateToString(),
+                product_id: id,
+            },
+        );
     }
 }
 

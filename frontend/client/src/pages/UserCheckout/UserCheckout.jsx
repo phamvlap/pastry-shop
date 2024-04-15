@@ -14,7 +14,7 @@ import styles from '~/pages/UserCheckout/UserCheckout.module.scss';
 const cx = classNames.bind(styles);
 
 const UserCheckout = () => {
-    const [address, setAddress] = useState({});
+    const [address, setAddress] = useState(null);
     const [itemList, setItemList] = useState([]);
     const [subTotal, setSubTotal] = useState(0);
     const [discount, setDiscount] = useState(0);
@@ -120,22 +120,26 @@ const UserCheckout = () => {
             <div className={cx('checkout-content')}>
                 <div className={cx('checkout-receiver')}>
                     <h2 className={cx('checkout-content__title')}>Thông tin nhận hàng</h2>
-                    <div className={cx('checkout-receiver__container')}>
-                        <div className={cx('checkout-receiver__contact')}>
-                            <div className={cx('checkout-receiver__contact-name')}>
-                                <span>Họ và tên người nhận:</span>
-                                <span>{address.address_fullname}</span>
+                    {address && (
+                        <div className={cx('checkout-receiver__container')}>
+                            <div className={cx('checkout-receiver__contact')}>
+                                <div className={cx('checkout-receiver__contact-name')}>
+                                    <span>Họ và tên người nhận:</span>
+                                    <span>{address.address_fullname}</span>
+                                </div>
+                                <div className={cx('checkout-receiver__contact-phone')}>
+                                    <span>Số điện thoại:</span>
+                                    <span>{address.address_phone_number}</span>
+                                </div>
                             </div>
-                            <div className={cx('checkout-receiver__contact-phone')}>
-                                <span>Số điện thoại:</span>
-                                <span>{address.address_phone_number}</span>
+                            <div className={cx('checkout-receiver__address')}>
+                                <span>Địa chỉ:</span>
+                                <span className={cx('checkout-receiver__address-content')}>
+                                    {address.address_detail}
+                                </span>
                             </div>
                         </div>
-                        <div className={cx('checkout-receiver__address')}>
-                            <span>Địa chỉ:</span>
-                            <span className={cx('checkout-receiver__address-content')}>{address.address_detail}</span>
-                        </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className={cx('checkout-list')}>

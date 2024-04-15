@@ -11,8 +11,7 @@ class CategoryController {
                 status: 'success',
                 data: categories,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -24,8 +23,7 @@ class CategoryController {
                 status: 'success',
                 message: 'Category created successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -37,8 +35,7 @@ class CategoryController {
                 status: 'success',
                 message: 'Category updated successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -50,8 +47,7 @@ class CategoryController {
                 status: 'success',
                 message: 'Category deleted successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

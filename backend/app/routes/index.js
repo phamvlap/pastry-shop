@@ -1,27 +1,12 @@
-import categoryRoutes from './categories.route.js';
-import customerRoutes from './customers.route.js';
-import discountRoutes from './discounts.route.js';
-import orderRoutes from './orders.route.js';
-import productRoutes from './products.route.js';
-import staffRoutes from './staffs.route.js';
-import supplierRoutes from './suppliers.route.js';
-import accountRoutes from './accounts.route.js';
-import paymentMethodRoutes from './paymentMethods.route.js';
-import vnpayRoutes from './vnpay.route.js';
-import statusRoutes from './status.route.js';
-import ratingsRoutes from './ratings.route.js';
-
-export {
-    categoryRoutes,
-    customerRoutes,
-    discountRoutes,
-    orderRoutes,
-    productRoutes,
-    staffRoutes,
-    supplierRoutes,
-    accountRoutes,
-    paymentMethodRoutes,
-    vnpayRoutes,
-    statusRoutes,
-    ratingsRoutes
-};
+export { default as categoryRoutes } from './categories.route.js';
+export { default as customerRoutes } from './customers.route.js';
+export { default as discountRoutes } from './discounts.route.js';
+export { default as orderRoutes } from './orders.route.js';
+export { default as productRoutes } from './products.route.js';
+export { default as staffRoutes } from './staffs.route.js';
+export { default as supplierRoutes } from './suppliers.route.js';
+export { default as accountRoutes } from './accounts.route.js';
+export { default as paymentMethodRoutes } from './paymentMethods.route.js';
+export { default as vnpayRoutes } from './vnpay.route.js';
+export { default as statusRoutes } from './status.route.js';
+export { default as ratingsRoutes } from './ratings.route.js';

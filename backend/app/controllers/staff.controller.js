@@ -11,8 +11,7 @@ class StaffController {
                 status: 'success',
                 data: staffs,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -24,8 +23,7 @@ class StaffController {
                 status: 'success',
                 data: staff,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -37,8 +35,7 @@ class StaffController {
                 status: 'success',
                 data: staff,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -50,8 +47,7 @@ class StaffController {
                 status: 'success',
                 message: 'Staff added successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -63,8 +59,7 @@ class StaffController {
                 status: 'success',
                 message: 'Staff updated successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -74,15 +69,14 @@ class StaffController {
                 staff_password: req.body.staff_password,
                 staff_new_password: req.body.staff_new_password,
                 staff_confirm_password: req.body.staff_confirm_password,
-            }
+            };
             const staffModel = new StaffModel();
             await staffModel.changePassword(req.staff.staff_id, data);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Password changed successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -94,8 +88,7 @@ class StaffController {
                 status: 'success',
                 message: 'Staff deleted successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

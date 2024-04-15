@@ -1,0 +1,13 @@
+export { default as Home } from './Home/Home.jsx';
+export { default as Products } from './Products/Products.jsx';
+export { default as ProductDetail } from './ProductDetail/ProductDetail.jsx';
+export { default as UserProfile } from './UserProfile/UserProfile.jsx';
+export { default as UserAddress } from './UserAddress/UserAddress.jsx';
+export { default as UserAddressAdd } from './UserAddressAdd/UserAddressAdd.jsx';
+export { default as UserPassword } from './UserPassword/UserPassword.jsx';
+export { default as UserOrder } from './UserOrder/UserOrder.jsx';
+export { default as UserCart } from './UserCart/UserCart.jsx';
+export { default as UserCheckout } from './UserCheckout/UserCheckout.jsx';
+export { default as OrderDetail } from './OrderDetail/OrderDetail.jsx';
+export { default as Login } from './Login/Login.jsx';
+export { default as Register } from './Register/Register.jsx';

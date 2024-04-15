@@ -17,7 +17,7 @@ import {
     paymentMethodRoutes,
     vnpayRoutes,
     statusRoutes,
-    ratingsRoutes
+    ratingsRoutes,
 } from './routes/index.js';
 
 const app = express();
@@ -51,15 +51,14 @@ const port = process.env.PORT || 3000;
 const startServer = async () => {
     try {
         const connection = await connectDB();
-        if(connection) {
+        if (connection) {
             app.listen(port, () => {
                 console.log(`Server is running at port ${port}`);
             });
         }
-    }
-    catch(error) {
+    } catch (error) {
         console.log(error);
     }
-}
+};
 
 startServer();

@@ -6,13 +6,17 @@ class RatingController {
     async index(req, res, next) {
         try {
             const ratingModel = new RatingModel();
-            const ratings = await ratingModel.getAll();
+            const filter = {
+                rating_star_sort: req.query.rating_star_sort,
+                limit: req.query.limit,
+                offset: req.query.offset,
+            };
+            const ratings = await ratingModel.getAll(filter);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: ratings,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -24,8 +28,7 @@ class RatingController {
                 status: 'success',
                 data: rating,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -37,14 +40,13 @@ class RatingController {
                 product_id: req.body.product_id,
                 rating_content: req.body.rating_content,
                 rating_star: req.body.rating_star,
-            }
+            };
             await ratingModel.add(data);
             return res.status(StatusCodes.CREATED).json({
                 status: 'success',
                 message: 'Rating created successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 
@@ -69,6 +69,7 @@ const SortBar = ({ filter, setFilter }) => {
                     newFilter[key] = prevFilter[key];
                 }
             });
+            console.log('newFilter', newFilter);
             return newFilter;
         });
         setActiveAllButton(true);
@@ -82,8 +83,14 @@ const SortBar = ({ filter, setFilter }) => {
             }
             return option;
         });
-        console.log(options);
     };
+
+    useEffect(() => {
+        if (filter.category_id || filter.priceOrder || filter.createdAtOrder) {
+            setActiveAllButton(false);
+        }
+    }, [filter.category_id, filter.priceOrder, filter.createdAtOrder]);
+
     return (
         <div className={cx('sort-bar')}>
             <div>Sắp xếp theo:</div>
@@ -106,6 +113,7 @@ const SortBar = ({ filter, setFilter }) => {
             <div className={cx('sort-select')}>
                 <FormSelect
                     options={options}
+                    value={filter.priceOrder || 'default'}
                     className={cx('sort-select__order')}
                     onChange={(event) => handleChangOrderPrice(event)}
                 />

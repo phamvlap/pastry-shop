@@ -11,8 +11,7 @@ class AddressController {
                 status: 'success',
                 data: addresses,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -22,14 +21,13 @@ class AddressController {
             const data = {
                 ...req.body,
                 customer_id: req.customer.customer_id,
-            }
+            };
             await addressModel.store(data);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Address is added successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -41,8 +39,7 @@ class AddressController {
                 status: 'success',
                 message: 'Address is updated successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -54,8 +51,7 @@ class AddressController {
                 status: 'success',
                 data: address,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -67,8 +63,7 @@ class AddressController {
                 status: 'success',
                 message: 'Address is set default successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -80,8 +75,7 @@ class AddressController {
                 status: 'success',
                 message: 'Address is deleted successfully.',
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

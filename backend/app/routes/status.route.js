@@ -5,5 +5,4 @@ const router = express.Router();
 
 router.get('/', StatusController.index);
 
-
 export default router;

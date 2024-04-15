@@ -11,8 +11,7 @@ class PaymentController {
                 status: 'success',
                 data: paymentMethods,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }
@@ -24,8 +23,7 @@ class PaymentController {
                 status: 'success',
                 data: paymentMethod,
             });
-        }
-        catch(error) {
+        } catch (error) {
             next(new BadRequestError(error.message));
         }
     }

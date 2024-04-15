@@ -41,13 +41,13 @@ class StaffModel {
         const staff = extractData(data, this.fields);
         const validator = new Validator();
         let schema = {};
-        Object.keys(this.schema).map(key => {
-            if(!exceptions.includes(key)) {
+        Object.keys(this.schema).map((key) => {
+            if (!exceptions.includes(key)) {
                 schema[key] = this.schema[key];
             }
         });
-        let { result, errors } = validator.validate(staff, schema); 
-        return { result, errors };   
+        let { result, errors } = validator.validate(staff, schema);
+        return { result, errors };
     }
     // get all
     async getAll(staff_name, staff_address, staff_role, staffNameOrder, limit, offset) {
@@ -55,9 +55,9 @@ class StaffModel {
         const parseStaffAddress = staff_address ? staff_address.trim() : null;
         const parseStaffRole = staff_role ? staff_role.trim() : null;
         const parseStaffNameOrder = staffNameOrder ? staffNameOrder.trim() : 'asc';
-        const parseLimit = limit ? ('' + limit) : ('' + process.env.MAX_LIMIT);
-        const parseOffset = offset ? ('' + offset) : '0';
-        
+        const parseLimit = limit ? '' + limit : '' + process.env.MAX_LIMIT;
+        const parseOffset = offset ? '' + offset : '0';
+
         let preparedStmt = `
             select *
             from ${this.table}
@@ -75,7 +75,7 @@ class StaffModel {
             limit: parseLimit,
             offset: parseOffset,
         });
-        return (rows.length > 0) ? rows : [];
+        return rows.length > 0 ? rows : [];
     }
     // get by id
     async getById(id) {
@@ -87,7 +87,7 @@ class StaffModel {
         const [rows] = await connection.execute(preparedStmt, {
             staff_id: id,
         });
-        return (rows.length > 0) ? rows[0] : null;
+        return rows.length > 0 ? rows[0] : null;
     }
     // get all properties of staff by email
     async getByEmail(email) {
@@ -99,13 +99,13 @@ class StaffModel {
         const [rows] = await connection.execute(preparedStmt, {
             staff_email: email,
         });
-        return (rows.length > 0) ? rows[0] : null;
+        return rows.length > 0 ? rows[0] : null;
     }
     // store staff data
     async store(data) {
         const { result: staff, errors } = this.validateStaffData(data);
-        if(errors.length > 0) {
-            const errorMessage = errors.map(error => error.msg).join(' ');
+        if (errors.length > 0) {
+            const errorMessage = errors.map((error) => error.msg).join(' ');
             throw new Error(errorMessage);
         }
 
@@ -123,7 +123,9 @@ class StaffModel {
 
         const preparedStmt = `
             insert into ${this.table} (${Object.keys(staff).join(', ')})
-                values (${Object.keys(staff).map(key => `:${key}`).join(', ')})
+                values (${Object.keys(staff)
+                    .map((key) => `:${key}`)
+                    .join(', ')})
         `;
         await connection.execute(preparedStmt, staff);
     }
@@ -131,38 +133,40 @@ class StaffModel {
     // update
     async update(id, payload) {
         const oldStaff = await this.getById(id);
-        if(!oldStaff) {
+        if (!oldStaff) {
             throw new Error('Staff not exists.');
         }
-        let exceptions= [];
-        Object.keys(this.schema).forEach(key => {
-            if(!payload.hasOwnProperty(key)) {
+        let exceptions = [];
+        Object.keys(this.schema).forEach((key) => {
+            if (!payload.hasOwnProperty(key)) {
                 exceptions.push(key);
             }
         });
         const data = {
             ...payload,
             staff_id: id,
-        }
+        };
         const { result: staff, errors } = this.validateStaffData(data, exceptions);
-        if(errors.length > 0) {
-            const errorMessage = errors.map(error => error.msg).join(' ');
+        if (errors.length > 0) {
+            const errorMessage = errors.map((error) => error.msg).join(' ');
             throw new Error(errorMessage);
         }
         const preparedStmt = `
             update ${this.table}
-            set ${Object.keys(staff).map(key => `${key} = :${key}`).join(', ')}
+            set ${Object.keys(staff)
+                .map((key) => `${key} = :${key}`)
+                .join(', ')}
             where staff_id = :staff_id;
         `;
         await connection.execute(preparedStmt, {
-                ...staff,
-                staff_id: id,
-            });
+            ...staff,
+            staff_id: id,
+        });
     }
     // delete
     async delete(id) {
         const oldStaff = await this.getById(id);
-        if(!oldStaff) {
+        if (!oldStaff) {
             throw new Error('Staff not exists.');
         }
         const acocuntModel = new AccountModel();

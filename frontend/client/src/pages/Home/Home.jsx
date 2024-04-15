@@ -1,153 +1,154 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar as faFilledStar, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { faStar } from '@fortawesome/free-regular-svg-icons';
 
-import { SortBar, CardItem, Pagination } from '~/components/index.js';
-import { ProductService } from '~/services/index.js';
-import Sidebar from '~/layouts/partials/Sidebar.jsx';
+import { CardItem } from '~/components/index.js';
+import Header from '~/layouts/partials/Header.jsx';
+import Footer from '~/layouts/partials/Footer.jsx';
+import ProductActions from '~/utils/productActions.js';
+import RatingActions from '~/utils/ratingActions.js';
 
-import styles from '~/pages/Home/Home.module.scss';
+import styles from './Home.module.scss';
 
 const cx = classNames.bind(styles);
 
-const filterOptions = [
-    'product_name',
-    'category_id',
-    'supplier_id',
-    'discount_id',
-    'createdAtOrder',
-    'priceOrder',
-    'status',
-    'limit',
-    'offset',
-];
-
 const Home = () => {
-    const [totalRecords, setTotalRecords] = useState(0);
-    const [productList, setProductList] = useState([]);
-    const [totalPages, setTotalPages] = useState(null);
-    const [recordOffset, setRecordOffset] = useState(null);
-    const [recordsPerPage, setRecordsPerPage] = useState(Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE));
-    const [currentPage, setCurrentPage] = useState(1);
-    const [filter, setFilter] = useState({});
+    const [productList, setProductList] = useState(null);
+    const [ratingList, setRatingList] = useState(null);
+    const [currentReview, setCurrentReview] = useState(0);
 
-    const productService = new ProductService();
-    const [searchParams, setSearchParams] = useSearchParams();
-
-    const fetchProductData = async (options) => {
-        let filter = {};
-        let response = null;
-        for (const key of filterOptions) {
-            if (options[key]) {
-                filter[key] = options[key];
+    const fetchData = async () => {
+        try {
+            let response = await ProductActions.getAll({
+                createdAtOrder: 'desc',
+                limit: 4,
+            });
+            let data = [];
+            if (response.status === 'success') {
+                for (const row of response.data) {
+                    data.push({
+                        product_id: row.product_id,
+                        product_name: row.product_name,
+                        product_images: row.images.map((image) => {
+                            return {
+                                image_id: image.image_id,
+                                image_url: `${import.meta.env.VITE_UPLOADED_DIR}${
+                                    image.image_url.split('/uploads/')[1]
+                                }`,
+                            };
+                        }),
+                        product_stock_quantity: row.product_stock_quantity,
+                        product_sold_quantity: row.product_sold_quantity,
+                        product_price: row.price.price_value,
+                        product_category: row.category,
+                        product_discount: row.discount,
+                        product_ratings: row.ratings,
+                    });
+                }
+                setProductList(data);
             }
-        }
-        if (filter.limit && !filter.offset) {
-            filter.offset = 0;
-        }
-        response = await productService.getCount(filter);
-        if (response.status === 'success') {
-            setTotalRecords(response.data);
-            setTotalPages(
-                Math.ceil(response.data / (filter.limit || Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE))),
-            );
-        }
-        response = await productService.getAll(filter);
-        let data = [];
-        if (response.status === 'success') {
-            for (const row of response.data) {
-                data.push({
-                    product_id: row.product_id,
-                    product_name: row.product_name,
-                    product_images: row.images.map((image) => {
-                        return {
-                            image_id: image.image_id,
-                            image_url: `${import.meta.env.VITE_UPLOADED_DIR}${image.image_url.split('/uploads/')[1]}`,
-                        };
-                    }),
-                    product_stock_quantity: row.product_stock_quantity,
-                    product_sold_quantity: row.product_sold_quantity,
-                    product_price: row.price.price_value,
-                    product_category: row.category,
-                    product_discount: row.discount,
-                    product_ratings: row.ratings,
-                });
+            response = await RatingActions.getAll({
+                rating_star_sort: 'desc',
+                limit: 10,
+            });
+            if (response.status === 'success') {
+                setRatingList(response.data);
             }
-            setProductList(data);
+        } catch (error) {
+            setProductList([]);
+            setRatingList([]);
         }
+    };
+    const handlePrevReview = (event) => {
+        event.preventDefault();
+        setCurrentReview((currentReview - 1 + ratingList.length) % ratingList.length);
+    };
+    const handleNextReview = (event) => {
+        event.preventDefault();
+        setCurrentReview((currentReview + 1) % ratingList.length);
     };
 
     useEffect(() => {
-        const getTotalProducts = async () => {
-            const response = await productService.getCount({});
-            setTotalRecords(response.data);
-            setTotalPages(Math.ceil(response.data / recordsPerPage));
-            setCurrentPage(1);
-        };
-        getTotalProducts();
+        fetchData();
     }, []);
-
-    useEffect(() => {
-        fetchProductData(filter);
-        setTotalPages(Math.ceil(totalRecords / recordsPerPage));
-        setRecordOffset((currentPage - 1) * recordsPerPage);
-        setSearchParams({
-            ...filter,
-        });
-    }, [filter, currentPage, recordsPerPage, recordOffset]);
 
     return (
         <div>
-            <div className="container">
-                <div className={cx('breadcrumb-wrapper')}>
-                    <ul className={cx('breadcrumb')}>
-                        <li className={cx('breadcrumb-item')}>Trang chủ</li>
-                        <span className={cx('breadcrumb-seperate')}>/</span>
-                        <li className={cx('breadcrumb-item')}>Danh muc</li>
-                        <span className={cx('breadcrumb-seperate')}>/</span>
-                        <li className={cx('breadcrumb-item')}>Do uong</li>
-                    </ul>
+            <Header />
+            <div className={cx('home-banner')}>
+                <img src="./src/assets/images/banner.jpg" alt="Banner" className={cx('home-banner__image')} />
+                <div className={cx('home-banner__link')}>
+                    <Link to="/products" className={cx('home-banner__link-item')}>
+                        Bắt đầu khám phá
+                    </Link>
+                    <Link to="/register" className={cx('home-banner__link-item')}>
+                        Đăng ký ngay
+                    </Link>
                 </div>
             </div>
             <div className="container">
-                <div className={cx('content-wrapper')}>
-                    <div className="row">
-                        <div className="col-md-3">
-                            <Sidebar setFilter={setFilter} />
-                        </div>
-                        <div className="col-md-9">
-                            <div className={cx('container')}>
-                                <SortBar filter={filter} setFilter={setFilter} />
-                                <div className={cx('products-list')}>
-                                    <h2 className={cx('list-title')}>Dành cho bạn</h2>
-                                    <div className={cx('list-container')}>
-                                        <div className="row">
-                                            {productList.map((product) => {
-                                                return (
-                                                    <div className="col-3" key={product.product_id}>
-                                                        <CardItem product={product} />
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
+                <div className={cx('home-new')}>
+                    <h2 className={cx('home-title')}>Sản phẩm mới</h2>
+                    <div className={cx('home-new__products')}>
+                        {productList &&
+                            productList.map((product) => {
+                                return <CardItem key={product.product_id} product={product} />;
+                            })}
+                    </div>
+                    <p className={cx('home-new__link')}>
+                        <Link to="/products">Xem tất cả</Link>
+                    </p>
+                </div>
+                <div className={cx('home-review')}>
+                    <h2 className={cx('home-title')}>Đánh giá của khách hàng</h2>
+                    <div className={cx('home-review__content')}>
+                        {ratingList && (
+                            <div className={cx('review-item')}>
+                                <div className={cx('review-item__content')}>
+                                    &quot;
+                                    {ratingList[currentReview].rating_content}
+                                    &quot;
                                 </div>
-                                <div className={cx('products-pagination')}>
-                                    <Pagination
-                                        totalPages={totalPages}
-                                        currentPage={currentPage}
-                                        setCurrentPage={setCurrentPage}
-                                        recordsPerPage={recordsPerPage}
-                                        setRecordsPerPage={setRecordsPerPage}
-                                        recordOffset={recordOffset}
-                                        setRecordsOffset={setRecordOffset}
-                                    />
+                                <div className={cx('review-item__star')}>
+                                    {Array.from(
+                                        {
+                                            length: 5,
+                                        },
+                                        (_, index) => {
+                                            return (
+                                                <FontAwesomeIcon
+                                                    key={index}
+                                                    icon={
+                                                        index < ratingList[currentReview].rating_star
+                                                            ? faFilledStar
+                                                            : faStar
+                                                    }
+                                                />
+                                            );
+                                        },
+                                    )}
+                                </div>
+                                <div className={cx('review-item__customer')}>
+                                    <span className={cx('review-item__customer-label')}>Khách hàng -</span>
+                                    <span className={cx('review-item__customer-name')}>
+                                        {ratingList[currentReview].customer.customer_name}
+                                    </span>
                                 </div>
                             </div>
-                        </div>
+                        )}
+                        <button className={cx('review-btn__left')} onClick={(event) => handlePrevReview(event)}>
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                        </button>
+                        <button className={cx('review-btn__right')} onClick={(event) => handleNextReview(event)}>
+                            <FontAwesomeIcon icon={faChevronRight} />
+                        </button>
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

@@ -10,9 +10,9 @@ const cx = classNames.bind(styles);
 
 const EmptyLayout = ({ children }) => {
     return (
-        <div>
+        <div className={cx('empty-layout-container')}>
             <Header />
-            <div className="container">
+            <div className={cx('container', 'empty-layout-children')}>
                 <div className={cx('wrapper')}>{children}</div>
             </div>
             <Footer />

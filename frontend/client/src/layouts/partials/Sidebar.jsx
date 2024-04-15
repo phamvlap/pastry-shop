@@ -10,8 +10,8 @@ import styles from '~/layouts/Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
-const Sidebar = ({ setFilter }) => {
-    const [active, setActive] = useState(-1);
+const Sidebar = ({ filter, setFilter }) => {
+    const [active, setActive] = useState(filter.category_id);
     const [cateogries, setCategories] = useState([]);
 
     const handleChangeCategory = (id) => {
@@ -32,6 +32,9 @@ const Sidebar = ({ setFilter }) => {
         };
         fetchCategories();
     }, []);
+    useEffect(() => {
+        setActive(filter.category_id);
+    }, [filter.category_id]);
 
     return (
         <div className={cx('sidebar-wrapper')}>
@@ -62,6 +65,7 @@ const Sidebar = ({ setFilter }) => {
 };
 
 Sidebar.propTypes = {
+    filter: PropTypes.object.isRequired,
     setFilter: PropTypes.func.isRequired,
 };
 

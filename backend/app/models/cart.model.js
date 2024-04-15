@@ -34,12 +34,17 @@ class CartModel {
     }
     // get one item from cart
     async getOneFromCart(customerId, itemId) {
-        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and product_id = :product_id`;
+        const preparedStmt = `
+            select *
+            from ${this.table}
+            where customer_id = :customer_id
+            and product_id = :product_id
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: customerId,
             product_id: itemId,
         });
-        return (rows.length > 0) ? rows[0] : null;
+        return rows.length > 0 ? rows[0] : null;
     }
     // get info of item in cart
     async getInfoCartItem(cartItem) {
@@ -54,22 +59,30 @@ class CartModel {
     // get all products in cart of customer
     async get(customerId, isSelected) {
         let rows = [];
-        if(!isSelected) {
-            const preparedStmt = `select * from ${this.table} where customer_id = :customer_id`;
+        if (!isSelected) {
+            const preparedStmt = `
+                select *
+                from ${this.table}
+                where customer_id = :customer_id
+            `;
             [rows] = await connection.execute(preparedStmt, {
                 customer_id: customerId,
             });
-
         }
-        if(isSelected) {
-            const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and cart_is_selected = 1`;
+        if (isSelected) {
+            const preparedStmt = `
+                select *
+                from ${this.table}
+                where customer_id = :customer_id
+                    and cart_is_selected = 1
+            `;
             [rows] = await connection.execute(preparedStmt, {
                 customer_id: customerId,
             });
         }
         let products = [];
-        if(rows.length > 0) {
-            for(const row of rows) {
+        if (rows.length > 0) {
+            for (const row of rows) {
                 const item = await this.getInfoCartItem(row);
                 products.push(item);
             }
@@ -78,13 +91,18 @@ class CartModel {
     }
     // get all selected products in cart
     async getSelectedItems(customerId) {
-        const preparedStmt = `select * from ${this.table} where customer_id = :customer_id and cart_is_selected = 1`;
+        const preparedStmt = `
+            select *
+            from ${this.table}
+            where customer_id = :customer_id
+                and cart_is_selected = 1
+        `;
         const [rows] = await connection.execute(preparedStmt, {
             customer_id: customerId,
         });
         let products = [];
-        if(rows.length > 0) {
-            for(const row of rows) {
+        if (rows.length > 0) {
+            for (const row of rows) {
                 const item = await this.getInfoCartItem(row);
                 products.push(item);
             }
@@ -94,36 +112,37 @@ class CartModel {
     // add product to cart
     async add(data) {
         const { result: cart, errors } = this.validateCartData(data);
-        if(errors.length > 0) {
-            const errorMessage = errors.map(error => error.msg).join(' ');
+        if (errors.length > 0) {
+            const errorMessage = errors.map((error) => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        if(!cart.cart_quantity) {
+        if (!cart.cart_quantity) {
             throw new Error('Item quantity is required.');
         }
         const oldItem = await this.getOneFromCart(cart.customer_id, cart.product_id);
-        if(oldItem) {
+        if (oldItem) {
             cart.cart_quantity += oldItem.cart_quantity;
             await this.update(cart);
-        }
-        else {
+        } else {
             cart['cart_is_selected'] = 0;
-            const preparedStmt = `insert into ${this.table} (${Object.keys(cart).map(key => `${key}`).join(', ')}) values (${Object.keys(cart).map(key => `:${key}`)})`;
+            const preparedStmt = `insert into ${this.table} (${Object.keys(cart)
+                .map((key) => `${key}`)
+                .join(', ')}) values (${Object.keys(cart).map((key) => `:${key}`)})`;
             await connection.execute(preparedStmt, cart);
         }
     }
     // update product quantity in cart
     async update(data) {
         const { result: cart, errors } = this.validateCartData(data);
-        if(errors.length > 0) {
-            const errorMessage = errors.map(error => error.msg).join(' ');
+        if (errors.length > 0) {
+            const errorMessage = errors.map((error) => error.msg).join(' ');
             throw new Error(errorMessage);
         }
-        if(!(cart.cart_quantity || cart.cart_is_selected)) {
+        if (!(cart.cart_quantity || cart.cart_is_selected)) {
             throw new Error('Both cart quantity and status are empty.');
         }
         const oldItem = await this.getOneFromCart(cart.customer_id, cart.product_id);
-        if(!oldItem) {
+        if (!oldItem) {
             await this.add(cart);
         }
         const updatedContent = {
@@ -131,7 +150,9 @@ class CartModel {
         };
         const preparedStmt = `
             update ${this.table}
-            set ${Object.keys(updatedContent).map(key => `${key} = :${key}`).join(', ')}
+            set ${Object.keys(updatedContent)
+                .map((key) => `${key} = :${key}`)
+                .join(', ')}
             where customer_id = :customer_id
                 and product_id = :product_id
         `;
@@ -140,10 +161,14 @@ class CartModel {
     // delete
     async delete(customerId, itemId) {
         const cartItem = await this.getOneFromCart(customerId, itemId);
-        if(!cartItem) {
+        if (!cartItem) {
             throw new Error('Cart item not found.');
-        }    
-        const preparedStmt = `delete from ${this.table} where customer_id = :customer_id and product_id = :product_id`;
+        }
+        const preparedStmt = `
+            delete from ${this.table}
+            where customer_id = :customer_id
+                and product_id = :product_id
+        `;
         await connection.execute(preparedStmt, {
             customer_id: customerId,
             product_id: itemId,

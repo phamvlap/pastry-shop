@@ -37,8 +37,8 @@ class OrderDetailModel {
         });
         const productModel = new ProductModel();
         let items = [];
-        if(rows.length > 0) {
-            for(const row of rows) {
+        if (rows.length > 0) {
+            for (const row of rows) {
                 const item = await productModel.getById(row.product_id);
                 const preparedStmt = `
                     select p.*
@@ -55,7 +55,7 @@ class OrderDetailModel {
                     order_id: orderId,
                 });
                 let price = {};
-                if(rows.length > 0) {
+                if (rows.length > 0) {
                     Object.assign(price, rows[0]);
                 }
 
@@ -73,17 +73,20 @@ class OrderDetailModel {
     // add product to order
     async add(orderId = '', productId = '', productQuantity = '') {
         const validator = new Validator();
-        const { result: orderDetail, errors } = validator.validate({
-            order_id: orderId,
-            product_id: productId,
-            product_quantity: productQuantity,
-        }, this.schema);
-        if(errors.length > 0) {
-            throw new Error(errors.map(error => error.msg).join(' '));
+        const { result: orderDetail, errors } = validator.validate(
+            {
+                order_id: orderId,
+                product_id: productId,
+                product_quantity: productQuantity,
+            },
+            this.schema,
+        );
+        if (errors.length > 0) {
+            throw new Error(errors.map((error) => error.msg).join(' '));
         }
         const preparedStmt = `
             insert into ${this.table} (${this.fields.join(', ')})
-                values (${this.fields.map(field => `:${field}`).join(', ')});
+                values (${this.fields.map((field) => `:${field}`).join(', ')});
         `;
         await connection.execute(preparedStmt, orderDetail);
     }

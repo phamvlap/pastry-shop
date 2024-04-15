@@ -15,14 +15,17 @@ class StatusModel {
         return rows;
     }
     async get(id) {
-        const [rows] = await connection.execute(`
+        const [rows] = await connection.execute(
+            `
             select *
             from ${this.table}
             where status_id = :status_id
-        `, {
-            status_id: id,
-        });
-        return (rows.length > 0) ? rows[0] : null;
+        `,
+            {
+                status_id: id,
+            },
+        );
+        return rows.length > 0 ? rows[0] : null;
     }
 }
 
