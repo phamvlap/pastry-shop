@@ -12,6 +12,7 @@ const routes = {
     userCart: '/user/cart',
     userCheckout: '/user/checkout',
     orderDetail: '/user/order/:id',
+    notFound: '*',
 };
 
 export default routes;

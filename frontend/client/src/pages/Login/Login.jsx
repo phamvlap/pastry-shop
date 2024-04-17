@@ -3,7 +3,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { Form, InputGroup } from '~/components/index.js';
-import styles from '~/pages/Login/Login.module.scss';
+import styles from './Login.module.scss';
 
 import { UserContext } from '~/contexts/UserContext.jsx';
 import Validator from '~/utils/validator.js';
@@ -73,7 +73,6 @@ const Login = () => {
                 buttons={[
                     {
                         type: 'primary',
-                        onClick: () => {},
                         name: 'Đăng nhập',
                     },
                 ]}

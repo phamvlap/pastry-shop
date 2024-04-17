@@ -1,0 +1,20 @@
+.not-found-wrapper {
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .title {
+        padding: 8px;
+    }
+    .description {
+        padding: 8px;
+        .home-link {
+            color: var(--first-level-color);
+            font-weight: bold;
+            &:hover {
+                opacity: 0.9;
+            }
+        }
+    }
+}

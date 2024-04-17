@@ -1,10 +1,12 @@
 // layouts
 import UserLayout from '~/layouts/UserLayout.jsx';
-import EmptyLayout from '~/layouts/EmptyLayout.jsx';
+import MainLayout from '~/layouts/MainLayout.jsx';
 
 // pages
 import {
     Home,
+    Login,
+    Register,
     Products,
     ProductDetail,
     UserProfile,
@@ -15,8 +17,7 @@ import {
     UserCart,
     UserCheckout,
     OrderDetail,
-    Login,
-    Register,
+    NotFound,
 } from '~/pages/index.js';
 
 import routesName from '~/config/routes.js';
@@ -29,62 +30,75 @@ const routes = [
     {
         path: routesName.login,
         page: Login,
-        layout: EmptyLayout,
+        layout: MainLayout,
     },
     {
         path: routesName.register,
         page: Register,
-        layout: EmptyLayout,
+        layout: MainLayout,
     },
     {
         path: routesName.products,
         page: Products,
-        layout: EmptyLayout,
+        layout: MainLayout,
     },
     {
         path: routesName.productDetail,
         page: ProductDetail,
-        layout: EmptyLayout,
+        layout: MainLayout,
     },
     {
         path: routesName.userProfile,
         page: UserProfile,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.userAddress,
         page: UserAddress,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.userAddressAdd,
         page: UserAddressAdd,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.userPassword,
         page: UserPassword,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.userOrder,
         page: UserOrder,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.userCart,
         page: UserCart,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.userCheckout,
         page: UserCheckout,
         layout: UserLayout,
+        protected: true,
     },
     {
         path: routesName.orderDetail,
         page: OrderDetail,
         layout: UserLayout,
+        protected: true,
+    },
+    {
+        path: routesName.notFound,
+        page: NotFound,
+        layout: MainLayout,
     },
 ];
 

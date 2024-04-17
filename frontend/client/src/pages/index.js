@@ -11,3 +11,4 @@ export { default as UserCheckout } from './UserCheckout/UserCheckout.jsx';
 export { default as OrderDetail } from './OrderDetail/OrderDetail.jsx';
 export { default as Login } from './Login/Login.jsx';
 export { default as Register } from './Register/Register.jsx';
+export { default as NotFound } from './NotFound/NotFound.jsx';
