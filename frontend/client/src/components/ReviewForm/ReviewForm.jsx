@@ -1,22 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as faFilledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar } from '@fortawesome/free-regular-svg-icons';
+import { toast } from 'react-toastify';
 
 import { Button, InputGroup } from '~/components/index.js';
+import { UserContext } from '~/contexts/UserContext.jsx';
 import RatingActions from '~/utils/ratingActions.js';
 
-import styles from '~/components/ReviewForm/ReviewForm.module.scss';
+import styles from './ReviewForm.module.scss';
 
 const cx = classNames.bind(styles);
 
-const ReviewForm = ({ item }) => {
+const ReviewForm = ({ item, setIsAddedReview }) => {
     const [form, setForm] = useState({});
     const [errors, setErrors] = useState({});
     const [star, setStar] = useState(0);
     const [starIcons, setStarIcons] = useState([]);
+
+    const { user } = useContext(UserContext);
 
     const handleChange = (event) => {
         setForm({
@@ -42,12 +46,19 @@ const ReviewForm = ({ item }) => {
             });
             return;
         }
+        if (!user) {
+            toast.error('Vui lòng đăng nhập để đánh giá sản phẩm');
+            return;
+        }
         const data = {
             product_id: item.product_id,
             rating_star: star,
             rating_content: form.rating_content,
         };
         await RatingActions.addRating(data);
+        setIsAddedReview(true);
+        setForm({});
+        setStar(0);
     };
     useEffect(() => {
         let stars = [];
@@ -90,8 +101,9 @@ const ReviewForm = ({ item }) => {
     );
 };
 
-PropTypes.ReviewForm = {
+ReviewForm.propTypes = {
     item: PropTypes.object,
+    setIsAddedReview: PropTypes.func,
 };
 
 export default ReviewForm;

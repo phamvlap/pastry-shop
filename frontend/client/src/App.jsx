@@ -1,11 +1,14 @@
-import { Fragment } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Fragment, useContext } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
 // routes
 import routes from '~/routes/routes.js';
-import ProtectedRoute from '~/routes/ProtectedRoute.jsx';
+import SessionManager from './SessionManger.jsx';
+import { UserContext } from '~/contexts/UserContext.jsx';
 
 const App = () => {
+    const { isLogged } = useContext(UserContext);
+
     return (
         <Router>
             <Routes>
@@ -14,10 +17,27 @@ const App = () => {
                     const Layout = layout || Fragment;
                     const Page = page;
 
-                    if (route.protected) {
+                    if (isLogged) {
                         return (
-                            <Route key={index} element={<ProtectedRoute />}>
+                            <Route
+                                key={index}
+                                path={path}
+                                element={
+                                    <SessionManager>
+                                        <Layout>
+                                            <Page />
+                                        </Layout>
+                                    </SessionManager>
+                                }
+                            />
+                        );
+                    } else {
+                        if (route.protected) {
+                            return <Route key={index} path={path} element={<Navigate to="/login" />}></Route>;
+                        } else {
+                            return (
                                 <Route
+                                    key={index}
                                     path={path}
                                     element={
                                         <Layout>
@@ -25,20 +45,8 @@ const App = () => {
                                         </Layout>
                                     }
                                 />
-                            </Route>
-                        );
-                    } else {
-                        return (
-                            <Route
-                                key={index}
-                                path={path}
-                                element={
-                                    <Layout>
-                                        <Page />
-                                    </Layout>
-                                }
-                            />
-                        );
+                            );
+                        }
                     }
                 })}
             </Routes>

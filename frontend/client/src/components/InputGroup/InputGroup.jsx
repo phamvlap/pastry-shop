@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import styles from '~/components/InputGroup/InputGroup.module.scss';
-
 import { FormSelect, InputTextarea, InputItem, InputCheckbox } from '~/components/index.js';
+
+import styles from './InputGroup.module.scss';
 
 const cx = classNames.bind(styles);
 

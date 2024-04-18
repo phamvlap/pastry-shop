@@ -34,9 +34,18 @@ class CartActions {
         await customerService.updateCart(itemId, data);
     }
 
-    static removeItem(itemId) {
+    static async removeItem(itemId) {
         const customerService = new CustomerService(configApi);
-        customerService.deleteCart(itemId);
+        await customerService.deleteCart(itemId);
+    }
+
+    static async clearCart() {
+        const response = await this.getCart();
+        if (response.status === 'success') {
+            for (const item of response.data) {
+                await this.removeItem(item.detail.product_id);
+            }
+        }
     }
 }
 

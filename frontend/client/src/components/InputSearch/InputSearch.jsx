@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import styles from '~/components/InputSearch/InputSearch.module.scss';
+import styles from './InputSearch.module.scss';
 
 const cx = classNames.bind(styles);
 

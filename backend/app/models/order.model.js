@@ -164,19 +164,43 @@ class OrderModel {
         }
         const addressTable = process.env.TABLE_ADDRESSES;
         const statusDetailsTable = process.env.TABLE_STATUS_DETAILS;
-        const preparedStmt = `
-            select *
-            from ${this.table} join ${addressTable}
-                on ${this.table}.address_id = ${addressTable}.address_id
-            join ${statusDetailsTable}
-                on ${this.table}.order_id = ${statusDetailsTable}.order_id
-            where ${addressTable}.customer_id = :customer_id
-                and (:order_status_id is null or ${statusDetailsTable}.status_id = :order_status_id);
-        `;
-        const [rows] = await connection.execute(preparedStmt, {
-            customer_id: customerId,
-            order_status_id: orderStatusId,
-        });
+
+        let rows = [];
+        if(!orderStatusId) {
+            let preparedStmt = `
+                select *
+                from ${this.table} join ${addressTable}
+                    on ${this.table}.address_id = ${addressTable}.address_id
+                where ${addressTable}.customer_id = :customer_id
+            `;
+            [rows] = await connection.execute(preparedStmt, {
+                customer_id: customerId,
+                order_status_id: orderStatusId,
+            });
+        }
+        else {
+            let preparedStmt = `
+                select *
+                from ${this.table} join ${addressTable}
+                    on ${this.table}.address_id = ${addressTable}.address_id
+                where ${addressTable}.customer_id = :customer_id
+                    and ${this.table}.order_id in (
+                        select sd.order_id
+                        from ${statusDetailsTable} as sd join (
+                                select order_id, max(status_updated_at) as status_updated_at
+                                from ${statusDetailsTable}
+                                group by order_id
+                            ) as tmp
+                                on sd.status_updated_at = tmp.status_updated_at
+                        where sd.status_id = :order_status_id
+                    );
+
+            `;
+            [rows] = await connection.execute(preparedStmt, {
+                customer_id: customerId,
+                order_status_id: orderStatusId,
+            });
+        }
         const orders = [];
         if (rows.length > 0) {
             for (const row of rows) {

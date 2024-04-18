@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import classNames from 'classnames/bind';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
-import { Form, InputGroup } from '~/components/index.js';
+import { Form, InputGroup, Modal } from '~/components/index.js';
 import addressRules from '~/config/rules/addressRules.js';
 import Validator from '~/utils/validator.js';
 import addressActions from '~/utils/addressActions.js';
 
-import styles from '~/pages/UserAddressAdd/UserAddressAdd.module.scss';
+import styles from './UserAddressAdd.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -19,6 +20,8 @@ const UserAddressAdd = () => {
     const validator = new Validator(addressRules);
     const navigate = useNavigate();
     const location = useLocation();
+    const openBtnRef = useRef(null);
+    const closeBtnRef = useRef(null);
 
     const handleOnChange = (event) => {
         if (event.target.type === 'checkbox') {
@@ -60,10 +63,26 @@ const UserAddressAdd = () => {
             if (response.status !== 'success') {
                 throw new Error('Invalid credentials');
             }
-            navigate('/user/address');
+            const message = `${isUpdating ? 'Cập nhật' : 'Thêm mới'} địa chỉ thành công`;
+            const duration = 3000;
+            toast.success(message, {
+                autoClose: duration,
+                onClose: () => {
+                    navigate('/user/address');
+                },
+            });
         } catch (error) {
-            console.log(error);
+            const message = error.response?.data?.message || 'Có lỗi xảy ra';
+            toast.error(message);
         }
+    };
+    const confirmCancel = (event) => {
+        event.preventDefault();
+        openBtnRef.current.click();
+    };
+    const cancelUpdateAddress = () => {
+        closeBtnRef.current.click();
+        navigate('/user/address');
     };
     useEffect(() => {
         if (location.state) {
@@ -81,6 +100,11 @@ const UserAddressAdd = () => {
                 <div className={cx('address-add-form')}>
                     <Form
                         buttons={[
+                            {
+                                type: 'secondary',
+                                name: 'Hủy',
+                                onClick: (event) => confirmCancel(event),
+                            },
                             {
                                 type: 'primary',
                                 name: isUpdating ? 'Cập nhật' : 'Thêm mới',
@@ -127,6 +151,27 @@ const UserAddressAdd = () => {
                     </Form>
                 </div>
             </div>
+
+            <button ref={openBtnRef} data-bs-toggle="modal" data-bs-target="#update-address-modal"></button>
+            <Modal
+                id="update-address-modal"
+                title="Xác nhận"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        dismiss: 'modal',
+                        text: 'Đóng',
+                        ref: closeBtnRef,
+                    },
+                    {
+                        type: 'primary',
+                        text: 'Đồng ý',
+                        onClick: () => cancelUpdateAddress(),
+                    },
+                ]}
+            >
+                <p>Bạn có chắc chắn muốn hủy bỏ việc {isUpdating ? 'cập nhật' : 'thêm mới'} địa chỉ này không?</p>
+            </Modal>
         </div>
     );
 };

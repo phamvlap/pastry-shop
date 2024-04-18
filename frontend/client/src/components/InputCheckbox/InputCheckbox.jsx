@@ -1,7 +1,7 @@
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 
-import styles from '~/components/InputCheckbox/InputCheckbox.module.scss';
+import styles from './InputCheckbox.module.scss';
 
 const cx = classNames.bind(styles);
 

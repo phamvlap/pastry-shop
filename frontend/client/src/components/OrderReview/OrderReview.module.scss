@@ -17,7 +17,29 @@
             }
         }
         .order-status {
-
+            padding: 8px 16px;
+            font-weight: bold;
+            border-radius: 16px;
+            &.waiting-status {
+                color: var(--waiting-color);
+                background-color: rgba(0, 0, 0, 0.08);
+            }
+            &.confirmed-status {
+                color: var(--confirmed-color);
+                background-color: rgba(0, 0, 0, 0.08);
+            }
+            &.shipping-status {
+                color: var(--shipping-color);
+                background-color: rgba(0, 0, 0, 0.08);
+            }
+            &.completed-status {
+                color: var(--completed-color);
+                background-color: rgba(0, 0, 0, 0.08);
+            }
+            &.canceled-status {
+                color: var(--canceled-color);
+                background-color: rgba(0, 0, 0, 0.08);
+            }
         }
     }
     .body {
@@ -55,6 +77,14 @@
                 span:last-child {
                     margin-left: 4px;
                 }
+            }
+        }
+        .order-item__quantity {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            span + span {
+                margin-left: 2px;
             }
         }
         .order-item__subtotal {

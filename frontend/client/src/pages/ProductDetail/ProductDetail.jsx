@@ -1,6 +1,6 @@
-import classNames from 'classnames/bind';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -10,31 +10,39 @@ import ProductActions from '~/utils/productActions.js';
 import ProductImage from '~/pages/ProductDetail/components/ProductImage.jsx';
 import ProductInfo from '~/pages/ProductDetail/components/ProductInfo.jsx';
 
-import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+import styles from './ProductDetail.module.scss';
 
 const cx = classNames.bind(styles);
 
 const ProductDetail = () => {
     const [product, setProduct] = useState(null);
+    const [ratingList, setRatingList] = useState(null);
+    const [isAddedReview, setIsAddedReview] = useState(false);
+
     const { id } = useParams();
 
     const fetchProduct = async () => {
-        const response = await ProductActions.getById(id);
-        if (response.status === 'success') {
-            setProduct(response.data);
+        try {
+            const response = await ProductActions.getById(id);
+            if (response.status === 'success') {
+                setProduct(response.data);
+                setRatingList(response.data.ratings);
+            }
+        } catch (err) {
+            setProduct(null);
+            setRatingList(null);
         }
     };
 
     useEffect(() => {
         fetchProduct();
-    }, [id]);
-    // console.log(product);
+    }, [id, isAddedReview]);
 
     return (
         <div className={cx('container')}>
             <div className={cx('detail-wrapper')}>
                 <div className={cx('detail-back')}>
-                    <Button to="/" outline>
+                    <Button to="/products" outline>
                         <FontAwesomeIcon icon={faChevronLeft} />
                         <span>Quay lại</span>
                     </Button>
@@ -74,8 +82,8 @@ const ProductDetail = () => {
                     <h3 className={cx('detail-title')}>Đánh giá sản phẩm</h3>
                     <div className="row">
                         <div className="col col-md-6">
-                            {product && product.ratings.length > 0 ? (
-                                product.ratings.map((rating, index) => {
+                            {ratingList && ratingList.length > 0 ? (
+                                ratingList.map((rating, index) => {
                                     return <ReviewItem key={index} review={rating} />;
                                 })
                             ) : (
@@ -83,7 +91,10 @@ const ProductDetail = () => {
                             )}
                         </div>
                         <div className="col col-md-6">
-                            <ReviewForm item={Helper.extractObject(product, ['product_id'])} />
+                            <ReviewForm
+                                item={Helper.extractObject(product, ['product_id'])}
+                                setIsAddedReview={setIsAddedReview}
+                            />
                         </div>
                     </div>
                 </div>

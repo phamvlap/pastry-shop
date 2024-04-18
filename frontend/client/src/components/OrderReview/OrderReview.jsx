@@ -1,15 +1,22 @@
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
 
 import { Button } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
 
-import styles from '~/components/OrderReview/OrderReview.module.scss';
+import styles from './OrderReview.module.scss';
 
 const cx = classNames.bind(styles);
 
 const OrderReview = ({ order }) => {
+    const statusMapping = {
+        1001: 'waiting',
+        1002: 'confirmed',
+        1003: 'shipping',
+        1004: 'completed',
+        1005: 'canceled',
+    };
     const navigate = useNavigate();
     const currentStatus = order.statusList[order.statusList.length - 1]?.status.vn_status_name;
 
@@ -27,7 +34,13 @@ const OrderReview = ({ order }) => {
                     <span>Mã đơn hàng:</span>
                     <span>{order.order_id}</span>
                 </div>
-                <div className={cx('order-status')}>
+                <div
+                    className={cx('order-status', {
+                        [`${
+                            statusMapping[order.statusList[order.statusList.length - 1]?.status.status_id]
+                        }-status`]: true,
+                    })}
+                >
                     <span>{currentStatus}</span>
                 </div>
             </div>
@@ -55,11 +68,16 @@ const OrderReview = ({ order }) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col col-md-2">{item.product_quantity}</div>
+                                <div className="col col-md-2">
+                                    <div className={cx('order-item__quantity')}>
+                                        <span>x</span>
+                                        <span>{item.product_quantity}</span>
+                                    </div>
+                                </div>
                                 <div className="col col-md-2">
                                     <div className={cx('order-item__subtotal')}>
                                         <span>{Helper.formatMoney(price * Number(item.product_quantity))}</span>
-                                        <span>VND</span>
+                                        <span>VNĐ</span>
                                     </div>
                                 </div>
                             </div>

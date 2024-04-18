@@ -1,19 +1,26 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as faFilledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar } from '@fortawesome/free-regular-svg-icons';
+import { toast } from 'react-toastify';
 
+import { UserContext } from '~/contexts/UserContext.jsx';
+import { CartContext } from '~/contexts/CartContext.jsx';
 import Helper from '~/utils/helper.js';
 import CartActions from '~/utils/cartActions.js';
 import { Button } from '~/components/index.js';
-import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+
+import styles from './../ProductDetail.module.scss';
 
 const cx = classNames.bind(styles);
 
 const ProductInfo = ({ item }) => {
-    const [selectdQuantity, setSelectedQuantity] = useState(0);
+    const [selectedQuantity, setSelectedQuantity] = useState(0);
+
+    const { user } = useContext(UserContext);
+    const { setQuantityInCart } = useContext(CartContext);
 
     const currentPrice =
         Number(item.price.price_value) - Number(item.price.price_value) * Number(item.discount.discount_rate);
@@ -28,20 +35,32 @@ const ProductInfo = ({ item }) => {
     }
 
     const handleIncreaseQuantity = () => {
-        setSelectedQuantity(selectdQuantity + 1);
+        if (selectedQuantity < Number(item.product_stock_quantity) - Number(item.product_sold_quantity)) {
+            setSelectedQuantity((oldQuantity) => oldQuantity + 1);
+        }
     };
     const handleDecreaseQuantity = () => {
-        if (selectdQuantity > 0) {
-            setSelectedQuantity(selectdQuantity - 1);
+        if (selectedQuantity > 0) {
+            setSelectedQuantity((oldQuantity) => oldQuantity - 1);
         }
     };
     const handleAddToCart = async () => {
+        if (selectedQuantity === 0) {
+            toast.error('Vui lòng chọn số lượng sản phẩm');
+            return;
+        }
+        if (!user) {
+            toast.error('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+            return;
+        }
         const data = {
             product_id: item.product_id,
-            cart_quantity: selectdQuantity,
+            cart_quantity: selectedQuantity,
             cart_is_selected: 0,
         };
         await CartActions.addItem(data);
+        setQuantityInCart((oldQuantity) => oldQuantity + selectedQuantity);
+        setSelectedQuantity(0);
     };
     // const handleToCheckout = () => {};
     return (
@@ -78,11 +97,11 @@ const ProductInfo = ({ item }) => {
                 <span className={cx('info-quantity__label')}>Số lượng: </span>
                 <div className={cx('info-quantity__buttons')}>
                     <button onClick={() => handleDecreaseQuantity()}>-</button>
-                    <input type="text" value={selectdQuantity} readOnly />
+                    <input type="text" value={selectedQuantity} readOnly />
                     <button onClick={() => handleIncreaseQuantity()}>+</button>
                 </div>
                 <div className={cx('info-quantity__avaiable')}>
-                    <span>{item.product_stock_quantity}</span>
+                    <span>{Number(item.product_stock_quantity) - Number(item.product_sold_quantity)}</span>
                     <span>sản phẩm có sẵn</span>
                 </div>
             </div>

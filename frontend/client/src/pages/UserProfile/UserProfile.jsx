@@ -1,10 +1,11 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import FormData from 'form-data';
+import { toast } from 'react-toastify';
 
-import { Button, InputItem } from '~/components/index.js';
+import { Button, InputGroup, Modal } from '~/components/index.js';
 import UserActions from '~/utils/userActions.js';
 import Validator from '~/utils/validator.js';
 import Helper from '~/utils/helper.js';
@@ -12,7 +13,7 @@ import registerRules from '~/config/rules/registerRules.js';
 import { CustomerService } from '~/services/index.js';
 import { UserContext } from '~/contexts/UserContext.jsx';
 
-import styles from '~/pages/UserProfile/UserProfile.module.scss';
+import styles from './UserProfile.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -24,9 +25,13 @@ const UserProfile = () => {
     });
     const [errors, setErrors] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
-    const { user, setUser } = useContext(UserContext);
     const [avatar, setAvatar] = useState(null);
     const [isShowSaveBtn, setIsShowSaveBtn] = useState(false);
+    const [isUpdateAvatar, setIsUpdateAvatar] = useState(false);
+
+    const { user, setUser } = useContext(UserContext);
+    const openBtnRef = useRef();
+    const closeBtnRef = useRef();
 
     const configApi = {
         headers: {
@@ -38,7 +43,7 @@ const UserProfile = () => {
     const currentUser = UserActions.getUser();
     const validator = new Validator(rules);
     const customerService = new CustomerService(configApi);
-    const srcAvatar = Helper.formatImageUrl(form.customer_avatar.image_url);
+    const srcAvatar = Helper.formatImageUrl(currentUser.customer_avatar.image_url);
 
     const handleOnChange = (event) => {
         if (event.target.type !== 'file') {
@@ -50,6 +55,7 @@ const UserProfile = () => {
             setAvatar(event.target.files[0]);
             setIsShowSaveBtn(true);
         }
+        setErrors({});
     };
     const handleTransferUpdate = (event) => {
         event.preventDefault();
@@ -72,15 +78,21 @@ const UserProfile = () => {
                 }
             });
             if (Object.keys(data).length === 0) {
+                toast.info('Không có thông tin nào thay đổi');
                 setIsUpdating(false);
                 return;
             }
             const response = await customerService.update(data);
             if (response.status === 'success') {
+                toast.success('Cập nhật thông tin thành công');
                 setIsUpdating(false);
                 const profileUser = await customerService.getProfile();
-                setUser(profileUser.data);
-                UserActions.setUser(profileUser.data);
+                const newInfo = {
+                    ...user,
+                    ...profileUser.data,
+                };
+                setUser(newInfo);
+                UserActions.setUser(newInfo);
             }
         } catch (error) {
             setErrors({
@@ -89,30 +101,52 @@ const UserProfile = () => {
             setForm({});
         }
     };
-    const handleCancel = () => {
+    const confirmCancel = (event) => {
+        event.preventDefault();
+        openBtnRef.current.click();
+    };
+    const cancelUpdating = () => {
         setForm({
             ...currentUser,
         });
         setIsUpdating(false);
+        closeBtnRef.current.click();
     };
 
     const handleUpdateAvatar = async (event) => {
         event.preventDefault();
+        setIsUpdateAvatar(true);
 
         let formData = new FormData();
         formData.append('customer_avatar', avatar);
 
         const response = await customerService.update(formData);
         if (response.status === 'success') {
+            toast.success('Cập nhật ảnh đại diện thành công');
             const profileUser = await customerService.getProfile();
-            setUser(profileUser.data);
-            UserActions.setUser(profileUser.data);
+            const newInfo = {
+                ...user,
+                ...profileUser.data,
+            };
+            setUser(newInfo);
+            UserActions.setUser(newInfo);
+            setAvatar(null);
+            setIsShowSaveBtn(false);
+            setIsUpdateAvatar(false);
         }
     };
-    const handleCancelAvatar = (event) => {
+    const confirmCancelAvatar = (event) => {
         event.preventDefault();
+        if (avatar) {
+            openBtnRef.current.click();
+            setIsUpdateAvatar(true);
+        }
+    };
+    const cancelUpdateAvatar = () => {
         setAvatar(null);
         setIsShowSaveBtn(false);
+        setIsUpdateAvatar(false);
+        closeBtnRef.current.click();
     };
 
     return (
@@ -129,7 +163,7 @@ const UserProfile = () => {
                                             <span className={cx('account-info__label')}>Tên đăng nhập:</span>
                                         </div>
                                         <div className="col col-md-9">
-                                            <InputItem
+                                            <InputGroup
                                                 type="text"
                                                 name="customer_username"
                                                 value={form.customer_username}
@@ -147,7 +181,7 @@ const UserProfile = () => {
                                             <span className={cx('account-info__label')}>Họ và tên:</span>
                                         </div>
                                         <div className="col col-md-9">
-                                            <InputItem
+                                            <InputGroup
                                                 type="text"
                                                 name="customer_name"
                                                 value={form.customer_name}
@@ -165,7 +199,7 @@ const UserProfile = () => {
                                             <span className={cx('account-info__label')}>Số điện thoại:</span>
                                         </div>
                                         <div className="col col-md-9">
-                                            <InputItem
+                                            <InputGroup
                                                 type="text"
                                                 name="customer_phone_number"
                                                 value={form.customer_phone_number}
@@ -183,7 +217,7 @@ const UserProfile = () => {
                                             <Button success onClick={(event) => handleUpdate(event)}>
                                                 <span>Lưu thay đổi</span>
                                             </Button>
-                                            <Button danger onClick={(event) => handleCancel(event)}>
+                                            <Button danger onClick={(event) => confirmCancel(event)}>
                                                 <span>Hủy</span>
                                             </Button>
                                         </>
@@ -234,7 +268,7 @@ const UserProfile = () => {
                                         <Button success onClick={(event) => handleUpdateAvatar(event)}>
                                             <span>Lưu</span>
                                         </Button>
-                                        <Button danger onClick={(event) => handleCancelAvatar(event)}>
+                                        <Button danger onClick={(event) => confirmCancelAvatar(event)}>
                                             <span> Hủy</span>
                                         </Button>
                                     </div>
@@ -244,6 +278,31 @@ const UserProfile = () => {
                     </div>
                 </div>
             </div>
+
+            <button ref={openBtnRef} data-bs-toggle="modal" data-bs-target="#update-user-modal"></button>
+            <Modal
+                id="update-user-modal"
+                title="Xác nhận"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        dismiss: 'modal',
+                        text: 'Đóng',
+                        ref: closeBtnRef,
+                    },
+                    {
+                        type: 'primary',
+                        text: 'Đồng ý',
+                        onClick: !isUpdateAvatar ? () => cancelUpdating() : () => cancelUpdateAvatar(),
+                    },
+                ]}
+            >
+                <p>
+                    {!isUpdateAvatar
+                        ? 'Bạn có chắc chắn muốn hủy bỏ việc chỉnh sửa thông tin cá nhân không? Mọi thay đổi chưa lưu sẽ bị mất.'
+                        : 'Bạn có chắc chắn muốn hủy bỏ việc cập nhật ảnh đại diện không?'}
+                </p>
+            </Modal>
         </div>
     );
 };

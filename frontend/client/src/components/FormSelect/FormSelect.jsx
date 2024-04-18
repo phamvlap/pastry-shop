@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import styles from '~/components/FormSelect/FormSelect.module.scss';
+import styles from './FormSelect.module.scss';
 
 const cx = classNames.bind(styles);
 

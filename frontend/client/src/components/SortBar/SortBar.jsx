@@ -3,7 +3,8 @@ import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 
 import { Button, FormSelect } from '~/components/index.js';
-import styles from '~/components/SortBar/SortBar.module.scss';
+
+import styles from './SortBar.module.scss';
 
 const cx = classNames.bind(styles);
 

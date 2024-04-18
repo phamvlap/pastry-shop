@@ -14,6 +14,12 @@ class OrderActions {
         return response;
     }
 
+    static async getOrderById(orderId) {
+        const orderService = new OrderService(configApi);
+        const response = await orderService.get(orderId);
+        return response;
+    }
+
     static async createOrder(data) {
         const orderService = new OrderService(configApi);
         const order = {
@@ -30,8 +36,10 @@ class OrderActions {
         // Update order
     }
 
-    static async cancelOrder(order) {
-        // Cancel order
+    static async cancelOrder(orderId) {
+        const orderService = new OrderService(configApi);
+        const response = await orderService.delete(orderId);
+        return response;
     }
 }
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import styles from '~/components/Pagination/Pagination.module.scss';
+import styles from './Pagination.module.scss';
 
 const cx = classNames.bind(styles);
 

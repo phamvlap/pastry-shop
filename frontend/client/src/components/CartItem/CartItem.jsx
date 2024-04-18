@@ -1,18 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
+import { CartContext } from '~/contexts/CartContext.jsx';
 import Helper from '~/utils/helper.js';
 import CartActions from '~/utils/cartActions.js';
-import styles from '~/components/CartItem/CartItem.module.scss';
+
+import styles from './CartItem.module.scss';
 
 const cx = classNames.bind(styles);
 
 const CartItem = ({ cartItem, setCart }) => {
     const [quantity, setQuantity] = useState(cartItem.quantityInCart);
     const [isSelected, setIsSelected] = useState(!!cartItem.statusItem);
+
+    const { setQuantityInCart } = useContext(CartContext);
 
     const currentPrice =
         Number(cartItem.product.price.price_value) -
@@ -25,6 +29,34 @@ const CartItem = ({ cartItem, setCart }) => {
             cart_is_selected: Number(isSelected),
         };
         await CartActions.updateItem(cartItem.product.product_id, data);
+    };
+
+    const handleDecreaseQuantity = () => {
+        if (quantity > 1) {
+            setQuantity((oldQuantity) => oldQuantity - 1);
+            setQuantityInCart((oldQuantity) => oldQuantity - 1);
+        }
+    };
+    const handleIncreaseQuantity = () => {
+        setQuantity((oldQuantity) => oldQuantity + 1);
+        setQuantityInCart((oldQuantity) => oldQuantity + 1);
+    };
+    const handleChangeSelectInput = (event) => {
+        setIsSelected(event.target.checked);
+        setCart((cart) =>
+            cart.map((item) =>
+                item.product.product_id === cartItem.product.product_id
+                    ? { ...item, statusItem: event.target.checked }
+                    : item,
+            ),
+        );
+    };
+    const handleRemoveItem = async () => {
+        const key = cartItem.product.product_id;
+        const oldQuantity = cartItem.quantityInCart;
+        await CartActions.removeItem(key);
+        setQuantityInCart((oldQuantityInCart) => oldQuantityInCart - oldQuantity);
+        setCart((cart) => cart.filter((item) => item.product.product_id !== key));
     };
 
     useEffect(() => {
@@ -46,29 +78,6 @@ const CartItem = ({ cartItem, setCart }) => {
         });
     }, [quantity]);
 
-    const handleDecreaseQuantity = () => {
-        if (quantity > 1) {
-            setQuantity((oldQuantity) => oldQuantity - 1);
-        }
-    };
-    const handleIncreaseQuantity = () => {
-        setQuantity((oldQuantity) => oldQuantity + 1);
-    };
-    const handleChangeSelectInput = (event) => {
-        setIsSelected(event.target.checked);
-        setCart((cart) =>
-            cart.map((item) =>
-                item.product.product_id === cartItem.product.product_id
-                    ? { ...item, statusItem: event.target.checked }
-                    : item,
-            ),
-        );
-    };
-    const handleRemoveItem = async () => {
-        const key = cartItem.product.product_id;
-        await CartActions.removeItem(key);
-        setCart((cart) => cart.filter((item) => item.product.product_id !== key));
-    };
     return (
         <div className={cx('cart-item-container')}>
             <div className="row">

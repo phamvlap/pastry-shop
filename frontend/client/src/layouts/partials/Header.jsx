@@ -6,17 +6,18 @@ import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
 import { InputSearch } from '~/components/index.js';
 import { UserContext } from '~/contexts/UserContext.jsx';
+import { CartContext } from '~/contexts/CartContext.jsx';
 import UserActions from '~/utils/userActions.js';
+import Helper from '~/utils/helper.js';
 
-import styles from '~/layouts/Layout.module.scss';
+import styles from './../Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
 const Header = () => {
-    const { user, setUser, token, setToken, isLogged, setIsLogged } = useContext(UserContext);
-    const srcAvatar = user
-        ? `${import.meta.env.VITE_UPLOADED_DIR}${user.customer_avatar.image_url.split('/uploads/')[1]}`
-        : '';
+    const { user, setUser, setToken, setIsLogged } = useContext(UserContext);
+    const { quantityInCart } = useContext(CartContext);
+    const srcAvatar = user ? Helper.formatImageUrl(user.customer_avatar.image_url) : '';
 
     const handleLogout = () => {
         UserActions.logout();
@@ -75,6 +76,11 @@ const Header = () => {
                         <div className={cx('action-cart')}>
                             <Link to="/user/cart" className={cx('action-cart__item')}>
                                 <FontAwesomeIcon icon={faCartShopping} />
+                                {user && quantityInCart >= 0 && (
+                                    <div className={cx('action-cart__badge')}>
+                                        <span>{quantityInCart}</span>
+                                    </div>
+                                )}
                             </Link>
                         </div>
                     </div>

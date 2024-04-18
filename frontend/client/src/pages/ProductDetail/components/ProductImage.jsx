@@ -1,9 +1,10 @@
-import classNames from 'classnames/bind';
 import { useState } from 'react';
+import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 
 import Helper from '~/utils/helper.js';
-import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+
+import styles from './../ProductDetail.module.scss';
 
 const cx = classNames.bind(styles);
 

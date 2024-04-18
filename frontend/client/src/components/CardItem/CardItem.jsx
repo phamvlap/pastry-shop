@@ -1,19 +1,26 @@
+import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as faFilledStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar } from '@fortawesome/free-regular-svg-icons';
-import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 import { Button } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
 import CartActions from '~/utils/cartActions.js';
+import { UserContext } from '~/contexts/UserContext.jsx';
+import { CartContext } from '~/contexts/CartContext.jsx';
 
-import styles from '~/components/CardItem/CardItem.module.scss';
+import styles from './CardItem.module.scss';
 
 const cx = classNames.bind(styles);
 
 const CardItem = ({ product }) => {
+    const { isLogged } = useContext(UserContext);
+    const { setQuantityInCart } = useContext(CartContext);
+
     const ratingValue = Helper.averageRating(product.product_ratings);
     let starIcons = [];
     const currentPrice =
@@ -27,12 +34,17 @@ const CardItem = ({ product }) => {
     }
 
     const handleAddToCart = async () => {
+        if (!isLogged) {
+            toast.error('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+            return;
+        }
         const data = {
             product_id: product.product_id,
             cart_quantity: 1,
             cart_is_selected: 0,
         };
         await CartActions.addItem(data);
+        setQuantityInCart((prevQuantity) => prevQuantity + 1);
     };
     return (
         <div className={cx('card-container')}>
@@ -88,6 +100,7 @@ const CardItem = ({ product }) => {
 
 CardItem.propTypes = {
     product: PropTypes.object,
+    setToasts: PropTypes.func,
 };
 
 export default CardItem;

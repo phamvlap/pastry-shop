@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 
-import styles from '~/components/InputItem/InputItem.module.scss';
+import styles from './InputItem.module.scss';
 
 const cx = classNames.bind(styles);
 

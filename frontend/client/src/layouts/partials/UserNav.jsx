@@ -1,13 +1,14 @@
-import classNames from 'classnames/bind';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserTag, faLocation, faKey, faReceipt, faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
 import UserActions from '~/utils/userActions.js';
 import Helper from '~/utils/helper.js';
+import { UserContext } from '~/contexts/UserContext.jsx';
 
-import styles from '~/layouts/Layout.module.scss';
+import styles from './../Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -47,7 +48,7 @@ const optionList = [
 const UserNav = () => {
     const [activeOption, setActiveOption] = useState(null);
 
-    const user = UserActions.getUser();
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const path = window.location.pathname;
@@ -56,12 +57,14 @@ const UserNav = () => {
     });
     return (
         <div className={cx('user-nav-wrapper')}>
-            <h2 className={cx('user-nav-header')}>
-                <span className={cx('user-nav-header__avatar')}>
-                    <img src={Helper.formatImageUrl(user.customer_avatar.image_url)} alt="" />
-                </span>
-                <span className={cx('user-nav-header__name')}>{user.customer_username}</span>
-            </h2>
+            {user && (
+                <h2 className={cx('user-nav-header')}>
+                    <span className={cx('user-nav-header__avatar')}>
+                        <img src={Helper.formatImageUrl(user.customer_avatar.image_url)} alt="" />
+                    </span>
+                    <span className={cx('user-nav-header__name')}>{user.customer_username}</span>
+                </h2>
+            )}
             <ul className={cx('user-nav-list')}>
                 {optionList.map((option) => {
                     return (

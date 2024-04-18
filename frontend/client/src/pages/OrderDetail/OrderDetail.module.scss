@@ -25,7 +25,7 @@
         }
         .order-review {
             padding: 8px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             .order-review__item {
                 padding: 8px;
                 span:first-child {
@@ -33,6 +33,31 @@
                 }
                 span:last-child {
                     margin-left: 8px;
+                }
+            }
+            .order-review__item-status {
+                padding: 8px 16px;
+                font-weight: bold;
+                border-radius: 16px;
+                &.waiting-status {
+                    color: var(--waiting-color);
+                    background-color: rgba(0, 0, 0, 0.08);
+                }
+                &.confirmed-status {
+                    color: var(--confirmed-color);
+                    background-color: rgba(0, 0, 0, 0.08);
+                }
+                &.shipping-status {
+                    color: var(--shipping-color);
+                    background-color: rgba(0, 0, 0, 0.08);
+                }
+                &.completed-status {
+                    color: var(--completed-color);
+                    background-color: rgba(0, 0, 0, 0.08);
+                }
+                &.canceled-status {
+                    color: var(--canceled-color);
+                    background-color: rgba(0, 0, 0, 0.08);
                 }
             }
         }
@@ -76,23 +101,38 @@
             padding: 8px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         }
-        .order-total {
-            font-size: 2.0rem;
+        .order-footer {
             padding: 16px 0;
-            .checout-total__row {
-                padding: 8px 0;
-            }
-            .checout-total__row:last-child {
-                font-weight: bold;
-            }
-            .order-total__item-value {
+            .order-cancel {
                 display: flex;
-                align-items: center;
-                span {
-                    display: inline-block;
+                justify-content: start;
+                align-items: start;
+                .order-cancel__btn-disabled {
+                    opacity: 0.8;
+                    pointer-events: none;
+                    background-color: #CCCCCC;
+                    border-color: #CCCCCC;
+                    user-select: none;
+                    cursor: not-allowed;
                 }
-                span:last-child {
-                    margin-left: 8px;
+            }
+            .order-total {
+                font-size: 2.0rem;
+                .checout-total__row {
+                    padding: 8px 0;
+                }
+                .checout-total__row:last-child {
+                    font-weight: bold;
+                }
+                .order-total__item-value {
+                    display: flex;
+                    align-items: center;
+                    span {
+                        display: inline-block;
+                    }
+                    span:last-child {
+                        margin-left: 8px;
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
 
 import { SortBar, CardItem, Pagination } from '~/components/index.js';
 import { ProductService } from '~/services/index.js';
@@ -22,7 +23,7 @@ const filterOptions = [
     'offset',
 ];
 
-const Products = () => {
+const Products = ({ setToasts }) => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [productList, setProductList] = useState([]);
     const [totalPages, setTotalPages] = useState(null);
@@ -125,7 +126,7 @@ const Products = () => {
                                             {productList.map((product) => {
                                                 return (
                                                     <div className="col-3" key={product.product_id}>
-                                                        <CardItem product={product} />
+                                                        <CardItem product={product} setToasts={setToasts} />
                                                     </div>
                                                 );
                                             })}
@@ -150,6 +151,10 @@ const Products = () => {
             </div>
         </div>
     );
+};
+
+Products.propTypes = {
+    setToasts: PropTypes.func,
 };
 
 export default Products;

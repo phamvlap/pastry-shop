@@ -1,39 +1,48 @@
+import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
-import { Button } from '~/components/index.js';
+import { Button, Modal } from '~/components/index.js';
 import AddressActions from '~/utils/addressActions.js';
 
-import styles from '~/components/AddressItem/AddressItem.module.scss';
+import styles from './AddressItem.module.scss';
 
 const cx = classNames.bind(styles);
 
 const AddressItem = ({ address, setAddressList }) => {
     const navigate = useNavigate();
+    const openBtnRef = useRef(null);
+    const closeBtnRef = useRef(null);
 
     const handleSetDefault = async () => {
-        const response = await AddressActions.setDefaultAddress(address.address_id);
+        try {
+            const response = await AddressActions.setDefaultAddress(address.address_id);
 
-        if (response.status !== 'success') {
-            return;
-        }
-        setAddressList((prevList) => {
-            return prevList.map((item) => {
-                if (item.address_id === address.address_id) {
+            if (response.status !== 'success') {
+                return;
+            }
+            setAddressList((prevList) => {
+                return prevList.map((item) => {
+                    if (item.address_id === address.address_id) {
+                        return {
+                            ...item,
+                            address_is_default: 1,
+                        };
+                    }
                     return {
                         ...item,
-                        address_is_default: 1,
+                        address_is_default: 0,
                     };
-                }
-                return {
-                    ...item,
-                    address_is_default: 0,
-                };
+                });
             });
-        });
+            toast.success('Đã thiết lập địa chỉ mặc định mới.');
+        } catch (e) {
+            toast.error(e.message);
+        }
     };
     const transferToUpdate = () => {
         navigate('/user/address/add', {
@@ -42,11 +51,15 @@ const AddressItem = ({ address, setAddressList }) => {
             },
         });
     };
-    const handleDelete = async () => {
+    const confirmDeleteAddress = () => {
+        openBtnRef.current.click();
+    };
+    const deleteAddress = async () => {
         await AddressActions.removeAddress(address.address_id);
         setAddressList((prevList) => {
             return prevList.filter((item) => item.address_id !== address.address_id);
         });
+        closeBtnRef.current.click();
     };
     return (
         <div className={cx('container')}>
@@ -71,7 +84,7 @@ const AddressItem = ({ address, setAddressList }) => {
                 <div className="col col-md-3 ms-auto">
                     <div className={cx('address-action')}>
                         <div className={cx('address-action__row')}>
-                            <Button outline onClick={() => handleSetDefault()}>
+                            <Button primary onClick={() => handleSetDefault()}>
                                 <span>Thiết lập mặc định</span>
                             </Button>
                         </div>
@@ -79,13 +92,36 @@ const AddressItem = ({ address, setAddressList }) => {
                             <Button outline onClick={() => transferToUpdate()}>
                                 <span>Sửa</span>
                             </Button>
-                            <Button outline onClick={() => handleDelete()}>
+                            <Button outline onClick={() => confirmDeleteAddress()}>
                                 <span>Xóa</span>
                             </Button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <button ref={openBtnRef} data-bs-toggle="modal" data-bs-target="#update-user-modal"></button>
+            <Modal
+                id="update-user-modal"
+                title="Xác nhận"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        dismiss: 'modal',
+                        text: 'Đóng',
+                        ref: closeBtnRef,
+                    },
+                    {
+                        type: 'primary',
+                        text: 'Đồng ý',
+                        onClick: () => deleteAddress(),
+                    },
+                ]}
+            >
+                <p>
+                    Bạn có chắc chắn muốn xóa địa chỉ <strong>{address.address_fullname}</strong> không?
+                </p>
+            </Modal>
         </div>
     );
 };

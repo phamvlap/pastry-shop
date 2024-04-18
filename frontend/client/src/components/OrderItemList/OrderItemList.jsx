@@ -2,7 +2,8 @@ import className from 'classnames/bind';
 import PropTypes from 'prop-types';
 
 import { OrderItem } from '~/components/index.js';
-import styles from '~/components/OrderItemList/OrderItemList.module.scss';
+
+import styles from './OrderItemList.module.scss';
 
 const cx = className.bind(styles);
 

@@ -6,7 +6,7 @@ import { faStar, faHeart } from '@fortawesome/free-regular-svg-icons';
 
 import Helper from '~/utils/helper.js';
 
-import styles from '~/components/ReviewItem/ReviewItem.module.scss';
+import styles from './ReviewItem.module.scss';
 
 const cx = classNames.bind(styles);
 

@@ -1,3 +1,4 @@
+import { cloneElement, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
@@ -5,14 +6,22 @@ import Header from '~/layouts/partials/Header.jsx';
 import Footer from '~/layouts/partials/Footer.jsx';
 import UserNav from '~/layouts/partials/UserNav.jsx';
 
-import styles from '~/layouts/Layout.module.scss';
+import styles from './Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
 const UserLayout = ({ children }) => {
+    const [toasts, setToasts] = useState([]);
+    const childrenWithProps = cloneElement(children, { setToasts });
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [window.location.pathname]);
+
     return (
         <div className={cx('user-layout-container')}>
             <Header />
+
             {/* <div className="container">
                 <div className={cx('breadcrumb-wrapper')}>
                     <ul className={cx('breadcrumb')}>
@@ -30,7 +39,7 @@ const UserLayout = ({ children }) => {
                         <div className="col-md-2">
                             <UserNav />
                         </div>
-                        <div className="col-md-10">{children}</div>
+                        <div className="col-md-10">{childrenWithProps}</div>
                     </div>
                 </div>
             </div>

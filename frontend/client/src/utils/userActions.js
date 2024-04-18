@@ -8,7 +8,7 @@ class UserActions {
 
     static getUser() {
         const data = JSON.parse(localStorage.getItem(import.meta.env.VITE_LOCAL_USER_KEY));
-        return data ? data.user : {};
+        return data ? data.user : null;
     }
 
     static setUser(user) {

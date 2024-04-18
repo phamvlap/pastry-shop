@@ -159,10 +159,12 @@ class AccountModel {
         if (!account) {
             throw new Error('Invalid information.');
         }
+        console.log(payload.account_password, account.account_password)
 
         if (!bcrypt.compareSync(payload.account_password, account.account_password)) {
             throw new Error('Invalid information.');
         }
+        console.log('check4');
 
         let data = '';
         if (account.account_role === 'staff') {

@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
-import { Button, InputGroup } from '~/components/index.js';
+import { Button, InputGroup, Modal } from '~/components/index.js';
 import UserActions from '~/utils/userActions.js';
 import { AccountService } from '~/services/index.js';
 import passwordRules from '~/config/rules/passwordRules.js';
 import Validator from '~/utils/validator.js';
 
-import styles from '~/pages/UserPassword/UserPassword.module.scss';
+import styles from './UserPassword.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -23,6 +24,8 @@ const UserPassword = () => {
     const accountService = new AccountService(configApi);
     const user = UserActions.getUser();
     const validator = new Validator(passwordRules);
+    const openBtnRef = useRef();
+    const closeBtnRef = useRef();
 
     const handleOnChange = (event) => {
         setForm({
@@ -49,9 +52,9 @@ const UserPassword = () => {
                 form.confirm_password,
             );
             if (response.status === 'success') {
+                toast.success('Đổi mật khẩu thành công');
                 setForm({});
                 setErrors({});
-                alert('Đổi mật khẩu thành công');
             }
         } catch (error) {
             const code = error.response.data.msg.split(':')[0];
@@ -65,10 +68,14 @@ const UserPassword = () => {
             setErrors(newErrors);
         }
     };
-    const handleOnCancel = (event) => {
+    const confirmCancel = (event) => {
         event.preventDefault();
+        openBtnRef.current.click();
+    };
+    const cancelUpdatePassword = () => {
         setForm({});
         setErrors({});
+        closeBtnRef.current.click();
     };
     return (
         <div className={cx('change-password-wrapper')}>
@@ -134,7 +141,7 @@ const UserPassword = () => {
                                 <Button success onClick={(event) => handleOnSubmit(event)}>
                                     <span>Lưu</span>
                                 </Button>
-                                <Button danger onClick={(event) => handleOnCancel(event)}>
+                                <Button danger onClick={(event) => confirmCancel(event)}>
                                     <span>Hủy</span>
                                 </Button>
                             </div>
@@ -142,6 +149,26 @@ const UserPassword = () => {
                     </div>
                 </div>
             </div>
+            <button ref={openBtnRef} data-bs-toggle="modal" data-bs-target="#update-user-modal"></button>
+            <Modal
+                id="update-user-modal"
+                title="Xác nhận"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        dismiss: 'modal',
+                        text: 'Đóng',
+                        ref: closeBtnRef,
+                    },
+                    {
+                        type: 'primary',
+                        text: 'Đồng ý',
+                        onClick: () => cancelUpdatePassword(),
+                    },
+                ]}
+            >
+                <p>Bạn có chắc chắn muốn hủy bỏ việc cập nhật mật khẩu không? Mọi thay đổi chưa lưu sẽ bị mất.</p>
+            </Modal>
         </div>
     );
 };

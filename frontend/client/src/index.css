@@ -7,16 +7,19 @@
     --white-color: #fff;
     --dark-text-color: #666666;
     --light-text-color: #f2f6fa;
+    --secondary-color: #6c757d;
     --info-color: #0b5ed7;
     --danger-color: #BB2D3B;
     --success-color: #157347;
     --warning-color: #FFCA2C;
     --star-color: #ffce3d;
-
-    --secondary-background-color: #008fdb;
-    --primary-background-color: #f6f6f5;
-    --hover-color: #004eaf;
-    --active-color: #1494d7;
+    /* status of order */
+    --waiting-color: #f67e05;
+    --confirmed-color: #06a957;
+    --shipping-color: #0566c7;
+    --completed-color: #881bf5;
+    --canceled-color: #f60a0a;
+    /* error color */
     --error-color: #ff0000;
     /* font */
     --font-family: 'OpenSans', sans-serif;
@@ -37,7 +40,7 @@ body {
     line-height: 1.5rem;
     text-rendering: optimizeSpeed;
     overflow-y: overlay;
-    height: inherit;
+    height: 100% !important;
 }
 h1, h2, h3, h4, h5, h6, p {
     margin: 0;
@@ -114,3 +117,5 @@ li {
     background-color: var(--first-level-color);
     color: var(--white-color);
 }
+
+/* react-toastify */

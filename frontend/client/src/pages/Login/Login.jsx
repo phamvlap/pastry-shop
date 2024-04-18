@@ -48,6 +48,7 @@ const Login = () => {
             setIsLogged(true);
             navigate('/');
         } catch (error) {
+            console.log(error.message);
             setErrors({
                 form: 'Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại',
             });
