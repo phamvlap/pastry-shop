@@ -1,33 +1,46 @@
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
+import { Button } from '~/components/index.js';
+
 import styles from './Modal.module.scss';
 
 const cx = classNames.bind(styles);
 
-const Modal = ({ modalId = '', modalContent = '' }) => {
+const Modal = ({ id, title, children, buttons }) => {
     return (
         <div
             className="modal fade"
-            id={modalId}
+            id={id}
             data-bs-backdrop="static"
             data-bs-keyboard="false"
             tabIndex="-1"
-            aria-labelledby="staticBackdropLabel"
             aria-hidden="true"
         >
             <div className="modal-dialog">
                 <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className={cx('modal-title', 'title')} id="staticBackdropLabel">
-                            {modalContent.title}
-                        </h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div className={cx('modal-header', 'modal__header')}>
+                        <h1 className={cx('modal-title', 'modal__title')}>{title}</h1>
                     </div>
-                    <div className={cx('modal-body', 'body')}>
-                        <div>{modalContent.body}</div>
+                    <div className={cx('modal-body', 'modal__body')}>{children}</div>
+                    <div className={cx('modal-footer', 'modal__footer')}>
+                        {buttons &&
+                            buttons.map((button, index) => {
+                                const props = {
+                                    [button.type]: true,
+                                    onClick: button.onClick,
+                                    'data-bs-dismiss': button.dismiss,
+                                    ref: button.ref,
+                                    hidden: button.hidden,
+                                    to: button.to,
+                                };
+                                return (
+                                    <Button key={index} {...props}>
+                                        {button.text}
+                                    </Button>
+                                );
+                            })}
                     </div>
-                    <div className={cx('modal-footer', 'footer')}>{modalContent.footer}</div>
                 </div>
             </div>
         </div>
@@ -35,8 +48,11 @@ const Modal = ({ modalId = '', modalContent = '' }) => {
 };
 
 Modal.propTypes = {
-    modalId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    modalContent: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.object]),
+    id: PropTypes.string,
+    title: PropTypes.string,
+    children: PropTypes.node,
+    buttons: PropTypes.array,
+    onClose: PropTypes.func,
 };
 
 export default Modal;

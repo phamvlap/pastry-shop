@@ -77,11 +77,11 @@ const sideNavList = [
 ];
 
 const SideNav = ({ activeSideNav, setActiveSideNav }) => {
-    const { staff, setStaff, setToken, isAuthenticated, setIsAuthenticated } = useContext(StaffContext);
+    const { staff, setStaff, setToken, setIsAuthenticated } = useContext(StaffContext);
 
     const handleLogout = () => {
         staffActions.logOut();
-        setStaff({});
+        setStaff(null);
         setToken('');
         setIsAuthenticated(false);
     };

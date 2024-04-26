@@ -19,7 +19,7 @@ const logIn = async (email, password) => {
             throw new Error('Error while login.');
         }
         const staff = {
-            ...response.data.staff,
+            ...response.data.data,
             expiredAt: new Date().getTime() + Number(response.data.expiresIn) * 1000,
         };
         const token = response.data.token;

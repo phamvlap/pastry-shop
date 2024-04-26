@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { StaffContext } from '~/contexts/StaffContext.jsx';
@@ -7,7 +7,7 @@ import { staffActions, Validator } from '~/utils/index.js';
 import { InputGroup, Form } from '~/components/index.js';
 import loginRules from '~/config/rules/login.js';
 
-import styles from '~/pages/Login/Login.module.scss';
+import styles from './Login.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -17,10 +17,13 @@ const Login = () => {
         password: '',
     });
     const [errors, setErrors] = useState({});
-    const { setStaff, token, setToken, isAuthenticated, setIsAuthenticated } = useContext(StaffContext);
+    const { setStaff, setToken, isAuthenticated, setIsAuthenticated } = useContext(StaffContext);
 
     const navigate = useNavigate();
+    const location = useLocation();
     const validator = new Validator(loginRules);
+
+    const from = location.state?.from?.pathname || '/';
 
     const handleFormChange = (event) => {
         const newForm = { ...form, [event.target.name]: event.target.value };
@@ -51,7 +54,7 @@ const Login = () => {
             setStaff(staff);
             setToken(token);
             setIsAuthenticated(true);
-            navigate('/');
+            navigate(from, { replace: true });
         } catch (error) {
             setErrors({
                 form: 'Email hoặc mật khẩu không chính xác. Vui lòng thử lại.',
@@ -66,7 +69,7 @@ const Login = () => {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/');
+            navigate(from, { replace: true });
         }
     });
 

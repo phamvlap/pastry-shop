@@ -1,32 +1,39 @@
+/* eslint-disable react/prop-types */
+import { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
+// import PropTypes from 'prop-types';
 
 import styles from './Button.module.scss';
 
 const cx = classNames.bind(styles);
 
-function Button({
-    to,
-    href,
-    primary = false,
-    outline = false,
-    text = false,
-    success = false,
-    warning = false,
-    danger = false,
-    rounded,
-    disabled = false,
-    small = false,
-    large = false,
-    children,
-    className,
-    leftIcon,
-    rightIcon,
-    onClick,
-    ...passProps
-}) {
+function Button(
+    {
+        to,
+        href,
+        primary = false,
+        secondary = false,
+        outline = false,
+        text = false,
+        success = false,
+        warning = false,
+        danger = false,
+        rounded,
+        disabled = false,
+        small = false,
+        large = false,
+        children,
+        className,
+        leftIcon,
+        rightIcon,
+        onClick,
+        ...passProps
+    },
+    ref,
+) {
     let Comp = 'button';
+    const buttonRef = useRef();
 
     const props = {
         onClick,
@@ -52,6 +59,7 @@ function Button({
     const classes = cx('wrapper', {
         [className]: className,
         primary,
+        secondary,
         outline,
         success,
         warning,
@@ -63,8 +71,12 @@ function Button({
         large,
     });
 
+    useImperativeHandle(ref, () => ({
+        click: () => buttonRef.current.click(),
+    }));
+
     return (
-        <Comp className={classes} {...props}>
+        <Comp ref={buttonRef} className={classes} {...props}>
             {leftIcon && <span className={cx('icon')}>{leftIcon}</span>}
             <span className={cx('title')}>{children}</span>
             {rightIcon && <span className={cx('icon')}>{rightIcon}</span>}
@@ -72,24 +84,26 @@ function Button({
     );
 }
 
-Button.propTypes = {
-    to: PropTypes.string,
-    href: PropTypes.string,
-    primary: PropTypes.bool,
-    outline: PropTypes.bool,
-    text: PropTypes.bool,
-    success: PropTypes.bool,
-    warning: PropTypes.bool,
-    danger: PropTypes.bool,
-    rounded: PropTypes.bool,
-    disabled: PropTypes.bool,
-    small: PropTypes.bool,
-    large: PropTypes.bool,
-    children: PropTypes.node.isRequired,
-    className: PropTypes.string,
-    leftIcon: PropTypes.node,
-    rightIcon: PropTypes.node,
-    onClick: PropTypes.func,
-};
+// Button.propTypes = {
+//     to: PropTypes.string,
+//     href: PropTypes.string,
+//     primary: PropTypes.bool,
+//     secondary: PropTypes.bool,
+//     outline: PropTypes.bool,
+//     text: PropTypes.bool,
+//     success: PropTypes.bool,
+//     warning: PropTypes.bool,
+//     danger: PropTypes.bool,
+//     rounded: PropTypes.bool,
+//     disabled: PropTypes.bool,
+//     small: PropTypes.bool,
+//     large: PropTypes.bool,
+//     children: PropTypes.node.isRequired,
+//     className: PropTypes.string,
+//     leftIcon: PropTypes.node,
+//     rightIcon: PropTypes.node,
+//     onClick: PropTypes.func,
+// };
 
-export default Button;
+const ForwardRefButton = forwardRef(Button);
+export default ForwardRefButton;

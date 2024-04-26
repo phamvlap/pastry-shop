@@ -6,7 +6,7 @@ import { staffActions } from '~/utils/index.js';
 const StaffContext = createContext();
 
 const StaffProvider = ({ children }) => {
-    const [staff, setStaff] = useState({});
+    const [staff, setStaff] = useState(null);
     const [token, setToken] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 

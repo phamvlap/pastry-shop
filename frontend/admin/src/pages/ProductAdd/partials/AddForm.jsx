@@ -111,6 +111,7 @@ const AddForm = ({ categories, discounts, suppliers, product }) => {
                     formData.append('product_images', form['product_images'][i]);
                 }
             }
+            console.log(formData)
             if (product.product_id > 0) {
                 console.log('update');
                 await productService.update(product.product_id, formData);

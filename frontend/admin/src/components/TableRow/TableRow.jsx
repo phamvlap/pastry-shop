@@ -150,32 +150,6 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
             })}
             {Object.keys(actions).length > 0 && (
                 <td className={cx('cell')}>
-                    <Modal
-                        modalId={`${entity}-${row[`${entity}_id`]}`}
-                        modalContent={{
-                            title: 'Xác nhận xóa',
-                            body: (
-                                <p>
-                                    Bạn có chắc chắn muốn xóa <b>{row[`${entity}_name`]}</b> này không?
-                                </p>
-                            ),
-                            footer: (
-                                <>
-                                    <Button className={cx('table-row__btn')} primary data-bs-dismiss="modal">
-                                        Hủy
-                                    </Button>
-                                    <Button
-                                        className={cx('table-row__btn')}
-                                        danger
-                                        onClick={() => handleDeleteRow(row[`${entity}_id`])}
-                                        data-bs-dismiss="modal"
-                                    >
-                                        Xóa
-                                    </Button>
-                                </>
-                            ),
-                        }}
-                    />
                     {!(Object.keys(activeAction).length > 0 && activeAction.isModifiedInRow === true) ? (
                         <div className="d-flex">
                             {Object.keys(actions).map((action, index) => {
@@ -242,3 +216,32 @@ TableRow.propTypes = {
 };
 
 export default TableRow;
+
+{
+    /* <Modal
+    modalId={`${entity}-${row[`${entity}_id`]}`}
+    modalContent={{
+        title: 'Xác nhận xóa',
+        body: (
+            <p>
+                Bạn có chắc chắn muốn xóa <b>{row[`${entity}_name`]}</b> này không?
+            </p>
+        ),
+        footer: (
+            <>
+                <Button className={cx('table-row__btn')} primary data-bs-dismiss="modal">
+                    Hủy
+                </Button>
+                <Button
+                    className={cx('table-row__btn')}
+                    danger
+                    onClick={() => handleDeleteRow(row[`${entity}_id`])}
+                    data-bs-dismiss="modal"
+                >
+                    Xóa
+                </Button>
+            </>
+        ),
+    }}
+/>; */
+}

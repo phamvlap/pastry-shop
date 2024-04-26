@@ -4,7 +4,7 @@
     justify-content: center;
     font-family: var(--font-family);
     font-size: 1.6rem;
-    font-weight: 700;
+    // font-weight: 700;
     min-width: 60px;
     padding: 8px 12px;
     border-radius: 2px;
@@ -41,7 +41,7 @@
         border-color: var(--info-color);
     }
 }
-.primary, .success, .warning, .danger, .outline, .text {
+.primary, .secondary, .success, .warning, .danger, .outline, .text {
     color: var(--white-color);
     &:hover {
         cursor: pointer;
@@ -50,6 +50,10 @@
 .primary {
     background-color: var(--first-level-color);
     border-color: var(--first-level-color);
+}
+.secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
 }
 .success {
     background-color: var(--success-color);
