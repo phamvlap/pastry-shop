@@ -9,8 +9,9 @@ const router = express.Router();
 router.get('/', authorizeStaff, CustomerController.index);
 router.get('/profile', authorizeCustomer, CustomerController.getProfile);
 router.post('/register', CustomerController.register);
+router.patch('/:id/lock', authorizeStaff, CustomerController.lock);
+router.patch('/:id/unlock', authorizeStaff, CustomerController.unlock);
 router.patch('/', authorizeCustomer, CustomerController.update);
-router.delete('/', authorizeStaff, CustomerController.delete);
 
 // cart
 router.get('/cart', authorizeCustomer, CartController.get);

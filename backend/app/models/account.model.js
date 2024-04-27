@@ -241,7 +241,7 @@ class AccountModel {
             account_id: id,
         });
     }
-    async delete(id) {
+    async lock(id) {
         const preparedStmt = `
 			update ${this.table}
 			set account_deleted_at = :deleted_at
@@ -250,6 +250,17 @@ class AccountModel {
 		`;
         await connection.execute(preparedStmt, {
             deleted_at: formatDateToString(new Date()),
+            account_id: id,
+        });
+    }
+    async unlock(id) {
+        const preparedStmt = `
+            update ${this.table}
+            set account_deleted_at = '${process.env.TIME_NOT_DELETED}'
+            where account_id = :account_id
+                and account_deleted_at <> '${process.env.TIME_NOT_DELETED}';
+        `
+        await connection.execute(preparedStmt, {
             account_id: id,
         });
     }

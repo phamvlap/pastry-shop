@@ -9,7 +9,12 @@ class CustomerController {
     async index(req, res, next) {
         try {
             const customerModel = new CustomerModel();
-            const customers = await customerModel.getAll();
+            const filter = {
+                customer_username: req.query.customer_username,
+                customer_name: req.query.customer_name,
+                status: req.query.status,
+            };
+            const customers = await customerModel.getAll(filter);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: customers,
@@ -85,10 +90,22 @@ class CustomerController {
             }
         });
     }
-    async delete(req, res, next) {
+    async lock(req, res, next) {
         try {
             const customerModel = new CustomerModel();
-            await customerModel.delete(req.customer.customer_id);
+            await customerModel.lock(req.params.id);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                message: 'Customer deleted successfully.',
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
+    async unlock(req, res, next) {
+        try {
+            const customerModel = new CustomerModel();
+            await customerModel.unlock(req.params.id);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 message: 'Customer deleted successfully.',

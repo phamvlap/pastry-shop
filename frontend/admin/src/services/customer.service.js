@@ -5,8 +5,16 @@ class CustomerService {
         const { baseUrl = '/api/v1/customers', headers = {} } = config;
         this.api = createAPIService(baseUrl, headers);
     }
-    async getAll() {
-        return (await this.api.get('/')).data;
+    async getAll(query = {}) {
+        let stringQuery = '';
+        if (Object.keys(query).length > 0) {
+            stringQuery += '?';
+            for (const key in query) {
+                stringQuery += `${key}=${query[key]}&`;
+            }
+            stringQuery = stringQuery.slice(0, -1);
+        }
+        return (await this.api.get(`/${stringQuery}`)).data;
     }
     async getProfile() {
         return (await this.api.get('/profile')).data;
@@ -16,6 +24,12 @@ class CustomerService {
     }
     async update(data) {
         return (await this.api.patch('/', data)).data;
+    }
+    async lockAccount(id) {
+        return (await this.api.patch(`/${id}/lock`)).data;
+    }
+    async unlockAccount(id) {
+        return (await this.api.patch(`/${id}/unlock`)).data;
     }
     // async delete(id) {
     //     return (await this.api.delete(`/${id}`)).data;

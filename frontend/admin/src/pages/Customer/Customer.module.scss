@@ -1,0 +1,109 @@
+.customer-container {
+    padding: 4px;
+    .customer-title {
+        padding: 4px;
+        text-align: center;
+    }
+    .table-container {
+        table-layout: fixed;
+        width: 100%;
+        &.rounded-conners {
+            border-spacing: 0;
+            border-collapse: separate;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .head {
+            color: var(--white-color);
+            background-color: var(--second-level-color);
+            &.cell {
+                font-size: 1.8rem;
+                font-weight: 700;
+                white-space: inherit;
+            }
+        }
+        .body {
+            overflow: auto;
+        }
+        .cell {
+            padding: 8px;
+            overflow: hidden;
+            max-width: 0;
+            text-overflow: ellipsis;
+        }
+        .scrollit {
+            overflow: scroll;
+            height: 100%;
+        }
+    }
+    tr {
+        .th-checkbox {
+            width: 80px;
+            .th-checkbox-input {
+                display: block;
+                margin: auto;
+            }
+        }
+        &:nth-child(odd) {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+        &:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+    }
+    .cell {
+        padding: 4px 8px;
+        overflow: hidden;
+        max-width: 0;
+        text-overflow: ellipsis;
+        line-height: 1.6;
+        .cell-image {
+            width: 90px;
+            height: 90px;
+        }
+    }
+}
+
+// SearchBar
+.searchbar-container {
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--fourth-level-color);
+    border-radius: 2px;
+    .select-section {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        .select-section__item {
+            padding: 0 6px;
+        }
+    }
+    .filter-section {
+        display: flex;
+        .filter-section__text {
+            display: inline-block;
+            width: 280px;
+            text-align: center;
+        }
+        .filter-section__item {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+        .filter-section__btn {
+            padding: 5.5px 8px;
+        }
+    }
+    .search-section {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        .search-section__button {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: 8px;
+        }
+    }
+}

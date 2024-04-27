@@ -50,10 +50,40 @@ class CustomerModel {
         return images.length > 0 ? images[0] : null;
     }
     // get all
-    async getAll() {
-        const preparedStmt = `select * from ${this.table}`;
-        const [rows] = await connection.execute(preparedStmt);
-        return rows.length > 0 ? rows : [];
+    async getAll(filter = {}) {
+        const accountTable = process.env.TABLE_ACCOUNTS;
+        const customerUsername = filter.customer_username ? filter.customer_username : '';
+        const customerName = filter.customer_name ? filter.customer_name : '';
+        let status = '';
+        if(filter.status === 'active') {
+            status = ` and ${accountTable}.account_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
+        }
+        else if(filter.status === 'inactive') {
+            status = ` and ${accountTable}.account_deleted_at <> '${process.env.TIME_NOT_DELETED}'`;
+        }
+
+        const preparedStmt = `
+            select *
+            from ${this.table} join ${accountTable}
+                on ${this.table}.account_id = ${accountTable}.account_id
+            where ${this.table}.customer_username like :customer_username
+                and ${this.table}.customer_name like :customer_name
+        ` + status;
+        const [rows] = await connection.execute(preparedStmt, {
+            customer_username: `%${customerUsername}%`,
+            customer_name: `%${customerName}%`,
+        });
+        let result = [];
+        if(rows.length > 0) {
+            for(let row of rows) {
+                const avatar = await this.getAvatar(row.customer_id);
+                result.push({
+                    ...row,
+                    customer_avatar: avatar,
+                });
+            }
+        }
+        return result;
     }
     // get newest user
     async getNewestUser() {
@@ -210,14 +240,23 @@ class CustomerModel {
             await imageModel.update(oldAvatar.image_id, image);
         }
     }
-    // delete
-    async delete(id) {
+    // lock
+    async lock(id) {
         const oldCustomer = await this.getById(id);
         if (!oldCustomer) {
             throw new Error('Customer not exists.');
         }
         const acocuntModel = new AccountModel();
-        await acocuntModel.delete(oldCustomer.account_id);
+        await acocuntModel.lock(oldCustomer.account_id);
+    }
+    // unlock
+    async unlock(id) {
+        const oldCustomer = await this.getById(id);
+        if (!oldCustomer) {
+            throw new Error('Customer not exists.');
+        }
+        const acocuntModel = new AccountModel();
+        await acocuntModel.unlock(oldCustomer.account_id);
     }
 }
 
