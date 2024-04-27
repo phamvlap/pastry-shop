@@ -12,3 +12,4 @@ export { default as Customer } from './Customer/Customer.jsx';
 export { default as Statistics } from './Statistics/Statistics.jsx';
 export { default as Setting } from './Setting/Setting.jsx';
 export { default as Staff } from './Staff/Staff.jsx';
+export { default as StaffAdd } from './StaffAdd/StaffAdd.jsx';

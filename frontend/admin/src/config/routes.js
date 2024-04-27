@@ -12,6 +12,8 @@ const routes = {
     orderDetail: '/orders/:id/detail',
     customers: '/customers',
     staffs: '/staffs',
+    staffAdd: '/staffs/add',
+    staffEdit: '/staffs/:id/edit',
     statistics: '/statistics',
     settings: '/settings',
 };

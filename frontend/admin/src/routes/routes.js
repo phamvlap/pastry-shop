@@ -15,6 +15,7 @@ import {
     OrderDetail,
     Customer,
     Staff,
+    StaffAdd,
     Statistics,
     Setting,
 } from '~/pages/index.js';
@@ -96,6 +97,18 @@ const routes = [
     {
         path: routesName.staffs,
         page: Staff,
+        layout: MainLayout,
+        requireAuth: true,
+    },
+    {
+        path: routesName.staffAdd,
+        page: StaffAdd,
+        layout: MainLayout,
+        requireAuth: true,
+    },
+    {
+        path: routesName.staffEdit,
+        page: StaffAdd,
         layout: MainLayout,
         requireAuth: true,
     },

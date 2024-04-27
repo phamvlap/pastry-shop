@@ -1,0 +1,61 @@
+// staff common
+.staff-container {
+    padding: 4px;
+    .staff-title {
+        padding: 4px;
+        text-align: center;
+    }
+    .control-panel  {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        padding: 4px;
+        margin: 4px 0px;
+        background-color: var(--fourth-level-color);
+        border-radius: 4px;
+    }
+}
+
+// SearchBar
+.searchbar-container {
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--fourth-level-color);
+    border-radius: 2px;
+    .select-section {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        .select-section__item {
+            padding: 0 6px;
+        }
+    }
+    .filter-section {
+        display: flex;
+        .filter-section__text {
+            display: inline-block;
+            width: 180px;
+            text-align: center;
+        }
+        .filter-section__item {
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+        .filter-section__btn {
+            padding: 5.5px 8px;
+        }
+    }
+    .search-section {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        .search-section__button {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: 8px;
+        }
+    }
+}

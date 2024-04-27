@@ -1,7 +1,8 @@
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { formatDateToString, escapeData, extractData } from './../utils/index.js';
+import { formatDateToString, escapeData, extractData, generateRandomString } from './../utils/index.js';
 import { AccountModel } from './../models/index.js';
+// import Helper from './../helpers/index.js';
 
 const connection = await connectDB();
 connection.config.namedPlaceholders = true;
@@ -22,7 +23,7 @@ class StaffModel {
                 min: 3,
             },
             staff_role: {
-                type: String, // admin, staff
+                type: String, // admin, staff, manager
                 required: true,
             },
             staff_phone_number: {
@@ -50,13 +51,13 @@ class StaffModel {
         return { result, errors };
     }
     // get all
-    async getAll(staff_name, staff_address, staff_role, staffNameOrder, limit, offset) {
-        const parseStaffName = staff_name ? staff_name.trim() : null;
-        const parseStaffAddress = staff_address ? staff_address.trim() : null;
-        const parseStaffRole = staff_role ? staff_role.trim() : null;
-        const parseStaffNameOrder = staffNameOrder ? staffNameOrder.trim() : 'asc';
-        const parseLimit = limit ? '' + limit : '' + process.env.MAX_LIMIT;
-        const parseOffset = offset ? '' + offset : '0';
+    async getAll(filter = {}) {
+        const parseStaffName = filter.staff_name ? filter.staff_name.trim() : '';
+        const parseStaffAddress = filter.staff_address ? filter.staff_address.trim() : '';
+        const parseStaffRole = filter.staff_role ? filter.staff_role.trim() : null;
+        const parseStaffNameOrder = filter.staffNameOrder ? filter.staffNameOrder.trim() : 'asc';
+        const parseLimit = filter.limit ? '' + filter.limit : '' + process.env.MAX_LIMIT;
+        const parseOffset = filter.offset ? '' + filter.offset : '0';
 
         let preparedStmt = `
             select *
@@ -67,7 +68,6 @@ class StaffModel {
             order by staff_name ${parseStaffNameOrder}
             limit :limit offset :offset;
         `;
-
         const [rows] = await connection.execute(preparedStmt, {
             staff_name: `%${parseStaffName}%`,
             staff_address: `%${parseStaffAddress}%`,
@@ -103,6 +103,7 @@ class StaffModel {
     }
     // store staff data
     async store(data) {
+        data.staff_email = data.staff_name.split(' ').join('').toLowerCase() + '@gmail.com';
         const { result: staff, errors } = this.validateStaffData(data);
         if (errors.length > 0) {
             const errorMessage = errors.map((error) => error.msg).join(' ');
@@ -112,11 +113,9 @@ class StaffModel {
         const accountModel = new AccountModel();
         const payload = {
             account_email: staff.staff_email,
-            account_password: data.staff_password,
+            account_password: generateRandomString(8),
             account_role: 'staff',
         };
-        console.log(staff);
-        console.log(payload);
         const account = await accountModel.add(payload);
 
         staff.account_id = account.account_id;
@@ -128,6 +127,11 @@ class StaffModel {
                     .join(', ')})
         `;
         await connection.execute(preparedStmt, staff);
+        return {
+            ...staff,
+            staff_email: staff.staff_email,
+            staff_password: payload.account_password,
+        }
     }
 
     // update
@@ -169,8 +173,8 @@ class StaffModel {
         if (!oldStaff) {
             throw new Error('Staff not exists.');
         }
-        const acocuntModel = new AccountModel();
-        await acocuntModel.delete(oldStaff.account_id);
+        const accountModel = new AccountModel();
+        await accountModel.lock(oldStaff.account_id);
     }
 }
 

@@ -6,7 +6,11 @@ class StaffController {
     async index(req, res, next) {
         try {
             const staffModel = new StaffModel();
-            const staffs = await staffModel.getAll();
+            const filter = {
+                staff_name: req.query.staff_name,
+                staff_role: req.query.staff_role,
+            }
+            const staffs = await staffModel.getAll(filter);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
                 data: staffs,
@@ -42,10 +46,12 @@ class StaffController {
     async create(req, res, next) {
         try {
             const staffModel = new StaffModel();
-            await staffModel.store(req.body);
+            const result = await staffModel.store(req.body);
             return res.status(StatusCodes.CREATED).json({
                 status: 'success',
-                message: 'Staff added successfully.',
+                data: {
+                    ...result
+                }
             });
         } catch (error) {
             next(new BadRequestError(error.message));

@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 import { Button, InputItem, Modal } from '~/components/index.js';
 import { staffActions, getButton } from '~/utils/index.js';
-import { CategoryService, ProductService, DiscountService, SupplierService } from '~/services/index.js';
+import { CategoryService, ProductService, DiscountService, SupplierService, StaffService } from '~/services/index.js';
 
 import styles from './TableRow.module.scss';
 
@@ -38,6 +38,9 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
             break;
         case 'supplier':
             instanceService = new SupplierService(config);
+            break;
+        case 'staff':
+            instanceService = new StaffService(config);
             break;
     }
 
@@ -81,7 +84,7 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                 toast.success('Xóa thành công');
             }
         } catch (error) {
-            throw new Error(error.message);
+            console.log(error);
         }
     };
     const handleCancelAction = () => {
@@ -107,6 +110,9 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                     break;
                 case 'order':
                     directTo = 'orders';
+                    break;
+                case 'staff':
+                    directTo = 'staffs';
                     break;
             }
             navigate(`/${directTo}/${row[`${entity}_id`]}/${activeAction.name}`);

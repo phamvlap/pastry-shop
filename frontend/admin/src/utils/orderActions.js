@@ -3,7 +3,7 @@ import StaffActions from '~/utils/staffActions.js';
 
 const configApi = {
     headers: {
-        authorization: `Bearer ${StaffActions.getToken()}`,
+        Authorization: `Bearer ${StaffActions.getToken()}`,
     },
 };
 

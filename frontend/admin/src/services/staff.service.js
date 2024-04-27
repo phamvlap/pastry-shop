@@ -5,8 +5,12 @@ class StaffService {
         const { baseUrl = '/api/v1/staffs', headers = {} } = config;
         this.api = createAPIService(baseUrl, headers);
     }
-    async getAll() {
-        return (await this.api.get('/')).data;
+    async getAll(query = {}) {
+        let queryString = '';
+        if (Object.keys(query).length > 0) {
+            queryString = `?${new URLSearchParams(query).toString()}`;
+        }
+        return (await this.api.get(`/${queryString}`)).data;
     }
     async get(id) {
         return (await this.api.get(`/${id}`)).data;

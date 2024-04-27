@@ -48,6 +48,10 @@ class Validator {
     static isUploaded(value) {
         return value.length > 0;
     }
+    static isPhoneNumber(value) {
+        const regex = new RegExp(import.meta.env.VITE_REGEX_PHONE_NUMBER);
+        return regex.test(value);
+    }
 }
 
 export default Validator;

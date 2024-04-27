@@ -1,0 +1,18 @@
+// staff common
+.staff-container {
+    padding: 4px;
+    .staff-title {
+        padding: 4px;
+        text-align: center;
+    }
+}
+// form
+.staff-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.staff-form {
+    width: 720px;
+}
