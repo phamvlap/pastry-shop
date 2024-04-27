@@ -33,6 +33,11 @@ const actions = {
         isDirected: false,
         isModifiedInRow: false,
     },
+    delete: {
+        value: 'Xóa',
+        isDirected: false,
+        isModifiedInRow: false,
+    },
 };
 
 const SupplierList = ({ supplierList, setSupplierList, setSupplier }) => {

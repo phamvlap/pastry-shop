@@ -14,7 +14,7 @@ const header = {
         isModified: false,
     },
     discount_rate: {
-        value: 'Giá trị giảm giá',
+        value: 'Giá trị giảm giá (%)',
         isModified: false,
     },
     discount_limit: {
@@ -41,7 +41,13 @@ const actions = {
         isDirected: false,
         isModifiedInRow: false,
     },
+    delete: {
+        value: 'Xóa',
+        isDirected: false,
+        isModifiedInRow: false,
+    },
 };
+const fillable = ['discount_id', 'discount_code', 'discount_rate', 'discount_limit', 'discount_start', 'discount_end'];
 
 const DiscountList = ({ discountList, setDiscountList, setDiscount }) => {
     const [activeRow, setActiveRow] = useState(null);
@@ -57,6 +63,7 @@ const DiscountList = ({ discountList, setDiscountList, setDiscount }) => {
                 <Table
                     entityName="discount"
                     header={header}
+                    fillable={fillable}
                     data={discountList}
                     setData={setDiscountList}
                     actions={actions}

@@ -71,7 +71,7 @@ const ProductAdd = () => {
                     product_stock_quantity: response.data.product_stock_quantity,
                     product_price: response.data.price.price_value,
                     product_expire_date: formatDate.convertToStandardFormat(response.data.product_expire_date),
-                    product_category: response.data.category.category_id,
+                    product_category: response.data.category?.category_id,
                     product_supplier: response.data.supplier.supplier_id,
                     product_discount: response.data.discount.discount_id,
                     product_description: response.data.product_description,

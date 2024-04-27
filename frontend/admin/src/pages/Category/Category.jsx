@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 
-import CategoryList from '~/pages/Category/partials/CategoryList.jsx';
-import CategoryForm from '~/pages/Category/partials/CategoryForm.jsx';
+import CategoryList from './partials/CategoryList.jsx';
+import CategoryForm from './partials/CategoryForm.jsx';
 
 import { CategoryService, ProductService } from '~/services/index.js';
 
-import styles from '~/pages/Category/Category.module.scss';
+import styles from './Category.module.scss';
 
 const cx = classNames.bind(styles);
 

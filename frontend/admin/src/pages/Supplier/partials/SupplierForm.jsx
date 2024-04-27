@@ -1,82 +1,18 @@
+import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
-import { Form, InputGroup, Button } from '~/components/index.js';
+import { Form, InputGroup, Button, Modal } from '~/components/index.js';
 import Validator from '~/utils/validator.js';
 import staffActions from '~/utils/staffActions.js';
 import SupplierService from '~/services/supplier.service.js';
+import supplierRules from '~/config/rules/supplier.js';
 
-import styles from '~/pages/Supplier/Supplier.module.scss';
+import styles from './../Supplier.module.scss';
 
 const cx = classNames.bind(styles);
 
-const rules = [
-    {
-        field: 'supplier_name',
-        method: 'isEmpty',
-        validWhen: false,
-        message: 'Tên nhà cung ứng là bắt buộc',
-    },
-    {
-        field: 'supplier_name',
-        method: 'isLength',
-        args: [
-            {
-                min: 3,
-            },
-        ],
-        validWhen: true,
-        message: 'Tên nhà cung ứng tối thiểu 3 ký tự',
-    },
-    {
-        field: 'supplier_phone_number',
-        method: 'isEmpty',
-        validWhen: false,
-        message: 'SỐ địện thoại là bắt buộc',
-    },
-    {
-        field: 'supplier_phone_number',
-        method: 'isMobilePhone',
-        args: ['vi-VN'],
-        validWhen: true,
-        message: 'Số điện thoại không hợp lệ',
-    },
-    {
-        field: 'supplier_email',
-        method: 'isEmpty',
-        validWhen: false,
-        message: 'Email là bắt buộc',
-    },
-    {
-        field: 'supplier_email',
-        method: 'isLength',
-        args: [
-            {
-                min: 3,
-            },
-        ],
-        validWhen: true,
-        message: 'Email tối thiểu 3 ký tự',
-    },
-    {
-        field: 'supplier_address',
-        method: 'isEmpty',
-        validWhen: false,
-        message: 'Địa chỉ là bắt buộc',
-    },
-    {
-        field: 'supplier_address',
-        method: 'isLength',
-        args: [
-            {
-                min: 3,
-            },
-        ],
-        validWhen: true,
-        message: 'Địa chỉ tối thiểu 3 ký tự',
-    },
-];
 const config = {
     headers: {
         authorization: `Bearer ${staffActions.getToken()}`,
@@ -90,7 +26,8 @@ const SupplierForm = ({ supplier, setSupplier }) => {
     const [errors, setErrors] = useState({});
     const [isUpdating, setIsUpdating] = useState(false);
     const supplierService = new SupplierService(config);
-    const validator = new Validator(rules);
+    const validator = new Validator(supplierRules);
+    const openBtnRef = useRef(null);
 
     const handleOnChange = (event) => {
         setForm({ ...form, [event.target.name]: event.target.value });
@@ -108,15 +45,23 @@ const SupplierForm = ({ supplier, setSupplier }) => {
             return;
         }
         try {
+            let response = null;
             if (isUpdating) {
-                await supplierService.update(supplier.supplier_id, form);
+                response = await supplierService.update(supplier.supplier_id, form);
             } else {
-                await supplierService.create(form);
+                response = await supplierService.create(form);
             }
-            setForm({});
-            setSupplier({});
-            setIsUpdating(false);
+            if (response.status === 'success') {
+                toast.success(`Nhà cung ứng đã được ${isUpdating ? 'cập nhật' : 'thêm mới'} thành công.`, {
+                    onClose: () => {
+                        setForm({});
+                        setSupplier({});
+                        setIsUpdating(false);
+                    },
+                });
+            }
         } catch (error) {
+            console.log(error);
             setErrors({ form: error.message });
         }
     };
@@ -126,23 +71,16 @@ const SupplierForm = ({ supplier, setSupplier }) => {
         setErrors({});
         setIsUpdating(false);
     };
+    const confirmCancelAction = (event) => {
+        event.preventDefault();
+        openBtnRef.current.click();
+    };
 
     useEffect(() => {
         if (Object.keys(supplier).length === 0) {
             return;
         }
-        const startDate = new Date(supplier.supplier_start);
-        const endDate = new Date(supplier.supplier_end);
-        const newSupplier = {
-            ...supplier,
-            supplier_start: `${startDate.getFullYear()}-${
-                startDate.getMonth() + 1 < 10 ? `0${startDate.getMonth() + 1}` : startDate.getMonth() + 1
-            }-${startDate.getDate() < 10 ? `0${startDate.getDate()}` : startDate.getDate()}`,
-            supplier_end: `${endDate.getFullYear()}-${
-                endDate.getMonth() + 1 < 10 ? `0${endDate.getMonth() + 1}` : endDate.getMonth() + 1
-            }-${endDate.getDate() < 10 ? `0${endDate.getDate()}` : endDate.getDate()}`,
-        };
-        setForm(newSupplier);
+        setForm(supplier);
         setErrors({});
         setIsUpdating(true);
     }, [supplier]);
@@ -152,9 +90,11 @@ const SupplierForm = ({ supplier, setSupplier }) => {
             <h2 className={cx('supplier-title')}>{!isUpdating ? 'Thêm nhà cung ứng mới' : 'Cập nhật nhà cung ứng'} </h2>
             <div className={cx('supplier-form__body')}>
                 {isUpdating && (
-                    <Button primary className="mb-3" onClick={changeActionToAdd}>
-                        Thêm mới
-                    </Button>
+                    <div className={cx('control-bar')}>
+                        <Button primary className="mb-3" onClick={changeActionToAdd}>
+                            Thêm mới
+                        </Button>
+                    </div>
                 )}
                 <Form
                     buttons={[
@@ -165,7 +105,7 @@ const SupplierForm = ({ supplier, setSupplier }) => {
                         {
                             name: 'Hủy',
                             type: 'danger',
-                            onClick: (event) => changeActionToAdd(event),
+                            onClick: (event) => confirmCancelAction(event),
                         },
                     ]}
                     onSubmit={handleSubmit}
@@ -176,37 +116,62 @@ const SupplierForm = ({ supplier, setSupplier }) => {
                             label="Tên nhà cung ứng"
                             type="text"
                             name="supplier_name"
-                            value={form['supplier_name']}
+                            value={form.supplier_name}
                             onChange={handleOnChange}
-                            error={errors['supplier_name']}
+                            error={errors.supplier_name}
                         />
                         <InputGroup
                             label="Số điện thoại"
                             type="text"
                             name="supplier_phone_number"
-                            value={form['supplier_phone_number']}
+                            value={form.supplier_phone_number}
                             onChange={handleOnChange}
-                            error={errors['supplier_phone_number']}
+                            error={errors.supplier_phone_number}
                         />
                         <InputGroup
                             label="Email"
-                            type="text"
+                            type="email"
                             name="supplier_email"
-                            value={form['supplier_email']}
+                            value={form.supplier_email}
                             onChange={handleOnChange}
-                            error={errors['supplier_email']}
+                            error={errors.supplier_email}
                         />
                         <InputGroup
                             label="Địa chỉ"
                             type="text"
                             name="supplier_address"
-                            value={form['supplier_address']}
+                            value={form.supplier_address}
                             onChange={handleOnChange}
-                            error={errors['supplier_address']}
+                            error={errors.supplier_address}
                         />
                     </>
                 </Form>
             </div>
+            <Button
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#confirm-cancel-update-discount"
+                ref={openBtnRef}
+            ></Button>
+            <Modal
+                id="confirm-cancel-update-discount"
+                title="Xác nhận hủy bỏ"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        text: 'Hủy',
+                        dismiss: 'modal',
+                    },
+                    {
+                        type: 'danger',
+                        text: 'Đồng ý',
+                        onClick: (event) => changeActionToAdd(event),
+                        dismiss: 'modal',
+                    },
+                ]}
+            >
+                <p>Bạn có chắc chắn muốn hủy bỏ {!isUpdating ? 'thêm mới' : 'cập nhật'} mã giảm giá này không?</p>
+            </Modal>
         </div>
     );
 };

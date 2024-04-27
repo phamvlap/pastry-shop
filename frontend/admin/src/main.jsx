@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import App from './App.jsx';
 import '~/assets/css/main.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -10,7 +12,10 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
         <StaffProvider>
-            <App />
+            <>
+                <ToastContainer />
+                <App />
+            </>
         </StaffProvider>
     </React.StrictMode>,
 );

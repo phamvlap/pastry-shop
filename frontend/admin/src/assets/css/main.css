@@ -9,6 +9,7 @@
     --white-color: #fff;
     --dark-text-color: #666666;
     --light-text-color: #f2f6fa;
+    --secondary-color: #6c757d;
     --info-color: #0b5ed7;
     --danger-color: #BB2D3B;
     --success-color: #157347;
@@ -114,9 +115,4 @@ li {
     font-family: OpenSans;
     src: url('/src/assets/fonts/open_sans/OpenSans-ExtraBold.ttf') format('ttf');
     font-weight: 700;
-}
-
-/* sweetalert */
-.swal2-container {
-    font-size: 1.6rem;
 }

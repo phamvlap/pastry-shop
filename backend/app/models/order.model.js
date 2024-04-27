@@ -74,8 +74,12 @@ class OrderModel {
             from ${this.table}
             where (:status_id is null or order_id in (
                     select order_id
-                    from ${process.env.TABLE_STATUS_DETAILS}
-                    where status_id = :status_id
+                    from (
+                        select order_id, max(status_id) as current_status
+                        from ${process.env.TABLE_STATUS_DETAILS}
+                        group by order_id
+                    ) as tmp
+                    where tmp.current_status = :status_id
                 ))
             and (:start_date is null or order_date >= :start_date)
             and (:end_date is null or order_date <= :end_date)

@@ -4,8 +4,9 @@ import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { toast } from 'react-toastify';
 
-import { Button, OrderItemList, FormSelect } from '~/components/index.js';
+import { Button, OrderItemList, FormSelect, Modal } from '~/components/index.js';
 import OrderActions from '~/utils/orderActions.js';
 import Helper from '~/utils/helper.js';
 
@@ -16,7 +17,12 @@ const cx = classNames.bind(styles);
 const OrderDetail = () => {
     const [order, setOrder] = useState(null);
     const [itemList, setItemList] = useState([]);
-    const [form, setForm] = useState();
+    const [statusList, setStatusList] = useState([]);
+    const [currentStatus, setCurrentStatus] = useState();
+    const [form, setForm] = useState({
+        status_id: '',
+    });
+    const [errors, setErrors] = useState({});
 
     const { id: orderId } = useParams();
     const closeBtnRef = useRef();
@@ -32,7 +38,7 @@ const OrderDetail = () => {
                         imageSrc: item.detail.images[0].image_url,
                         price:
                             Number(item.detail.price.price_value) -
-                            Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate),
+                            (Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate)) / 100,
                         quantity: item.product_quantity,
                     };
                 });
@@ -50,6 +56,8 @@ const OrderDetail = () => {
                 };
                 setOrder(order);
                 setItemList(items);
+                setStatusList(response.data.statusList);
+                setCurrentStatus(response.data.statusList[response.data.statusList.length - 1]);
             }
         } catch (error) {
             setOrder(null);
@@ -61,24 +69,46 @@ const OrderDetail = () => {
             [event.target.name]: event.target.value,
         });
     };
+    const validateForm = () => {
+        const errors = {};
+        if (form.status_id === '') {
+            errors.status_id = 'Vui lòng chọn trạng thái mới';
+        } else if (
+            Helper.validateOrderStatus(statusList[statusList.length - 1].status.status_id, Number(form.status_id)) ===
+            false
+        ) {
+            errors.status_id = 'Trạng thái mới không hợp lệ';
+        }
+        console.log(errors);
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
     const handleUpdateStatus = async (event) => {
         event.preventDefault();
 
-        if (form && form.status_id) {
-            try {
-                const response = await OrderActions.updateOrder(orderId, form.status_id);
-                if (response.status === 'success') {
-                    await fetchOrder();
-                    closeBtnRef.current.click();
-                }
-            } catch (error) {
-                console.log(error);
+        if (!validateForm()) {
+            return;
+        }
+        try {
+            const response = await OrderActions.updateOrder(orderId, form.status_id);
+            if (response.status === 'success') {
+                toast.success('Cập nhật trạng thái mới cho đơn hàng thành công', {
+                    onClose: async () => {
+                        setForm({ status_id: '' });
+                        setErrors({});
+                        await fetchOrder();
+                        closeBtnRef.current.click();
+                    },
+                });
             }
+        } catch (error) {
+            console.log(error);
         }
     };
     useEffect(() => {
         fetchOrder();
     }, [orderId]);
+
     return (
         <div className={cx('order-detail-container')}>
             <h2 className={cx('order-detail-title')}>Chi tiết đơn hàng</h2>
@@ -123,7 +153,11 @@ const OrderDetail = () => {
                                 </div>
                                 <div className={cx('order-info__item')}>
                                     <span className={cx('order-info__item-label')}>Nhận hàng lúc:</span>
-                                    <span>10:30 31/03/2024</span>
+                                    <span>
+                                        {currentStatus.status.status_id === 1004
+                                            ? Helper.formatDateTime(currentStatus.updatedAt)
+                                            : 'Chưa nhận hàng'}
+                                    </span>
                                 </div>
                             </div>
                             <div className={cx('order-section__customer')}>
@@ -145,11 +179,55 @@ const OrderDetail = () => {
                             </div>
                         </div>
                         <div className="col col-md-8">
-                            <OrderItemList itemList={itemList} />
-                            <div className={cx('order-section__total')}>
-                                <div className={cx('order-section__total-total')}>
-                                    <span className={cx('order-section__total-label')}>Tổng tiền:</span>
-                                    <span>{Helper.formatMoney(order.order_total) + ' VNĐ'}</span>
+                            <div>
+                                <OrderItemList itemList={itemList} />
+                                <div className={cx('order-section__total')}>
+                                    <div className={cx('order-section__total-total')}>
+                                        <span className={cx('order-section__total-label')}>Tổng thanh toán:</span>
+                                        <span>{Helper.formatMoney(order.order_total) + ' VNĐ'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className={cx('order-section__title')}>Thông tin chi tiết trạng thái</h2>
+                                <div className={cx('status-content')}>
+                                    <div className={cx('content-row')}>
+                                        <div className="row">
+                                            <div className={cx('col col-md-1', 'content-row__column')}>##</div>
+                                            <div className={cx('col col-md-3', 'content-row__column')}>Thời gian</div>
+                                            <div className={cx('col col-md-3', 'content-row__column')}>Trạng thái</div>
+                                            <div className={cx('col col-md-3', 'content-row__column')}>
+                                                Người cập nhật
+                                            </div>
+                                            <div className={cx('col col-md-2', 'content-row__column')}>Vai trò</div>
+                                        </div>
+                                    </div>
+                                    {statusList &&
+                                        statusList.map((status, index) => (
+                                            <div className={cx('content-row')} key={index}>
+                                                <div className="row">
+                                                    <div className={cx('col col-md-1', 'content-row__column')}>
+                                                        {index + 1}
+                                                    </div>
+                                                    <div className={cx('col col-md-3', 'content-row__column')}>
+                                                        {Helper.formatDateTime(status.updatedAt)}
+                                                    </div>
+                                                    <div className={cx('col col-md-3', 'content-row__column')}>
+                                                        {status.status.vn_status_name}
+                                                    </div>
+                                                    <div className={cx('col col-md-3', 'content-row__column')}>
+                                                        {status.implementer.role === 'customer'
+                                                            ? status.implementer.customer_name
+                                                            : status.implementer.role === 'staff'
+                                                            ? status.implementer.staff_name
+                                                            : ''}
+                                                    </div>
+                                                    <div className={cx('col col-md-2', 'content-row__column')}>
+                                                        {status.implementer.role}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                         </div>
@@ -157,75 +235,68 @@ const OrderDetail = () => {
                 )}
             </div>
 
-            <div
-                className={cx('modal fade', 'update-status-modal')}
+            <Modal
                 id="update-order-status"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
-                tabIndex="-1"
-                aria-labelledby="update-order-status__label"
-                aria-hidden="true"
+                title="Cập nhật trạng thái đơn hàng"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        text: 'Hủy',
+                        dismiss: 'modal',
+                        onClick: () => {
+                            setForm({ status_id: '' });
+                            setErrors({});
+                        },
+                        ref: closeBtnRef,
+                    },
+                    {
+                        type: 'success',
+                        text: 'Lưu thay đổi',
+                        onClick: (event) => handleUpdateStatus(event),
+                    },
+                ]}
             >
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5
-                                className={cx('modal-title', 'update-status-modal__title')}
-                                id="update-order-status__label"
-                            >
-                                Cập nhật trạng thái đơn hàng
-                            </h5>
-                            <button
-                                ref={closeBtnRef}
-                                type="button"
-                                className="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            ></button>
-                        </div>
-                        <div className="modal-body">
-                            <div className={cx('current-status')}>
-                                <span className={cx('current-status__label')}>Trạng thái hiện tại:</span>
-                                <span className={cx('current-status__value')}>{order?.order_status}</span>
-                            </div>
-                            <form>
-                                <div className="input-group mb-3">
-                                    <span className={cx('input-group-text', 'input-group-label')}>
-                                        Chọn trạng thái mới:
-                                    </span>
-                                    <FormSelect
-                                        name="status_id"
-                                        value={form?.status_id}
-                                        options={[
-                                            {
-                                                value: '0000',
-                                                name: '-- Chọn --',
-                                            },
-                                            {
-                                                value: '1002',
-                                                name: 'Duyệt đơn hàng',
-                                            },
-                                            {
-                                                value: '1003',
-                                                name: 'Đang giao hàng',
-                                            },
-                                        ]}
-                                        onChange={(event) => handleChangeStatus(event)}
-                                    />
-                                </div>
-                            </form>
-                        </div>
-                        <div className="modal-footer">
-                            <Button danger data-bs-dismiss="modal">
-                                Hủy
-                            </Button>
-                            <Button success onClick={(event) => handleUpdateStatus(event)}>
-                                Lưu
-                            </Button>
-                        </div>
+                <>
+                    <div className={cx('current-status')}>
+                        <span className={cx('current-status__label')}>Trạng thái hiện tại:</span>
+                        <span className={cx('current-status__value')}>{order?.order_status}</span>
                     </div>
-                </div>
-            </div>
+                    <form>
+                        <div className="input-group mb-3">
+                            <span className={cx('input-group-text', 'input-group-label')}>Chọn trạng thái mới:</span>
+                            <FormSelect
+                                name="status_id"
+                                value={form?.status_id}
+                                options={[
+                                    {
+                                        value: '',
+                                        name: '-- Chọn --',
+                                    },
+                                    {
+                                        value: '1002',
+                                        name: 'Duyệt đơn hàng',
+                                    },
+                                    {
+                                        value: '1003',
+                                        name: 'Đang giao hàng',
+                                    },
+                                    {
+                                        value: '1005',
+                                        name: 'Huỷ đơn hàng',
+                                    },
+                                ]}
+                                disabled={
+                                    statusList.length > 0 &&
+                                    (statusList[statusList.length - 1].status.status_id === 1004 ||
+                                        statusList[statusList.length - 1].status.status_id === 1005)
+                                }
+                                onChange={(event) => handleChangeStatus(event)}
+                            />
+                        </div>
+                        {errors.status_id && <p className={cx('error')}>{errors.status_id}</p>}
+                    </form>
+                </>
+            </Modal>
         </div>
     );
 };

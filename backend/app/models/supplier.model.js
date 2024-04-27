@@ -102,7 +102,8 @@ class SupplierModel {
     }
     // update
     async update(id, payload) {
-        const oldSupplier = await this.get(id);
+        console.log(id, payload)
+        const oldSupplier = await this.getById(id);
         if (!oldSupplier) {
             throw new Error('Supplier not found.');
         }
@@ -138,7 +139,7 @@ class SupplierModel {
     }
     // delete
     async delete(id) {
-        const oldSupplier = await this.get(id);
+        const oldSupplier = await this.getById(id);
         if (!oldSupplier) {
             throw new Error('Supplier not found.');
         }

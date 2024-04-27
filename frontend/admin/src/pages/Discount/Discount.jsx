@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 
-import DiscountList from '~/pages/Discount/partials/DiscountList.jsx';
-import DiscountForm from '~/pages/Discount/partials/DiscountForm.jsx';
+import DiscountList from './partials/DiscountList.jsx';
+import DiscountForm from './partials/DiscountForm.jsx';
 
 import { DiscountService, ProductService } from '~/services/index.js';
 import { formatDate } from '~/utils/index.js';
 
-import styles from '~/pages/Discount/Discount.module.scss';
+import styles from './Discount.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -29,11 +29,11 @@ const Discount = () => {
                 data.push({
                     discount_id: discount.discount_id,
                     discount_code: discount.discount_code,
-                    discount_rate: Number(discount.discount_rate).toFixed(2),
+                    discount_rate: Number(discount.discount_rate).toFixed(2) * 100,
                     discount_limit: discount.discount_limit,
                     discount_applied: appliedCount.data,
-                    discount_start: formatDate.convertToViewFormat(discount.discount_start),
-                    discount_end: formatDate.convertToViewFormat(discount.discount_end),
+                    discount_start: formatDate.convertToStandardFormat(discount.discount_start),
+                    discount_end: formatDate.convertToStandardFormat(discount.discount_end),
                 });
             }
             setDiscountList(data);

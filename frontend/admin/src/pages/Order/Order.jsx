@@ -61,10 +61,10 @@ const Order = () => {
 
     const fetchOrders = async () => {
         const filter = {
-            status_id: statusId,
-            start_date: startDate, // yyyy-mm-dd
-            end_date: endDate, // yyyy-mm-dd
-            order_total: orderTotalSort,
+            status_id: statusId === 'all' ? null : statusId,
+            start_date: startDate === '' ? null : startDate, // yyyy-mm-dd
+            end_date: endDate === '' ? null : endDate, // yyyy-mm-dd
+            order_total: orderTotalSort === 'all' ? null : orderTotalSort,
             limit: recordsPerPage,
             offset: recordOffset,
         };
@@ -120,7 +120,7 @@ const Order = () => {
                 setOrderList([]);
             }
         };
-        if (searchOrderId !== null) {
+        if (searchOrderId !== '' && searchOrderId !== null) {
             fetchOneOrder();
         } else {
             fetchOrders();

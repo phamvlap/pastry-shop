@@ -24,11 +24,11 @@ export default [
         args: [
             {
                 min: 0,
-                max: 1,
+                max: 100,
             },
         ],
         validWhen: true,
-        message: 'Tỷ lệ giảm giá phải trong khoảng 0 - 1.',
+        message: 'Tỷ lệ giảm giá phải trong khoảng 0 - 100.',
     },
     {
         field: 'discount_limit',

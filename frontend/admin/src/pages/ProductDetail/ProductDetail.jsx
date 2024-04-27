@@ -1,17 +1,16 @@
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
-import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrashCan, faChevronLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 import { formatDate, staffActions } from '~/utils/index.js';
 import { ProductService } from '~/services/index.js';
-import ImageList from '~/pages/ProductDetail/partials/ImageList.jsx';
-import { Button, Paragraph } from '~/components/index.js';
+import ImageList from './partials/ImageList.jsx';
+import { Button, Paragraph, Modal } from '~/components/index.js';
 
-import styles from '~/pages/ProductDetail/ProductDetail.module.scss';
+import styles from './ProductDetail.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -29,6 +28,7 @@ const ProductDetail = () => {
     const { id: productId } = useParams();
     const navigate = useNavigate();
     const productService = new ProductService(configApi);
+    const openBtnRef = useRef();
 
     const fetchProduct = async () => {
         try {
@@ -58,34 +58,25 @@ const ProductDetail = () => {
             console.error(error);
         }
     };
+    const confirmDeleteItem = () => {
+        openBtnRef.current.click();
+    };
     useEffect(() => {
         fetchProduct();
     }, []);
 
-    const handleDeleteItem = () => {
-        Swal.fire({
-            title: `Bạn có chắc chắn muốn xóa sản phẩm ${product.product_name} ?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Xác nhận',
-            cancelButtonText: 'Hủy',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                await productService.delete(productId).then(() => {
-                    Swal.fire({
-                        title: 'Xóa thành công',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 1500,
-                    });
-                    setTimeout(() => {
-                        navigate('/products');
-                    }, 1500);
+    const handleDeleteItem = async () => {
+        try {
+            const productService = new ProductService();
+            const response = await productService.delete(productId);
+            if (response.status === 'success') {
+                toast.success('Xóa sản phẩm thành công!', {
+                    onClose: () => navigate('/products'),
                 });
             }
-        });
+        } catch (error) {
+            toast.error('Xóa sản phẩm thất bại!');
+        }
     };
 
     return (
@@ -132,11 +123,38 @@ const ProductDetail = () => {
                     <Button to={`/products/${productId}/edit`} warning leftIcon={<FontAwesomeIcon icon={faPen} />}>
                         Hiệu chỉnh
                     </Button>
-                    <Button danger leftIcon={<FontAwesomeIcon icon={faTrashCan} />} onClick={() => handleDeleteItem()}>
+                    <Button danger leftIcon={<FontAwesomeIcon icon={faTrashCan} />} onClick={() => confirmDeleteItem()}>
                         Xóa
                     </Button>
                 </div>
             </div>
+            <Button
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#confirm-delete-product-modal"
+                ref={openBtnRef}
+            ></Button>
+            <Modal
+                id="confirm-delete-product-modal"
+                title="Xác nhận xóa sản phẩm"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        text: 'Hủy',
+                        dismiss: 'modal',
+                    },
+                    {
+                        type: 'primary',
+                        text: 'Đồng ý',
+                        onClick: () => handleDeleteItem,
+                        dismiss: 'modal',
+                    },
+                ]}
+            >
+                <p>
+                    Bạn có chắc chắn muốn xóa sản phẩm <strong>{product.product_name}</strong> ?
+                </p>
+            </Modal>
         </div>
     );
 };

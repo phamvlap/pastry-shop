@@ -37,16 +37,25 @@
         font-size: 2.2rem;
     }
 }
-.update-status-modal {
-    .update-status-modal__title {
-        font-size: 1.6rem;
-        font-weight: 700;
-        margin-bottom: 8px;
+
+.input-group-label {
+    font-size: 1.6rem !important;
+}
+.status-content {
+    padding: 8px;
+    .content-row {
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        .content-row__column {
+            display: flex;
+            align-items: center;
+        }
     }
-    .current-status {
-        margin-bottom: 16px;
+    .content-row:first-child {
+        font-weight: bold;
     }
-    .input-group-label {
-        font-size: 1.6rem;
-    }
+}
+.error {
+    color: var(--danger-color);
+    font-style: italic;
 }

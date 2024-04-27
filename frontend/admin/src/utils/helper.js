@@ -59,5 +59,19 @@ class Helper {
             date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()
         }`;
     }
+
+    // validat udpated order status
+    static validateOrderStatus(currentStatusId, updatedStatusId) {
+        switch (currentStatusId) {
+            case 1001:
+                return updatedStatusId === 1002 || updatedStatusId === 1005;
+            case 1002:
+                return updatedStatusId === 1003;
+            case 1003:
+                return updatedStatusId === 1004;
+            default:
+                return false;
+        }
+    }
 }
 export default Helper;

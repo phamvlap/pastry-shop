@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
 import { Button, InputItem, Modal } from '~/components/index.js';
 import { staffActions, getButton } from '~/utils/index.js';
@@ -52,30 +53,40 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
         });
         const id = row[`${entity}_id`];
         try {
-            await instanceService.update(id, payload);
-            setData((prevData) => {
-                return prevData.map((item) => {
-                    if (item[`${entity}_id`] === id) {
-                        return { ...item, ...payload };
-                    }
-                    return item;
+            const resopnse = await instanceService.update(id, payload);
+            if (resopnse.status === 'success') {
+                setData((prevData) => {
+                    return prevData.map((item) => {
+                        if (item[`${entity}_id`] === id) {
+                            return { ...item, ...payload };
+                        }
+                        return item;
+                    });
                 });
-            });
-            setActiveAction({});
+                setActiveAction({});
+                toast.success('Cập nhật thành công');
+            }
         } catch (error) {
             throw new Error(error.message);
         }
     };
     const handleDeleteRow = async (itemId) => {
         try {
-            await instanceService.delete(itemId);
-            setData((prevData) => {
-                return prevData.filter((item) => item[`${entity}_id`] !== itemId);
-            });
-            setActiveAction({});
+            const response = await instanceService.delete(itemId);
+            if (response.status === 'success') {
+                setData((prevData) => {
+                    return prevData.filter((item) => item[`${entity}_id`] !== itemId);
+                });
+                setActiveAction({});
+                toast.success('Xóa thành công');
+            }
         } catch (error) {
             throw new Error(error.message);
         }
+    };
+    const handleCancelAction = () => {
+        setActiveAction({});
+        toast.warning('Bạn vừa mới hủy bỏ thao tác');
     };
 
     useEffect(() => {
@@ -175,7 +186,7 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                                 }
                                 if (action === 'delete') {
                                     button['data-bs-toggle'] = 'modal';
-                                    button['data-bs-target'] = `#${entity}-${row[`${entity}_id`]}`;
+                                    button['data-bs-target'] = `#confirm-delete-item-modal-${row[`${entity}_id`]}`;
                                 }
                                 return (
                                     <Button className={cx('table-row__btn')} key={index} {...button}>
@@ -183,6 +194,28 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                                     </Button>
                                 );
                             })}
+                            <Modal
+                                id={`confirm-delete-item-modal-${row[`${entity}_id`]}`}
+                                title="Xác nhận xóa"
+                                buttons={[
+                                    {
+                                        type: 'secondary',
+                                        text: 'Hủy',
+                                        dismiss: 'modal',
+                                    },
+                                    {
+                                        type: 'danger',
+                                        text: 'Xóa',
+                                        onClick: () => handleDeleteRow(row[`${entity}_id`]),
+                                        dismiss: 'modal',
+                                    },
+                                ]}
+                            >
+                                <p>
+                                    Bạn có chắc chắn muốn xóa <b>{row[`${entity}_name`] || row[`${entity}_code`]}</b>{' '}
+                                    này không?
+                                </p>
+                            </Modal>
                         </div>
                     ) : (
                         <>
@@ -193,7 +226,7 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                             >
                                 Áp dụng
                             </Button>
-                            <Button className={cx('table-row__btn')} danger onClick={() => setActiveAction({})}>
+                            <Button className={cx('table-row__btn')} danger onClick={() => handleCancelAction()}>
                                 Hủy
                             </Button>
                         </>
@@ -216,32 +249,3 @@ TableRow.propTypes = {
 };
 
 export default TableRow;
-
-{
-    /* <Modal
-    modalId={`${entity}-${row[`${entity}_id`]}`}
-    modalContent={{
-        title: 'Xác nhận xóa',
-        body: (
-            <p>
-                Bạn có chắc chắn muốn xóa <b>{row[`${entity}_name`]}</b> này không?
-            </p>
-        ),
-        footer: (
-            <>
-                <Button className={cx('table-row__btn')} primary data-bs-dismiss="modal">
-                    Hủy
-                </Button>
-                <Button
-                    className={cx('table-row__btn')}
-                    danger
-                    onClick={() => handleDeleteRow(row[`${entity}_id`])}
-                    data-bs-dismiss="modal"
-                >
-                    Xóa
-                </Button>
-            </>
-        ),
-    }}
-/>; */
-}

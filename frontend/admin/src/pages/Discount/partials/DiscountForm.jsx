@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
-import { Form, InputGroup, Button } from '~/components/index.js';
+import { Form, InputGroup, Button, Modal } from '~/components/index.js';
 import { staffActions, Validator, formatDate } from '~/utils/index.js';
 import { DiscountService } from '~/services/index.js';
 import discountRules from '~/config/rules/discount.js';
 
-import styles from '~/pages/Discount/Discount.module.scss';
+import styles from './../Discount.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -32,6 +33,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
     const [isUpdating, setIsUpdating] = useState(false);
     const discountService = new DiscountService(config);
     const validator = new Validator(discountRules);
+    const openBtnRef = useRef(null);
 
     const handleOnChange = (event) => {
         setForm({ ...form, [event.target.name]: event.target.value });
@@ -49,14 +51,21 @@ const DiscountForm = ({ discount, setDiscount }) => {
             return;
         }
         try {
+            let response = null;
             if (isUpdating) {
-                await discountService.update(discount.discount_id, form);
+                response = await discountService.update(discount.discount_id, form);
             } else {
-                await discountService.create(form);
+                response = await discountService.create(form);
             }
-            setForm({});
-            setDiscount({});
-            setIsUpdating(false);
+            if (response.status === 'success') {
+                toast.success(`${isUpdating ? 'Cập nhật' : 'Thêm'} mã giảm giá thành công!`, {
+                    onClose: () => {
+                        setForm({});
+                        setDiscount({});
+                        setIsUpdating(false);
+                    },
+                });
+            }
         } catch (error) {
             setErrors({ form: error.message });
         }
@@ -67,21 +76,18 @@ const DiscountForm = ({ discount, setDiscount }) => {
         setErrors({});
         setIsUpdating(false);
     };
+    const showModal = () => {
+        openBtnRef.current.click();
+    };
 
     useEffect(() => {
         if (Object.keys(discount).length === 0) {
             return;
         }
-        const startDate = new Date(discount.discount_start);
-        const endDate = new Date(discount.discount_end);
         const newDiscount = {
             ...discount,
-            discount_start: `${startDate.getFullYear()}-${
-                startDate.getMonth() + 1 < 10 ? `0${startDate.getMonth() + 1}` : startDate.getMonth() + 1
-            }-${startDate.getDate() < 10 ? `0${startDate.getDate()}` : startDate.getDate()}`,
-            discount_end: `${endDate.getFullYear()}-${
-                endDate.getMonth() + 1 < 10 ? `0${endDate.getMonth() + 1}` : endDate.getMonth() + 1
-            }-${endDate.getDate() < 10 ? `0${endDate.getDate()}` : endDate.getDate()}`,
+            discount_start: formatDate.convertToStandardFormat(discount.discount_start),
+            discount_end: formatDate.convertToStandardFormat(discount.discount_end),
         };
         setForm(newDiscount);
         setErrors({});
@@ -93,9 +99,11 @@ const DiscountForm = ({ discount, setDiscount }) => {
             <h2 className={cx('discount-title')}>{!isUpdating ? 'Thêm mã giảm giá mới' : 'Cập nhật mã giảm giá'}</h2>
             <div className={cx('discount-form__body')}>
                 {isUpdating && (
-                    <Button primary className="mb-3" onClick={changeActionToAdd}>
-                        Thêm mới
-                    </Button>
+                    <div className={cx('control-bar')}>
+                        <Button primary className="mb-3" onClick={changeActionToAdd}>
+                            Thêm mới
+                        </Button>
+                    </div>
                 )}
                 <Form
                     buttons={[
@@ -106,7 +114,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
                         {
                             name: 'Hủy',
                             type: 'danger',
-                            onClick: (event) => changeActionToAdd(event),
+                            onClick: () => showModal(),
                         },
                     ]}
                     onSubmit={handleSubmit}
@@ -168,6 +176,31 @@ const DiscountForm = ({ discount, setDiscount }) => {
                         </div>
                     </>
                 </Form>
+                <Button
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirm-cancel-update-discount"
+                    ref={openBtnRef}
+                ></Button>
+                <Modal
+                    id="confirm-cancel-update-discount"
+                    title="Xác nhận hủy bỏ"
+                    buttons={[
+                        {
+                            type: 'secondary',
+                            text: 'Hủy',
+                            dismiss: 'modal',
+                        },
+                        {
+                            type: 'danger',
+                            text: 'Đồng ý',
+                            onClick: (event) => changeActionToAdd(event),
+                            dismiss: 'modal',
+                        },
+                    ]}
+                >
+                    <p>Bạn có chắc chắn muốn hủy bỏ {!isUpdating ? 'thêm mới' : 'cập nhật'} mã giảm giá này không?</p>
+                </Modal>
             </div>
         </div>
     );

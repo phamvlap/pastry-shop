@@ -1,11 +1,13 @@
+import { useState, useEffect } from 'react';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRotate } from '@fortawesome/free-solid-svg-icons';
 
 import { FormSelect, InputSearch, Button } from '~/components/index.js';
 import { CategoryService } from '~/services/index.js';
 
-import styles from '~/pages/Product/Product.module.scss';
+import styles from './../Product.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -41,8 +43,9 @@ const statusOptions = [
 const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [filter, setFilter] = useState({
-        status: null,
-        category_id: null,
+        status: 'all',
+        category_id: 'all',
+        product_name: '',
     });
 
     const categoryService = new CategoryService();
@@ -71,11 +74,27 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
     const handleChangeFilter = (event) => {
         setFilter({
             ...filter,
-            [event.target.name]: event.target.value === 'all' ? null : event.target.value,
+            [event.target.name]: event.target.value,
         });
     };
     const submitFilter = () => {
         setCurrentFilter(filter);
+    };
+    const handleSubmitSearch = () => {
+        console.log(filter);
+        setCurrentFilter(filter);
+    };
+    const handleRefreshFilter = () => {
+        setFilter({
+            status: 'all',
+            category_id: 'all',
+            product_name: '',
+        });
+        setCurrentFilter({
+            status: 'all',
+            category_id: 'all',
+            product_name: '',
+        });
     };
 
     return (
@@ -93,13 +112,19 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
             <div className={cx('filter-section')}>
                 <div className={cx('filter-section__item')}>
                     <span className={cx('filter-section__text')}>Trạng thái: </span>
-                    <FormSelect options={statusOptions} name="status" onChange={(event) => handleChangeFilter(event)} />
+                    <FormSelect
+                        options={statusOptions}
+                        name="status"
+                        value={filter.status}
+                        onChange={(event) => handleChangeFilter(event)}
+                    />
                 </div>
                 <div className={cx('filter-section__item')}>
                     <span className={cx('filter-section__text')}>Danh mục: </span>
                     <FormSelect
                         options={categoryOptions}
                         name="category_id"
+                        value={filter.category_id}
                         onChange={(event) => handleChangeFilter(event)}
                     />
                 </div>
@@ -110,7 +135,16 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
                 </div>
             </div>
             <div className={cx('col col-sm-4', 'search-section')}>
-                <InputSearch />
+                <InputSearch
+                    placeholder="Nhập tên sản phẩm cần tìm"
+                    name="product_name"
+                    value={filter.product_name}
+                    onChange={(event) => handleChangeFilter(event)}
+                    onSubmit={() => handleSubmitSearch()}
+                />
+                <Button outline className={cx('search-section__button')} onClick={handleRefreshFilter}>
+                    <FontAwesomeIcon icon={faRotate} />
+                </Button>
             </div>
         </div>
     );

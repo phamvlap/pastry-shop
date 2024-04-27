@@ -72,8 +72,9 @@ const Product = () => {
     const [recordsPerPage, setRecordsPerPage] = useState(Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE));
     const [currentPage, setCurrentPage] = useState(1);
     const [currentFilter, setCurrentFilter] = useState({
-        status: null,
-        category_id: null,
+        status: 'all',
+        category_id: 'all',
+        product_name: '',
     });
     const [activeRow, setActiveRow] = useState(null);
 
@@ -133,8 +134,9 @@ const Product = () => {
 
     useEffect(() => {
         fetchProduct({
-            status: currentFilter.status,
-            category_id: currentFilter.category_id,
+            status: currentFilter.status === 'all' ? null : currentFilter.status,
+            category_id: currentFilter.category_id === 'all' ? null : currentFilter.category_id,
+            product_name: currentFilter.product_name,
             limit: recordsPerPage,
             offset: recordOffset,
         });
@@ -146,7 +148,14 @@ const Product = () => {
             page: currentPage,
             limit: recordsPerPage,
         });
-    }, [currentPage, recordOffset, recordsPerPage, currentFilter.status, currentFilter.category_id]);
+    }, [
+        currentPage,
+        recordOffset,
+        recordsPerPage,
+        currentFilter.status,
+        currentFilter.category_id,
+        currentFilter.product_name,
+    ]);
 
     return (
         <div className={cx('product-container')}>

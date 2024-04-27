@@ -46,6 +46,7 @@ class SupplierController {
     }
     async update(req, res, next) {
         try {
+            console.log(req.params.id)
             const supplierModel = new SupplierModel();
             await supplierModel.update(req.params.id, req.body);
             return res.status(StatusCodes.OK).json({

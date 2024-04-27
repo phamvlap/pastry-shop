@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
 import { Form, InputGroup } from '~/components/index.js';
 import { Validator, staffActions } from '~/utils/index.js';
 import { CategoryService } from '~/services/index.js';
 import categoryRules from '~/config/rules/category.js';
 
-import styles from '~/pages/Category/Category.module.scss';
+import styles from './../Category.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -31,7 +32,7 @@ const CategoryForm = ({ category, setCategory }) => {
             [event.target.name]: event.target.value,
         });
     };
-    const onSubmit = (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault();
         const newErrors = validator.validate(form);
         setErrors(newErrors);
@@ -39,13 +40,16 @@ const CategoryForm = ({ category, setCategory }) => {
             return;
         }
         try {
-            categoryService.create(form);
-            setCategory({
-                ...form,
-            });
-            setForm({
-                category_name: '',
-            });
+            const response = await categoryService.create(form);
+            if (response.status === 'success') {
+                setCategory({
+                    ...form,
+                });
+                setForm({
+                    category_name: '',
+                });
+                toast.success('Thêm danh mục thành công');
+            }
         } catch (error) {
             console.error('CategoryForm.onSubmit', error);
         }
