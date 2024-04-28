@@ -64,25 +64,27 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    // position: fixed;
     color: var(--fourth-level-color);
     background-color: var(--first-level-color);
     .sidenav-head {
         border-bottom: 1px solid var(--second-level-color);
     }
     .sidenav-head__admin {
-        padding: 20px;
+        padding: 16px;
         font-size: 2.0rem;
         text-align: center;
         color: var(--fourth-level-color);
         font-weight: 700;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     .sidenav-list {
         padding: 8px 0;
         .sidenav-item {
             display: block;
             padding: 16px 8px;
-            border-radius: 8px;
+            border-radius: 4px;
             &:hover {
                 background-color: var(--second-level-color);
             }

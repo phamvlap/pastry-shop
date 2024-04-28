@@ -9,6 +9,7 @@ import { StaffService } from '~/services/index.js';
 import { Button } from '~/components/index.js';
 import StaffActions from '~/utils/staffActions.js';
 import AddForm from './partials/AddForm.jsx';
+import routes from '~/config/routes.js';
 
 import styles from './StaffAdd.module.scss';
 
@@ -50,7 +51,7 @@ const StaffAdd = () => {
             <h2 className={cx('staff-title')}>{staffId ? 'Cập nhật thông tin nhân viên' : 'Thêm mới nhân viên'}</h2>
             <div className="mt-3">
                 <div style={{ marginTop: '8px', marginBottom: '8px' }}>
-                    <Button to="/staffs" outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
+                    <Button to={routes.staffs} outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
                         Quay lại
                     </Button>
                 </div>

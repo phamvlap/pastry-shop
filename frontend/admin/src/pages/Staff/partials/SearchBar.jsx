@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotate } from '@fortawesome/free-solid-svg-icons';
 
 import { FormSelect, InputSearch, Button } from '~/components/index.js';
-import StaffRole from '~/enums/StaffRole';
+import UserRole from '~/enums/UserRole.js';
 
 import styles from './../Staff.module.scss';
 
@@ -18,10 +18,10 @@ let roles = [
     },
 ];
 roles.push(
-    ...StaffRole.getKeys().map((role) => {
+    ...['STAFF', 'ADMIN', 'MANAGER'].map((role) => {
         return {
             value: role,
-            name: StaffRole.retrieveRole(role),
+            name: UserRole.retrieveRole(role),
         };
     }),
 );

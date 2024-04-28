@@ -4,19 +4,20 @@ import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { Button } from '~/components/index.js';
+import routes from '~/config/routes.js';
 
-import styles from '~/pages/Product/Product.module.scss';
+import styles from './../Staff.module.scss';
 
 const cx = classNames.bind(styles);
 
 const ControlPanel = () => {
     const navigate = useNavigate();
-    const toAddProduct = () => {
-        navigate('/staffs/add');
+    const goToAddStaff = () => {
+        navigate(routes.staffAdd);
     };
     return (
         <div className={cx('control-panel')}>
-            <Button primary leftIcon={<FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>} onClick={toAddProduct}>
+            <Button primary leftIcon={<FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>} onClick={goToAddStaff}>
                 Thêm nhân viên mới
             </Button>
         </div>

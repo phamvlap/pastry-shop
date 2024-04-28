@@ -9,6 +9,7 @@ import { Button } from '~/components/index.js';
 
 import { staffActions, formatDate } from '~/utils/index.js';
 import { CategoryService, DiscountService, SupplierService, ProductService } from '~/services/index.js';
+import routes from '~/config/routes.js';
 import styles from '~/pages/ProductAdd/ProductAdd.module.scss';
 
 const cx = classNames.bind(styles);
@@ -87,7 +88,7 @@ const ProductAdd = () => {
             <h2 className={cx('product-add-title')}>{productId > 0 ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</h2>
             <div className="mt-3">
                 <div style={{ marginTop: '8px', marginBottom: '8px' }}>
-                    <Button to="/products" outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
+                    <Button to={routes.products} outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
                         Quay lại
                     </Button>
                 </div>

@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import { Button, OrderItemList, FormSelect, Modal } from '~/components/index.js';
 import OrderActions from '~/utils/orderActions.js';
 import Helper from '~/utils/helper.js';
+import routes from '~/config/routes.js';
+import UserRole from '~/enums/UserRole.js';
 
 import styles from './OrderDetail.module.scss';
 
@@ -45,7 +47,7 @@ const OrderDetail = () => {
                 const order = {
                     order_id: response.data.order_id,
                     order_note: response.data.order_note,
-                    order_paymentMethod: response.data.paymentMethod.pm_name,
+                    order_paymentMethod: response.data.paymentMethod.vn_pm_name,
                     order_date: response.data.order_date,
                     order_status:
                         response.data && response.data.statusList.length > 0
@@ -114,7 +116,7 @@ const OrderDetail = () => {
             <h2 className={cx('order-detail-title')}>Chi tiết đơn hàng</h2>
             <div>
                 <div className={cx('control-bar')}>
-                    <Button to="/orders" outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
+                    <Button to={routes.orders} outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
                         Quay lại
                     </Button>
                     <Button
@@ -223,7 +225,7 @@ const OrderDetail = () => {
                                                             : ''}
                                                     </div>
                                                     <div className={cx('col col-md-2', 'content-row__column')}>
-                                                        {status.implementer.role}
+                                                        {UserRole.retrieveRole(status.implementer.role.toUpperCase())}
                                                     </div>
                                                 </div>
                                             </div>

@@ -25,11 +25,11 @@ const header = {
         value: 'Số lượng đã áp dụng',
         isModified: false,
     },
-    discount_start: {
+    discount_start_view: {
         value: 'Ngày bắt đầu',
         isModified: false,
     },
-    discount_end: {
+    discount_end_view: {
         value: 'Ngày kết thúc',
         isModified: false,
     },
@@ -47,7 +47,14 @@ const actions = {
         isModifiedInRow: false,
     },
 };
-const fillable = ['discount_id', 'discount_code', 'discount_rate', 'discount_limit', 'discount_start', 'discount_end'];
+const fillable = [
+    'discount_id',
+    'discount_code',
+    'discount_rate',
+    'discount_limit',
+    'discount_start_view',
+    'discount_end_view',
+];
 
 const DiscountList = ({ discountList, setDiscountList, setDiscount }) => {
     const [activeRow, setActiveRow] = useState(null);

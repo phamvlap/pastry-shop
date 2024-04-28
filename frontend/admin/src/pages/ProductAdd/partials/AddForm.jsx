@@ -8,6 +8,7 @@ import { Form, InputGroup, Modal, Button } from '~/components/index.js';
 import productRules from '~/config/rules/product.js';
 import { Validator, staffActions } from '~/utils/index.js';
 import { ProductService } from '~/services/index.js';
+import routes from '~/config/routes.js';
 
 const config = {
     headers: {
@@ -102,7 +103,7 @@ const AddForm = ({ categories, discounts, suppliers, product }) => {
             }
             if (response.status === 'success') {
                 toast.success(`Sản phẩm đã được ${product.product_id ? 'cập nhật' : 'thêm'} thành công!`, {
-                    onClose: () => navigate('/products'),
+                    onClose: () => navigate(routes.products),
                 });
             }
         } catch (error) {
@@ -279,7 +280,7 @@ const AddForm = ({ categories, discounts, suppliers, product }) => {
                     {
                         type: 'primary',
                         text: 'Đồng ý',
-                        onClick: () => navigate('/products'),
+                        onClick: () => navigate(routes.products),
                         dismiss: 'modal',
                     },
                 ]}

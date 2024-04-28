@@ -7,7 +7,7 @@ import { Table } from '~/components/index.js';
 import SearchBar from './partials/SearchBar.jsx';
 import ControlPanel from './partials/ControlPanel.jsx';
 import StaffActions from '~/utils/staffActions.js';
-import StaffRole from '~/enums/StaffRole.js';
+import UserRole from '~/enums/UserRole.js';
 
 import styles from './Staff.module.scss';
 
@@ -68,7 +68,7 @@ const Staff = () => {
     const fetchStaffs = async (filter) => {
         try {
             const customFilter = {};
-            if (StaffRole.getKeys().includes(filter.staff_role)) {
+            if (['STAFF', 'ADMIN', 'MANAGER'].includes(filter.staff_role)) {
                 customFilter.staff_role = filter.staff_role.toLowerCase();
             }
             if (filter.staff_name !== '') {
@@ -81,7 +81,7 @@ const Staff = () => {
                     return {
                         ...staff,
                         staff_role_key: staff.staff_role,
-                        staff_role: StaffRole.retrieveRole(staff.staff_role.toUpperCase()),
+                        staff_role: UserRole.retrieveRole(staff.staff_role.toUpperCase()),
                     };
                 });
                 setStaffs(data);

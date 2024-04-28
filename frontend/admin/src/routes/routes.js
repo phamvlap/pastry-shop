@@ -24,6 +24,12 @@ import routesName from '~/config/routes.js';
 
 const routes = [
     {
+        path: routesName.origin,
+        page: Home,
+        layout: MainLayout,
+        requireAuth: true,
+    },
+    {
         path: routesName.home,
         page: Home,
         layout: MainLayout,

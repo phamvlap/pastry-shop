@@ -6,9 +6,10 @@ import { toast } from 'react-toastify';
 import { Form, InputGroup, Modal, Button } from '~/components/index.js';
 import Validator from '~/utils/validator.js';
 import staffRules from '~/config/rules/staff.js';
-import StaffRole from '~/enums/StaffRole.js';
+import UserRole from '~/enums/UserRole.js';
 import { StaffService } from '~/services/index.js';
 import StaffActions from '~/utils/staffActions';
+import routes from '~/config/routes.js';
 
 let roles = [
     {
@@ -17,10 +18,10 @@ let roles = [
     },
 ];
 roles.push(
-    ...StaffRole.getKeys().map((role) => {
+    ...['STAFF', 'ADMIN', 'MANAGER'].map((role) => {
         return {
             value: role,
-            name: StaffRole.retrieveRole(role),
+            name: UserRole.retrieveRole(role),
         };
     }),
 );
@@ -64,7 +65,7 @@ const AddForm = ({ staff }) => {
                 const response = await staffService.update(form.staff_id, form);
                 if (response.status === 'success') {
                     toast.success('Cập nhật nhân viên thành công', {
-                        onClose: () => navigate('/staffs'),
+                        onClose: () => navigate(routes.staffs),
                     });
                 } else {
                     toast.error('Cập nhật nhân viên thất bại');
@@ -152,7 +153,7 @@ const AddForm = ({ staff }) => {
                     {
                         type: 'primary',
                         text: 'Đồng ý',
-                        onClick: () => navigate('/staffs'),
+                        onClick: () => navigate(routes.staffs),
                         dismiss: 'modal',
                     },
                 ]}
@@ -183,7 +184,7 @@ const AddForm = ({ staff }) => {
                     {
                         type: 'primary',
                         text: 'Đồng ý',
-                        onClick: () => navigate('/staffs'),
+                        onClick: () => navigate(routes.staffs),
                         dismiss: 'modal',
                     },
                 ]}

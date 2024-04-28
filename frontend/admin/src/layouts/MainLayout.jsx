@@ -1,24 +1,19 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import Header from '~/layouts/partials/Header.jsx';
-import SideNav from '~/layouts/partials/SideNav.jsx';
-import Footer from '~/layouts/partials/Footer.jsx';
+import Header from './partials/Header.jsx';
+import SideNav from './partials/SideNav.jsx';
+import Footer from './partials/Footer.jsx';
 
-import styles from '~/layouts/Layout.module.scss';
+import styles from './Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
 const MainLayout = ({ children }) => {
-    const [activeSideNav, setActiveSideNav] = useState(() => {
-        return `/${window.location.pathname.split('/')[1]}`;
-    });
-
     return (
         <div className={cx('row', 'main-container')}>
             <div className={cx('col-md-2', 'main-sidebar')}>
-                <SideNav activeSideNav={activeSideNav} setActiveSideNav={setActiveSideNav} />
+                <SideNav />
             </div>
             <div className={cx('col-md-10', 'main-content')}>
                 <div className={cx('main-content__wrapper')}>

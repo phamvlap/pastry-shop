@@ -15,9 +15,9 @@ const OrderItemList = ({ itemList }) => {
                     <div className="row">
                         <div className={cx('col col-md-1', 'content-row__column')}>##</div>
                         <div className={cx('col col-md-5', 'content-row__column')}>Sản phẩm</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>Giá bán</div>
+                        <div className={cx('col col-md-2', 'content-row__column')}>Giá bán (VNĐ)</div>
                         <div className={cx('col col-md-2', 'content-row__column')}>Số lượng</div>
-                        <div className={cx('col col-md-2', 'content-row__column')}>Thành tiền</div>
+                        <div className={cx('col col-md-2', 'content-row__column')}>Thành tiền (VNĐ)</div>
                     </div>
                 </div>
                 {itemList.map((item, index) => (

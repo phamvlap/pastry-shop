@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { StaffContext } from '~/contexts/StaffContext.jsx';
 import { staffActions } from '~/utils/index.js';
 import { Modal } from '~/components/index.js';
+import routes from '~/config/routes.js';
 
 const SessionManager = ({ children }) => {
     const { staff, setStaff, setToken, isAuthenticated, setIsAuthenticated } = useContext(StaffContext);
@@ -15,9 +16,8 @@ const SessionManager = ({ children }) => {
     useEffect(() => {
         let timer = null;
         if (!isAuthenticated) {
-            navigate('/login');
+            navigate(routes.login);
         } else {
-            navigate(window.location.pathname);
             timer = setTimeout(() => {
                 openBtnRef.current.click();
             }, Number(staff.expiredAt) - new Date().getTime());
@@ -38,7 +38,7 @@ const SessionManager = ({ children }) => {
     const navigateToLogin = () => {
         closeBtnRef.current.click();
         handleAutoLogout();
-        navigate('/login');
+        navigate(routes.login);
     };
     return (
         <>

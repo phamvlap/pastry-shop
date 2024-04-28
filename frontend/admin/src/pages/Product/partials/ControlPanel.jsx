@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { Button } from '~/components/index.js';
+import routes from '~/config/routes.js';
 
 import styles from '~/pages/Product/Product.module.scss';
 
@@ -12,7 +13,7 @@ const cx = classNames.bind(styles);
 const ControlPanel = () => {
     const navigate = useNavigate();
     const toAddProduct = () => {
-        navigate('/products/add');
+        navigate(routes.productAdd);
     };
     return (
         <div className={cx('control-panel')}>

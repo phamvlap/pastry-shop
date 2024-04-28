@@ -6,8 +6,10 @@ import { faUser, faHome } from '@fortawesome/free-solid-svg-icons';
 
 import { StaffContext } from '~/contexts/StaffContext.jsx';
 import { Button } from '~/components/index.js';
-import styles from '~/layouts/Layout.module.scss';
 import appConfig from '~/config/index.js';
+import routes from '~/config/routes.js';
+
+import styles from './../Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -19,11 +21,11 @@ const Header = () => {
             <div className={cx('header-left')}>{appConfig.app.name}</div>
             <div className={cx('header-right')}>
                 {!isAuthenticated ? (
-                    <Button to="/login" outline leftIcon={<FontAwesomeIcon icon={faUser} />}>
+                    <Button to={routes.login} outline leftIcon={<FontAwesomeIcon icon={faUser} />}>
                         Đăng nhập
                     </Button>
                 ) : (
-                    <Link to="/">
+                    <Link to={routes.home}>
                         <FontAwesomeIcon icon={faHome} className={cx('header-icon')} />
                     </Link>
                 )}

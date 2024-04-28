@@ -34,6 +34,8 @@ const Discount = () => {
                     discount_applied: appliedCount.data,
                     discount_start: formatDate.convertToStandardFormat(discount.discount_start),
                     discount_end: formatDate.convertToStandardFormat(discount.discount_end),
+                    discount_start_view: formatDate.convertToViewFormat(discount.discount_start),
+                    discount_end_view: formatDate.convertToViewFormat(discount.discount_end),
                 });
             }
             setDiscountList(data);

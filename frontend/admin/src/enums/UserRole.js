@@ -1,8 +1,9 @@
-class StaffRole {
+class UserRole {
     static roles = {
         ADMIN: 'Quản trị viên',
         STAFF: 'Nhân viên',
         MANAGER: 'Quản lý',
+        CUSTOMER: 'Khách hàng',
     };
     static getKeys() {
         return Object.keys(this.roles);
@@ -12,4 +13,4 @@ class StaffRole {
     }
 }
 
-export default StaffRole;
+export default UserRole;

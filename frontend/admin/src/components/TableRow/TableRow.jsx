@@ -115,7 +115,7 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                     directTo = 'staffs';
                     break;
             }
-            navigate(`/${directTo}/${row[`${entity}_id`]}/${activeAction.name}`);
+            navigate(`/admin/${directTo}/${row[`${entity}_id`]}/${activeAction.name}`);
         }
     }, [activeAction]);
 

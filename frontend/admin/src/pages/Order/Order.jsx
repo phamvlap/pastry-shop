@@ -24,7 +24,7 @@ const header = {
         isModified: false,
     },
     order_total: {
-        value: 'Tổng tiền',
+        value: 'Tổng tiền (VNĐ)',
         isModified: false,
     },
     order_status: {
@@ -79,7 +79,7 @@ const Order = () => {
                     order_id: order.order_id,
                     order_date: Helper.formatDateTime(order.order_date),
                     order_customer: order.receiver.address_fullname,
-                    order_total: Helper.formatMoney(parseInt(order.order_total)) + ' VNĐ',
+                    order_total: Helper.formatMoney(parseInt(order.order_total)),
                     order_status:
                         order.statusList.length > 0
                             ? order.statusList[order.statusList.length - 1].status.vn_status_name

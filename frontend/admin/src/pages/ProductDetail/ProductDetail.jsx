@@ -9,6 +9,8 @@ import { formatDate, staffActions } from '~/utils/index.js';
 import { ProductService } from '~/services/index.js';
 import ImageList from './partials/ImageList.jsx';
 import { Button, Paragraph, Modal } from '~/components/index.js';
+import routes from '~/config/routes.js';
+import Helper from '~/utils/helper.js';
 
 import styles from './ProductDetail.module.scss';
 
@@ -71,7 +73,7 @@ const ProductDetail = () => {
             const response = await productService.delete(productId);
             if (response.status === 'success') {
                 toast.success('Xóa sản phẩm thành công!', {
-                    onClose: () => navigate('/products'),
+                    onClose: () => navigate(routes.products),
                 });
             }
         } catch (error) {
@@ -84,10 +86,10 @@ const ProductDetail = () => {
             <h2 className={cx('product-title')}>Chi tiết sản phẩm</h2>
             <div className="mt-3">
                 <div className={cx('control-bar')}>
-                    <Button to="/products" outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
+                    <Button to={routes.products} outline leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}>
                         Quay lại
                     </Button>
-                    <Button to="/products/add" primary leftIcon={<FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>}>
+                    <Button to={routes.productAdd} primary leftIcon={<FontAwesomeIcon icon={faPlus}></FontAwesomeIcon>}>
                         Thêm sản phẩm mới
                     </Button>
                 </div>
@@ -99,7 +101,10 @@ const ProductDetail = () => {
                                 <Paragraph prefix="Tên sản phẩm: " value={product.product_name} />
                                 <Paragraph prefix="Số lượng: " value={product.product_stock_quantity} />
                                 <Paragraph prefix="Số lượng đã bán: " value={product.product_sold_quantity} />
-                                <Paragraph prefix="Giá bán: " value={product.product_price} />
+                                <Paragraph
+                                    prefix="Giá bán: "
+                                    value={Helper.formatMoney(parseInt(product.product_price)) + ' VNĐ'}
+                                />
                             </div>
                             <div className="col col-md-6">
                                 <Paragraph prefix="Ngày hết hạn: " value={product.product_expire_date} />
@@ -120,7 +125,11 @@ const ProductDetail = () => {
                     </div>
                 </div>
                 <div className="text-center mt-5">
-                    <Button to={`/products/${productId}/edit`} warning leftIcon={<FontAwesomeIcon icon={faPen} />}>
+                    <Button
+                        to={`/admin/products/${productId}/edit`}
+                        warning
+                        leftIcon={<FontAwesomeIcon icon={faPen} />}
+                    >
                         Hiệu chỉnh
                     </Button>
                     <Button danger leftIcon={<FontAwesomeIcon icon={faTrashCan} />} onClick={() => confirmDeleteItem()}>
@@ -128,6 +137,7 @@ const ProductDetail = () => {
                     </Button>
                 </div>
             </div>
+
             <Button
                 type="button"
                 data-bs-toggle="modal"
