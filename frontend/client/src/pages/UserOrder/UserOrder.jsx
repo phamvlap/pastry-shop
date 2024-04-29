@@ -6,7 +6,7 @@ import { OrderReview } from '~/components/index.js';
 import OrderActions from '~/utils/orderActions.js';
 import { StatusService } from '~/services/index.js';
 
-import styles from '~/pages/UserOrder/UserOrder.module.scss';
+import styles from './UserOrder.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -71,9 +71,13 @@ const UserOrder = () => {
                     ))}
                 </div>
                 <div className={cx('order-list')}>
-                    {orders.map((order) => (
-                        <OrderReview key={order.order_id} order={order} />
-                    ))}
+                    {orders.length > 0 ? (
+                        orders.map((order) => <OrderReview key={order.order_id} order={order} />)
+                    ) : (
+                        <div className={cx('order-empty')}>
+                            <p>Không có đơn hàng nào.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

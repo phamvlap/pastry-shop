@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +10,8 @@ import Header from '~/layouts/partials/Header.jsx';
 import Footer from '~/layouts/partials/Footer.jsx';
 import ProductActions from '~/utils/productActions.js';
 import RatingActions from '~/utils/ratingActions.js';
+import routes from '~/config/routes.js';
+import { UserContext } from '~/contexts/UserContext.jsx';
 
 import styles from './Home.module.scss';
 
@@ -19,6 +21,8 @@ const Home = () => {
     const [productList, setProductList] = useState(null);
     const [ratingList, setRatingList] = useState(null);
     const [currentReview, setCurrentReview] = useState(0);
+
+    const { isLogged } = useContext(UserContext);
 
     const fetchData = async () => {
         try {
@@ -81,12 +85,14 @@ const Home = () => {
             <div className={cx('home-banner')}>
                 <img src="./src/assets/images/banner.jpg" alt="Banner" className={cx('home-banner__image')} />
                 <div className={cx('home-banner__link')}>
-                    <Link to="/products" className={cx('home-banner__link-item')}>
+                    <Link to={routes.products} className={cx('home-banner__link-item')}>
                         Bắt đầu khám phá
                     </Link>
-                    <Link to="/register" className={cx('home-banner__link-item')}>
-                        Đăng ký ngay
-                    </Link>
+                    {!isLogged && (
+                        <Link to={routes.register} className={cx('home-banner__link-item')}>
+                            Đăng ký ngay
+                        </Link>
+                    )}
                 </div>
             </div>
             <div className="container">
@@ -99,7 +105,7 @@ const Home = () => {
                             })}
                     </div>
                     <p className={cx('home-new__link')}>
-                        <Link to="/products">Xem tất cả</Link>
+                        <Link to={routes.products}>Xem tất cả</Link>
                     </p>
                 </div>
                 <div className={cx('home-review')}>

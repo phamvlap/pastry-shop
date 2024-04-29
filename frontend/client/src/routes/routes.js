@@ -24,6 +24,10 @@ import routesName from '~/config/routes.js';
 
 const routes = [
     {
+        path: routesName.origin,
+        page: Home,
+    },
+    {
         path: routesName.home,
         page: Home,
     },

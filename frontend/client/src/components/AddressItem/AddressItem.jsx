@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 
 import { Button, Modal } from '~/components/index.js';
 import AddressActions from '~/utils/addressActions.js';
+import routes from '~/config/routes.js';
 
 import styles from './AddressItem.module.scss';
 
@@ -45,7 +46,7 @@ const AddressItem = ({ address, setAddressList }) => {
         }
     };
     const transferToUpdate = () => {
-        navigate('/user/address/add', {
+        navigate(routes.userAddressAdd, {
             state: {
                 address,
             },

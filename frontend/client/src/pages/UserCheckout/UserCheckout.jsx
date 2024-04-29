@@ -8,8 +8,9 @@ import CartActions from '~/utils/cartActions.js';
 import Helper from '~/utils/helper.js';
 import OrderActions from '~/utils/orderActions.js';
 import { PaymentService, VNPAYService } from '~/services/index.js';
+import routes from '~/config/routes.js';
 
-import styles from '~/pages/UserCheckout/UserCheckout.module.scss';
+import styles from './UserCheckout.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -27,7 +28,7 @@ const UserCheckout = () => {
     const orderItemList = itemList.map((item, index) => {
         const priceValue =
             Number(item.detail.price.price_value) -
-            Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate);
+            (Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate)) / 100;
         return {
             index: index + 1,
             imageSrc: Helper.formatImageUrl(item.detail.images[0].image_url),
@@ -45,7 +46,7 @@ const UserCheckout = () => {
         const discount = itemList.reduce((total, item) => {
             const originalPrice = Number(item.detail.price.price_value);
             const discountRate = Number(item.detail.discount.discount_rate);
-            return total + originalPrice * discountRate * Number(item.quantityInCart);
+            return total + (originalPrice * discountRate * Number(item.quantityInCart)) / 100;
         }, 0);
         const total = subTotal - discount;
         setSubTotal(subTotal);
@@ -83,9 +84,9 @@ const UserCheckout = () => {
         };
         const response = await OrderActions.createOrder(order);
         if (response.status === 'success') {
-            navigate('/user/order');
+            navigate(routes.userOrder);
         } else {
-            navigate('/user/cart');
+            navigate(routes.userCart);
         }
     };
     const redirectToVnpay = async (event) => {

@@ -7,8 +7,9 @@ import { CartItem, Button, Modal } from '~/components/index.js';
 import CartActions from '~/utils/cartActions.js';
 import Helper from '~/utils/helper.js';
 import { CartContext } from '~/contexts/CartContext.jsx';
+import routes from '~/config/routes.js';
 
-import styles from '~/pages/UserCart/UserCart.module.scss';
+import styles from './UserCart.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -49,7 +50,7 @@ const UserCart = () => {
         const discount = cart.reduce((total, item) => {
             const originalPrice = Number(item.product.price.price_value);
             const discountRate = Number(item.product.discount.discount_rate);
-            return total + (item.statusItem ? originalPrice * discountRate * Number(item.quantityInCart) : 0);
+            return total + (item.statusItem ? (originalPrice * discountRate * Number(item.quantityInCart)) / 100 : 0);
         }, 0);
         const total = subTotal - discount;
         setSubTotal(subTotal);
@@ -115,7 +116,7 @@ const UserCart = () => {
                             <img src="/src/assets/images/empty_cart.png" alt="" className={cx('cart-empty__image')} />
                             <div className={cx('cart-empty__content')}>
                                 <p className={cx('cart-empty__text')}>Giỏ hàng của bạn đang trống</p>
-                                <Button className={cx('cart-empty__link')} outline to="/products">
+                                <Button className={cx('cart-empty__link')} outline to={routes.products}>
                                     Tìm sản phẩm
                                 </Button>
                             </div>
@@ -132,7 +133,7 @@ const UserCart = () => {
                                     <span onClick={() => handleConfirmClearAll()}>Xóa tất cả</span>
                                 </div>
                                 <div className={cx('cart-footer__left-item')}>
-                                    <Link to="/products">Tiếp tục mua hàng</Link>
+                                    <Link to={routes.products}>Tiếp tục mua hàng</Link>
                                 </div>
                             </div>
                         </div>
@@ -160,7 +161,7 @@ const UserCart = () => {
                                     </span>
                                 </div>
                                 <div className={cx('cart-footer__button')}>
-                                    <Button primary to="/user/checkout">
+                                    <Button primary to={routes.userCheckout}>
                                         Mua hàng
                                     </Button>
                                 </div>

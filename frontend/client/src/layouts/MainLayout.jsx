@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import Header from '~/layouts/partials/Header.jsx';
-import Footer from '~/layouts/partials/Footer.jsx';
+import Header from './partials/Header.jsx';
+import Footer from './partials/Footer.jsx';
 
 import styles from './Layout.module.scss';
 

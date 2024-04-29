@@ -7,6 +7,7 @@ import { faChevronLeft, faTrashCan, faBan } from '@fortawesome/free-solid-svg-ic
 import { OrderItemList, Button, Modal } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
 import OrderActions from '~/utils/orderActions.js';
+import routes from '~/config/routes.js';
 
 import styles from './OrderDetail.module.scss';
 
@@ -95,7 +96,7 @@ const OrderDetail = () => {
             <h3 className={cx('order-title')}>
                 <div className={cx('order-back')}>
                     <Button
-                        to="/user/order"
+                        to={routes.userOrders}
                         primary
                         className={cx('order-back-btn')}
                         leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}

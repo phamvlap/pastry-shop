@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { UserContext } from '~/contexts/UserContext.jsx';
 import UserActions from '~/utils/userActions.js';
 import { Modal } from '~/components/index.js';
+import routes from '~/config/routes.js';
 
 const SessionManager = ({ children }) => {
     const { user, setUser, setToken, isLogged, setIsLogged } = useContext(UserContext);
@@ -15,9 +16,8 @@ const SessionManager = ({ children }) => {
     useEffect(() => {
         let timer = null;
         if (!isLogged) {
-            navigate('/login');
+            navigate(routes.login);
         } else {
-            navigate(window.location.pathname);
             timer = setTimeout(() => {
                 confirmExpiredSession();
             }, Number(user.expiredAt) - new Date().getTime());
@@ -40,12 +40,12 @@ const SessionManager = ({ children }) => {
     };
     const navigateToHome = () => {
         closeBtnRef.current.click();
-        navigate('/');
+        navigate(routes.origin);
         implementLogout();
     };
     const navigateToLogin = () => {
         closeBtnRef.current.click();
-        navigate('/login');
+        navigate(routes.login);
         implementLogout();
     };
     return (

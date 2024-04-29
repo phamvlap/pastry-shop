@@ -17,7 +17,9 @@ import styles from './UserProfile.module.scss';
 
 const cx = classNames.bind(styles);
 
-const rules = registerRules.filter((rule) => rule.field !== 'customer_password');
+const rules = registerRules.filter(
+    (rule) => rule.field !== 'customer_password' && rule.field !== 'customer_confirm_password',
+);
 
 const UserProfile = () => {
     const [form, setForm] = useState({

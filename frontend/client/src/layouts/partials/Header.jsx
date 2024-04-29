@@ -9,6 +9,7 @@ import { UserContext } from '~/contexts/UserContext.jsx';
 import { CartContext } from '~/contexts/CartContext.jsx';
 import UserActions from '~/utils/userActions.js';
 import Helper from '~/utils/helper.js';
+import routes from '~/config/routes.js';
 
 import styles from './../Layout.module.scss';
 
@@ -29,7 +30,7 @@ const Header = () => {
     return (
         <div className={cx('header-wrapper')}>
             <div className={cx('container', 'header')}>
-                <Link to="/" className={cx('header-logo')}>
+                <Link to={routes.origin} className={cx('header-logo')}>
                     Pastry Shop
                 </Link>
                 <div className={cx('header-search')}>
@@ -47,7 +48,7 @@ const Header = () => {
                                     <div className={cx('tooltip-user')}>
                                         <ul className={cx('tooltip-user__list')}>
                                             <li>
-                                                <Link to="/user/profile" className={cx('tooltip-user__item')}>
+                                                <Link to={routes.userProfile} className={cx('tooltip-user__item')}>
                                                     Tài khoản
                                                 </Link>
                                             </li>
@@ -64,17 +65,17 @@ const Header = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <Link to="/login" className={cx('action-account__item')}>
+                                    <Link to={routes.login} className={cx('action-account__item')}>
                                         Đăng nhập
                                     </Link>
-                                    <Link to="/register" className={cx('action-account__item')}>
+                                    <Link to={routes.register} className={cx('action-account__item')}>
                                         Đăng ký
                                     </Link>
                                 </>
                             )}
                         </div>
                         <div className={cx('action-cart')}>
-                            <Link to="/user/cart" className={cx('action-cart__item')}>
+                            <Link to={routes.userCart} className={cx('action-cart__item')}>
                                 <FontAwesomeIcon icon={faCartShopping} />
                                 {user && quantityInCart >= 0 && (
                                     <div className={cx('action-cart__badge')}>

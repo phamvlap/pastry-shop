@@ -1,25 +1,35 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
 import { Form, InputGroup } from '~/components/index.js';
-import styles from './Login.module.scss';
-
 import { UserContext } from '~/contexts/UserContext.jsx';
 import Validator from '~/utils/validator.js';
 import UserActions from '~/utils/userActions.js';
 import loginRules from '~/config/rules/loginRules.js';
+import routes from '~/config/routes.js';
+
+import styles from './Login.module.scss';
 
 const cx = classNames.bind(styles);
 
 const Login = () => {
-    const [form, setForm] = useState({});
-    const [errors, setErrors] = useState({});
-    const { user, setUser, token, setToken, isLogged, setIsLogged } = useContext(UserContext);
+    const [form, setForm] = useState({
+        customer_username: '',
+        customer_password: '',
+    });
+    const [errors, setErrors] = useState({
+        customer_username: '',
+        customer_password: '',
+        form: '',
+    });
+    const { setUser, setToken, isLogged, setIsLogged } = useContext(UserContext);
 
     const validator = new Validator(loginRules);
     const navigate = useNavigate();
     const location = useLocation();
+    const from = location.state?.from?.pathname || '/';
 
     const handleOnChange = (event) => {
         setForm({
@@ -32,7 +42,7 @@ const Login = () => {
 
         const newErrors = validator.validate(form);
         setErrors(newErrors);
-        if (Object.keys(newErrors).length > 0) {
+        if (Object.values(newErrors).filter((value) => value !== '').length > 0) {
             return;
         }
         try {
@@ -42,11 +52,21 @@ const Login = () => {
                     form: 'Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại',
                 });
                 setForm({});
+                return;
             }
-            setUser(data.user);
-            setToken(data.token);
-            setIsLogged(true);
-            navigate('/');
+            toast.success('Đăng nhập thành công', {
+                duration: 1000,
+                onClose: () => {
+                    setForm({});
+                    setErrors({});
+                    setUser(data.user);
+                    setToken(data.token);
+                    setIsLogged(true);
+                    navigate(from, {
+                        replace: true,
+                    });
+                },
+            });
         } catch (error) {
             console.log(error.message);
             setErrors({
@@ -58,9 +78,11 @@ const Login = () => {
 
     useEffect(() => {
         if (isLogged) {
-            navigate('/');
+            navigate(from, {
+                replace: true,
+            });
         }
-        if (location.state) {
+        if (location.state?.newUser) {
             setForm({
                 customer_username: location.state.newUser.customer_username,
             });
@@ -101,7 +123,7 @@ const Login = () => {
                     <div className={cx('form-item__forget-password')}>Quên mật khẩu?</div>
                     <div className={cx('form-item__direct-register')}>
                         Bạn chưa có tài khoản?
-                        <Link to="/register" className={cx('form-item__link-register')}>
+                        <Link to={routes.register} className={cx('form-item__link-register')}>
                             Đăng ký
                         </Link>
                     </div>

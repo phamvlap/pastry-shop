@@ -7,6 +7,7 @@ import { Form, InputGroup, Modal } from '~/components/index.js';
 import addressRules from '~/config/rules/addressRules.js';
 import Validator from '~/utils/validator.js';
 import addressActions from '~/utils/addressActions.js';
+import routes from '~/config/routes.js';
 
 import styles from './UserAddressAdd.module.scss';
 
@@ -68,7 +69,7 @@ const UserAddressAdd = () => {
             toast.success(message, {
                 autoClose: duration,
                 onClose: () => {
-                    navigate('/user/address');
+                    navigate(routes.userAddress);
                 },
             });
         } catch (error) {
@@ -82,7 +83,7 @@ const UserAddressAdd = () => {
     };
     const cancelUpdateAddress = () => {
         closeBtnRef.current.click();
-        navigate('/user/address');
+        navigate(routes.userAddress);
     };
     useEffect(() => {
         if (location.state) {

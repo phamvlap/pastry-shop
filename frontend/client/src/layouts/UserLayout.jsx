@@ -1,19 +1,16 @@
-import { cloneElement, useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 
-import Header from '~/layouts/partials/Header.jsx';
-import Footer from '~/layouts/partials/Footer.jsx';
-import UserNav from '~/layouts/partials/UserNav.jsx';
+import Header from './partials/Header.jsx';
+import Footer from './partials/Footer.jsx';
+import UserNav from './partials/UserNav.jsx';
 
 import styles from './Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
 const UserLayout = ({ children }) => {
-    const [toasts, setToasts] = useState([]);
-    const childrenWithProps = cloneElement(children, { setToasts });
-
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [window.location.pathname]);
@@ -39,7 +36,7 @@ const UserLayout = ({ children }) => {
                         <div className="col-md-2">
                             <UserNav />
                         </div>
-                        <div className="col-md-10">{childrenWithProps}</div>
+                        <div className="col-md-10">{children}</div>
                     </div>
                 </div>
             </div>

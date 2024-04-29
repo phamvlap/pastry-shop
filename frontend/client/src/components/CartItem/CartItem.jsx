@@ -20,7 +20,7 @@ const CartItem = ({ cartItem, setCart }) => {
 
     const currentPrice =
         Number(cartItem.product.price.price_value) -
-        Number(cartItem.product.price.price_value) * Number(cartItem.product.discount.discount_rate);
+        (Number(cartItem.product.price.price_value) * Number(cartItem.product.discount.discount_rate)) / 100;
 
     const updateCartItem = async () => {
         const data = {

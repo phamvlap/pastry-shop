@@ -70,7 +70,6 @@ const SortBar = ({ filter, setFilter }) => {
                     newFilter[key] = prevFilter[key];
                 }
             });
-            console.log('newFilter', newFilter);
             return newFilter;
         });
         setActiveAllButton(true);

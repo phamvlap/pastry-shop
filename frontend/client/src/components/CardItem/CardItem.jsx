@@ -24,7 +24,7 @@ const CardItem = ({ product }) => {
     const ratingValue = Helper.averageRating(product.product_ratings);
     let starIcons = [];
     const currentPrice =
-        product.product_price - Number(product.product_price) * Number(product.product_discount.discount_rate);
+        product.product_price - (Number(product.product_price) * Number(product.product_discount.discount_rate)) / 100;
     for (let i = 0; i < 5; i++) {
         if (i < ratingValue) {
             starIcons.push(<FontAwesomeIcon key={i} icon={faFilledStar} />);
@@ -64,8 +64,10 @@ const CardItem = ({ product }) => {
                             <span className={cx('card-price__unit-money')}>VNĐ</span>
                         </p>
                         <p className={cx('card-price__deducted-rate')}>
-                            <span>-</span>
-                            <span>{Number(product.product_discount.discount_rate) * 100}</span>
+                            <span className="d-inline-block me-1">-</span>
+                            <span className="d-inline-block me-1">
+                                {Number(product.product_discount.discount_rate)}
+                            </span>
                             <span>%</span>
                         </p>
                     </div>

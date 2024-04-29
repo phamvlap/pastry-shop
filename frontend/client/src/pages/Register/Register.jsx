@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
+import { toast } from 'react-toastify';
 
 import { Form, InputGroup } from '~/components/index.js';
 import registerRules from '~/config/rules/registerRules.js';
 import Validator from '~/utils/validator.js';
 import { CustomerService } from '~/services/index.js';
+import routes from '~/config/routes.js';
 
 import styles from './Register.module.scss';
 
@@ -28,23 +30,31 @@ const Register = () => {
     const handleOnSubmit = async (event) => {
         event.preventDefault();
 
-        const newErrors = validator.validate(form);
-        console.log(newErrors);
-        setErrors(newErrors);
-        if (Object.keys(newErrors).length > 0) {
+        let newErrors = validator.validate(form);
+        if (form.customer_password !== form.customer_confirm_password) {
+            newErrors.customer_confirm_password = 'Nhập lại mật khẩu không khớp';
+        }
+        if (Object.values(newErrors).filter((value) => value !== '').length > 0) {
+            setErrors(newErrors);
             return;
         }
         try {
             const response = await customerService.register(form);
-            if (response.status !== 'success') {
-                throw new Error('Invalid credentials');
+            if (response.status === 'success') {
+                toast.success('Đăng ký tài khoản thành công', {
+                    duration: 1000,
+                    onClose: () => {
+                        const user = response.data;
+                        setForm({});
+                        setErrors({});
+                        navigate(routes.login, {
+                            state: {
+                                newUser: user,
+                            },
+                        });
+                    },
+                });
             }
-            const user = response.data;
-            navigate('/login', {
-                state: {
-                    newUser: user,
-                },
-            });
         } catch (error) {
             console.log(error);
         }
@@ -97,6 +107,14 @@ const Register = () => {
                             onChange={(event) => handleOnChange(event)}
                             value={form.customer_password}
                             error={errors.customer_password}
+                        />
+                        <InputGroup
+                            label="Nhập lại mật khẩu"
+                            name="customer_confirm_password"
+                            type="password"
+                            onChange={(event) => handleOnChange(event)}
+                            value={form.customer_confirm_password}
+                            error={errors.customer_confirm_password}
                         />
                     </>
                 </Form>

@@ -23,7 +23,7 @@ const ProductInfo = ({ item }) => {
     const { setQuantityInCart } = useContext(CartContext);
 
     const currentPrice =
-        Number(item.price.price_value) - Number(item.price.price_value) * Number(item.discount.discount_rate);
+        Number(item.price.price_value) - (Number(item.price.price_value) * Number(item.discount.discount_rate)) / 100;
     const ratingValue = Helper.averageRating(item.ratings);
     let starIcons = [];
     for (let i = 0; i < 5; i++) {
@@ -75,7 +75,7 @@ const ProductInfo = ({ item }) => {
                 <span className={cx('info-rating__value')}>{ratingValue}</span>
             </div>
             <div className={cx('info-category')}>
-                <span>Danh mục: </span>
+                <span className="fw-bold">Danh mục: </span>
                 <span>{item.category.category_name}</span>
             </div>
             <div className={cx('info-price')}>
@@ -88,8 +88,8 @@ const ProductInfo = ({ item }) => {
                     <span>VNĐ</span>
                 </div>
                 <div className={cx('info-price__discount')}>
-                    <span>-</span>
-                    <span>{Number(item.discount.discount_rate) * 100}</span>
+                    <span className="d-inline-block me-1">-</span>
+                    <span className="d-inline-block me-1">{Number(item.discount.discount_rate)}</span>
                     <span>%</span>
                 </div>
             </div>

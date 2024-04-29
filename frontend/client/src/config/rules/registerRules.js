@@ -51,4 +51,10 @@ export default [
         validWhen: true,
         message: 'Mật khẩu phải ít nhất 8 ký tư bao gồm chữ số và chữ cái.',
     },
+    {
+        field: 'customer_confirm_password',
+        method: 'isEmpty',
+        validWhen: false,
+        message: 'Nhập lại mật khẩu không được để trống.',
+    },
 ];

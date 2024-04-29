@@ -7,8 +7,9 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { Button, ReviewItem, ReviewForm } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
 import ProductActions from '~/utils/productActions.js';
-import ProductImage from '~/pages/ProductDetail/components/ProductImage.jsx';
-import ProductInfo from '~/pages/ProductDetail/components/ProductInfo.jsx';
+import ProductImage from './components/ProductImage.jsx';
+import ProductInfo from './components/ProductInfo.jsx';
+import routes from '~/config/routes.js';
 
 import styles from './ProductDetail.module.scss';
 
@@ -42,7 +43,7 @@ const ProductDetail = () => {
         <div className={cx('container')}>
             <div className={cx('detail-wrapper')}>
                 <div className={cx('detail-back')}>
-                    <Button to="/products" outline>
+                    <Button to={routes.products} link>
                         <FontAwesomeIcon icon={faChevronLeft} />
                         <span>Quay lại</span>
                     </Button>
@@ -87,7 +88,7 @@ const ProductDetail = () => {
                                     return <ReviewItem key={index} review={rating} />;
                                 })
                             ) : (
-                                <div className={cx('detail-loading')}>Chưa có đánh giá nào</div>
+                                <div className={cx('detail-loading')}>Chưa có đánh giá nào.</div>
                             )}
                         </div>
                         <div className="col col-md-6">

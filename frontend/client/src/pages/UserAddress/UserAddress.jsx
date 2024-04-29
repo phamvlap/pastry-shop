@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
+import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import { AddressItem } from '~/components/index.js';
 import addressActions from '~/utils/addressActions.js';
+import routes from '~/config/routes.js';
 
-import styles from '~/pages/UserAddress/UserAddress.module.scss';
+import styles from './UserAddress.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -27,7 +28,7 @@ const UserAddress = () => {
         <div className={cx('address-wrapper')}>
             <h3 className={cx('address-title')}>
                 <span>Địa chỉ của tôi</span>
-                <Link to="/user/address/add" className={cx('address-add')}>
+                <Link to={routes.userAddressAdd} className={cx('address-add')}>
                     <span>
                         <FontAwesomeIcon icon={faPlus} />
                         <span className={cx('address-add__title')}>Thêm địa chỉ mới</span>
@@ -35,9 +36,15 @@ const UserAddress = () => {
                 </Link>
             </h3>
             <div className={cx('address-content')}>
-                {addressList.map((address) => (
-                    <AddressItem key={address.address_id} address={address} setAddressList={setAddressList} />
-                ))}
+                {addressList.length > 0 ? (
+                    addressList.map((address) => (
+                        <AddressItem key={address.address_id} address={address} setAddressList={setAddressList} />
+                    ))
+                ) : (
+                    <div className={cx('address-empty')}>
+                        <p>Bạn chưa có địa chỉ nào.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

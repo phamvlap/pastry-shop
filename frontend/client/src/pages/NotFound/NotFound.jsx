@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
-import styles from '~/pages/NotFound/NotFound.module.scss';
+import routes from '~/config/routes.js';
+
+import styles from './NotFound.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -14,7 +16,7 @@ const NotFound = () => {
                     <span>
                         Địa chỉ bạn truy cập không tồn tại hoặc đã bị xóa. Vui lòng kiểm tra lại đường dẫn hoặc quay về{' '}
                     </span>
-                    <Link to="/" className={cx('home-link')}>
+                    <Link to={routes.origin} className={cx('home-link')}>
                         trang chủ.
                     </Link>
                 </p>
