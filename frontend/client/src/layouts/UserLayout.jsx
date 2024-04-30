@@ -5,6 +5,7 @@ import classNames from 'classnames/bind';
 import Header from './partials/Header.jsx';
 import Footer from './partials/Footer.jsx';
 import UserNav from './partials/UserNav.jsx';
+import { Breadcrumb } from '~/components/index.js';
 
 import styles from './Layout.module.scss';
 
@@ -18,18 +19,7 @@ const UserLayout = ({ children }) => {
     return (
         <div className={cx('user-layout-container')}>
             <Header />
-
-            {/* <div className="container">
-                <div className={cx('breadcrumb-wrapper')}>
-                    <ul className={cx('breadcrumb')}>
-                        <li className={cx('breadcrumb-item')}>Trang chủ</li>
-                        <span className={cx('breadcrumb-seperate')}>/</span>
-                        <li className={cx('breadcrumb-item')}>Danh muc</li>
-                        <span className={cx('breadcrumb-seperate')}>/</span>
-                        <li className={cx('breadcrumb-item')}>Do uong</li>
-                    </ul>
-                </div>
-            </div> */}
+            <Breadcrumb />
             <div className={cx('container', 'user-layout-body')}>
                 <div className={cx('content-wrapper')}>
                     <div className="row">

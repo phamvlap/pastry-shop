@@ -15,6 +15,18 @@ class AddressController {
             next(new BadRequestError(error.message));
         }
     }
+    async getOne(req, res, next) {
+        try {
+            const addressModel = new AddressModel();
+            const address = await addressModel.getOneAddress(req.params.id);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: address,
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
     async create(req, res, next) {
         try {
             const addressModel = new AddressModel();
@@ -22,10 +34,10 @@ class AddressController {
                 ...req.body,
                 customer_id: req.customer.customer_id,
             };
-            await addressModel.store(data);
+            const address = await addressModel.store(data);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                message: 'Address is added successfully.',
+                data: address,
             });
         } catch (error) {
             next(new BadRequestError(error.message));
@@ -34,10 +46,10 @@ class AddressController {
     async update(req, res, next) {
         try {
             const addressModel = new AddressModel();
-            await addressModel.update(req.params.addressId, req.body);
+            const address  = await addressModel.update(req.params.addressId, req.body);
             return res.status(StatusCodes.OK).json({
                 status: 'success',
-                message: 'Address is updated successfully.',
+                data: address,
             });
         } catch (error) {
             next(new BadRequestError(error.message));

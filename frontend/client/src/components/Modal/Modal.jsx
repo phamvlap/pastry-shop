@@ -10,7 +10,7 @@ const cx = classNames.bind(styles);
 const Modal = ({ id, title, children, buttons }) => {
     return (
         <div
-            className="modal fade"
+            className="modal fade position-fixed"
             id={id}
             data-bs-backdrop="static"
             data-bs-keyboard="false"

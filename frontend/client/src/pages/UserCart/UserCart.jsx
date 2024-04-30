@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { toast } from 'react-toastify';
 
@@ -22,6 +22,7 @@ const UserCart = () => {
     const { setQuantityInCart } = useContext(CartContext);
     const openBtnRef = useRef(null);
     const closeBtnRef = useRef();
+    const navigate = useNavigate();
 
     const fetchCart = async () => {
         const discardDetailKeys = [
@@ -87,6 +88,22 @@ const UserCart = () => {
     const handleConfirmClearAll = () => {
         openBtnRef.current.click();
     };
+    const handleGoToCheckout = () => {
+        let haveItem = false;
+        if (cart) {
+            for (const item of cart) {
+                if (item.statusItem) {
+                    haveItem = true;
+                    break;
+                }
+            }
+        }
+        if (!haveItem) {
+            toast.error('Vui lòng chọn sản phẩm trước khi thực hiện mua hàng');
+            return;
+        }
+        navigate(routes.userCheckout);
+    };
 
     useEffect(() => {
         fetchCart();
@@ -97,6 +114,7 @@ const UserCart = () => {
             calculateTotal();
         }
     }, [cart]);
+    console.log(cart);
 
     return (
         <div className={cx('container')}>
@@ -161,7 +179,7 @@ const UserCart = () => {
                                     </span>
                                 </div>
                                 <div className={cx('cart-footer__button')}>
-                                    <Button primary to={routes.userCheckout}>
+                                    <Button primary onClick={() => handleGoToCheckout()}>
                                         Mua hàng
                                     </Button>
                                 </div>

@@ -58,6 +58,12 @@ const routes = [
         protected: true,
     },
     {
+        path: routesName.user,
+        page: UserProfile,
+        layout: UserLayout,
+        protected: true,
+    },
+    {
         path: routesName.userAddress,
         page: UserAddress,
         layout: UserLayout,
@@ -70,13 +76,19 @@ const routes = [
         protected: true,
     },
     {
+        path: routesName.userAddressEdit,
+        page: UserAddressAdd,
+        layout: UserLayout,
+        protected: true,
+    },
+    {
         path: routesName.userPassword,
         page: UserPassword,
         layout: UserLayout,
         protected: true,
     },
     {
-        path: routesName.userOrder,
+        path: routesName.userOrders,
         page: UserOrder,
         layout: UserLayout,
         protected: true,

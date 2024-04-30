@@ -34,13 +34,14 @@ const OrderDetail = () => {
     const fetchOrder = async () => {
         try {
             const response = await OrderActions.getOrderById(orderId);
+            console.log(response);
             if (response.status === 'success') {
                 const itemList = response.data.items.map((item, index) => {
                     const imageSrc = Helper.formatImageUrl(item.detail.images[0].image_url);
                     const name = item.detail.product_name;
                     const price =
                         Number(item.detail.price.price_value) -
-                        Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate);
+                        (Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate)) / 100;
                     const quantity = item.product_quantity;
                     return {
                         index: index + 1,
@@ -50,28 +51,25 @@ const OrderDetail = () => {
                         quantity,
                     };
                 });
+                const subTotal = response.data.items.reduce((total, item) => {
+                    const originalPrice = Number(item.detail.price.price_value);
+                    return total + originalPrice * Number(item.product_quantity);
+                }, 0);
+                const discount = response.data.items.reduce((total, item) => {
+                    const originalPrice = Number(item.detail.price.price_value);
+                    const discountRate = Number(item.detail.discount.discount_rate) / 100;
+                    return total + originalPrice * discountRate * Number(item.product_quantity);
+                }, 0);
+                const total = subTotal - discount;
+                setSubTotal(subTotal);
+                setDiscount(discount);
+                setTotal(total);
                 setItemList(itemList);
                 setOrder(response.data);
             }
         } catch (error) {
             setOrder(null);
         }
-    };
-
-    const calculateTotal = () => {
-        const subTotal = order.items.reduce((total, item) => {
-            const originalPrice = Number(item.detail.price.price_value);
-            return total + originalPrice * Number(item.product_quantity);
-        }, 0);
-        const discount = order.items.reduce((total, item) => {
-            const originalPrice = Number(item.detail.price.price_value);
-            const discountRate = Number(item.detail.discount.discount_rate);
-            return total + originalPrice * discountRate * Number(item.product_quantity);
-        }, 0);
-        const total = subTotal - discount;
-        setSubTotal(subTotal);
-        setDiscount(discount);
-        setTotal(total);
     };
 
     const confirmCancelOrder = () => {
@@ -86,22 +84,15 @@ const OrderDetail = () => {
         if (orderId) {
             fetchOrder();
         }
-        if (order) {
-            calculateTotal();
-        }
-    }, [orderId, order]);
+    }, [orderId]);
 
     return (
         <div className={cx('order-wrapper')}>
             <h3 className={cx('order-title')}>
                 <div className={cx('order-back')}>
-                    <Button
-                        to={routes.userOrders}
-                        primary
-                        className={cx('order-back-btn')}
-                        leftIcon={<FontAwesomeIcon icon={faChevronLeft} />}
-                    >
-                        Quay lại
+                    <Button to={routes.userOrders} link className={cx('order-back-btn')}>
+                        <FontAwesomeIcon icon={faChevronLeft} />
+                        <span className="ms-2">Quay lại</span>
                     </Button>
                 </div>
                 <span>Chi tiết đơn hàng</span>
@@ -114,7 +105,7 @@ const OrderDetail = () => {
                             <span>{order.order_id}</span>
                         </div>
                         <div className={cx('order-review__item')}>
-                            <span>Trạng thái:</span>
+                            <span>Trạng thái hiện tại:</span>
                             <span
                                 className={cx('order-review__item-status', {
                                     [`${
@@ -135,7 +126,15 @@ const OrderDetail = () => {
                         </div>
                         <div className={cx('order-review__item')}>
                             <span>Nhận hàng lúc:</span>
-                            <span>10:30 31/03/2024</span>
+                            <span>
+                                {order.statusList[order.statusList.length - 1].status.status_id === 1004
+                                    ? Helper.formatDateTime(order.statusList[order.statusList.length - 1].updatedAt)
+                                    : 'Chưa nhận hàng'}
+                            </span>
+                        </div>
+                        <div className={cx('order-review__item')}>
+                            <span>Ghi chú:</span>
+                            <span>{order.order_note}</span>
                         </div>
                     </div>
                 )}

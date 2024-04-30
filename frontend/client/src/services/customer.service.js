@@ -24,6 +24,9 @@ class CustomerService {
     async getAddresses() {
         return (await this.api.get('/addresses')).data;
     }
+    async getOneAddresses(id) {
+        return (await this.api.get(`/addresses/${id}`)).data;
+    }
     async getDefaultAddress() {
         return (await this.api.get('/addresses/default')).data;
     }

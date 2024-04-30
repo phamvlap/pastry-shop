@@ -5,6 +5,7 @@
     .header {
         padding: 8px;
         display: flex;
+        align-items: center;
         justify-content: space-between;
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         .order-id {
@@ -114,5 +115,13 @@
             // font-size: 1.8rem;
             // font-weight: bold;
         }
+    }
+    .order-btn__disabled {
+        opacity: 0.8;
+        pointer-events: none;
+        background-color: #CCCCCC;
+        border-color: #CCCCCC;
+        user-select: none;
+        cursor: not-allowed;
     }
 }

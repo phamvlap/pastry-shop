@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { OrderReview } from '~/components/index.js';
@@ -17,6 +17,7 @@ const UserOrder = () => {
 
     const statusService = new StatusService();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const fetchOrders = async () => {
         const response = await OrderActions.getUserOrders(activeFilter);
@@ -37,6 +38,9 @@ const UserOrder = () => {
     useEffect(() => {
         fetchOrders();
         fetchStatusList();
+        if (location.state?.activeFilter) {
+            setActiveFilter(location.state.activeFilter.toString());
+        }
     }, []);
 
     useEffect(() => {

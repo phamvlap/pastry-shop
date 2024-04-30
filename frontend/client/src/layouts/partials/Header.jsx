@@ -1,10 +1,11 @@
-import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { useContext, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
-import { InputSearch } from '~/components/index.js';
+import { InputSearch, Button, Modal } from '~/components/index.js';
 import { UserContext } from '~/contexts/UserContext.jsx';
 import { CartContext } from '~/contexts/CartContext.jsx';
 import UserActions from '~/utils/userActions.js';
@@ -18,13 +19,26 @@ const cx = classNames.bind(styles);
 const Header = () => {
     const { user, setUser, setToken, setIsLogged } = useContext(UserContext);
     const { quantityInCart } = useContext(CartContext);
+    const openBtnRef = useRef(null);
+    const navigate = useNavigate();
     const srcAvatar = user ? Helper.formatImageUrl(user.customer_avatar.image_url) : '';
 
+    const handleShowConfirmLogout = () => {
+        openBtnRef.current.click();
+    };
     const handleLogout = () => {
         UserActions.logout();
         setUser(null);
         setToken('');
         setIsLogged(false);
+        toast.success('Đăng xuất thành công', {
+            duration: 1000,
+            onClose: () => [
+                navigate(routes.origin, {
+                    replace: true,
+                }),
+            ],
+        });
     };
 
     return (
@@ -54,8 +68,8 @@ const Header = () => {
                                             </li>
                                             <li>
                                                 <span
-                                                    onClick={() => handleLogout()}
-                                                    className={cx('tooltip-user__item')}
+                                                    onClick={() => handleShowConfirmLogout()}
+                                                    className={cx('tooltip-user__item', 'tooltip-user__item-logout')}
                                                 >
                                                     Đăng xuất
                                                 </span>
@@ -87,6 +101,27 @@ const Header = () => {
                     </div>
                 </div>
             </div>
+
+            <Button ref={openBtnRef} data-bs-toggle="modal" data-bs-target="#confirm-logout-modal-in-header" hidden />
+            <Modal
+                id="confirm-logout-modal-in-header"
+                title="Xác nhận đăng xuất"
+                buttons={[
+                    {
+                        type: 'secondary',
+                        dismiss: 'modal',
+                        text: 'Hủy',
+                    },
+                    {
+                        type: 'primary',
+                        text: 'Đồng ý',
+                        dismiss: 'modal',
+                        onClick: () => handleLogout(),
+                    },
+                ]}
+            >
+                <p>Bạn có chắc chắn muốn đăng xuất khỏi website?</p>
+            </Modal>
         </div>
     );
 };

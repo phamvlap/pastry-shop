@@ -46,7 +46,7 @@ const AddressItem = ({ address, setAddressList }) => {
         }
     };
     const transferToUpdate = () => {
-        navigate(routes.userAddressAdd, {
+        navigate(routes.userAddressEdit, {
             state: {
                 address,
             },
@@ -93,17 +93,23 @@ const AddressItem = ({ address, setAddressList }) => {
                             <Button outline onClick={() => transferToUpdate()}>
                                 <span>Sửa</span>
                             </Button>
-                            <Button outline onClick={() => confirmDeleteAddress()}>
-                                <span>Xóa</span>
-                            </Button>
+                            {!address.address_is_default && (
+                                <Button outline onClick={() => confirmDeleteAddress()}>
+                                    <span>Xóa</span>
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button ref={openBtnRef} data-bs-toggle="modal" data-bs-target="#update-user-modal"></button>
+            <button
+                ref={openBtnRef}
+                data-bs-toggle="modal"
+                data-bs-target={`#confirm-delete-address-${address.address_id}`}
+            ></button>
             <Modal
-                id="update-user-modal"
+                id={`confirm-delete-address-${address.address_id}`}
                 title="Xác nhận"
                 buttons={[
                     {

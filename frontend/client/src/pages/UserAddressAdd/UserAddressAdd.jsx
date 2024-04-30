@@ -2,8 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 
-import { Form, InputGroup, Modal } from '~/components/index.js';
+import { Form, InputGroup, Modal, Button } from '~/components/index.js';
 import addressRules from '~/config/rules/addressRules.js';
 import Validator from '~/utils/validator.js';
 import addressActions from '~/utils/addressActions.js';
@@ -24,6 +26,18 @@ const UserAddressAdd = () => {
     const openBtnRef = useRef(null);
     const closeBtnRef = useRef(null);
 
+    const fetchAddresses = async () => {
+        try {
+            const response = await addressActions.getAddresses();
+            if (response.status === 'success') {
+                return response.data;
+            } else {
+                return [];
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
     const handleOnChange = (event) => {
         if (event.target.type === 'checkbox') {
             setForm({
@@ -56,23 +70,43 @@ const UserAddressAdd = () => {
                     address_is_default: Number(form.address_is_default),
                 });
             } else {
+                const addresses = await fetchAddresses();
+                if (addresses.length === 0) {
+                    form.address_is_default = true;
+                }
                 response = await addressActions.addAddress({
                     ...form,
                     address_is_default: Number(form.address_is_default),
                 });
+                console.log(response);
             }
             if (response.status !== 'success') {
                 throw new Error('Invalid credentials');
             }
             const message = `${isUpdating ? 'Cập nhật' : 'Thêm mới'} địa chỉ thành công`;
             const duration = 3000;
+            const from = location.state?.from || routes.userAddress;
             toast.success(message, {
                 autoClose: duration,
                 onClose: () => {
-                    navigate(routes.userAddress);
+                    if (from === routes.userAddress) {
+                        navigate(from);
+                    } else {
+                        navigate(from, {
+                            state: {
+                                state: {
+                                    ...location.state.state,
+                                    address: {
+                                        ...response.data,
+                                    },
+                                },
+                            },
+                        });
+                    }
                 },
             });
         } catch (error) {
+            console.log(error);
             const message = error.response?.data?.message || 'Có lỗi xảy ra';
             toast.error(message);
         }
@@ -86,7 +120,7 @@ const UserAddressAdd = () => {
         navigate(routes.userAddress);
     };
     useEffect(() => {
-        if (location.state) {
+        if (location.state?.address) {
             setForm(location.state.address);
             setIsUpdating(true);
         }
@@ -94,9 +128,15 @@ const UserAddressAdd = () => {
 
     return (
         <div className={cx('address-wrapper')}>
-            <h3 className={cx('address-title')}>
+            <div className={cx('address-title')}>
+                <div className={cx('address-back')}>
+                    <Button to={routes.userAddress} link>
+                        <FontAwesomeIcon icon={faChevronLeft} />
+                        <span className="d-inline-block ms-1">Quay lại</span>
+                    </Button>
+                </div>
                 {!isUpdating ? <span>Thêm địa chỉ mới</span> : <span>Cập nhật địa chỉ</span>}
-            </h3>
+            </div>
             <div className={cx('address-content')}>
                 <div className={cx('address-add-form')}>
                     <Form

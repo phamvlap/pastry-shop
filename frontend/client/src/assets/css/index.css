@@ -117,5 +117,7 @@ li {
     background-color: var(--first-level-color);
     color: var(--white-color);
 }
-
-/* react-toastify */
+.error {
+    color: var(--danger-color);
+    font-style: italic;
+}

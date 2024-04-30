@@ -115,3 +115,19 @@
         } 
     }
 }
+.address-list-container {
+    max-height: 400px;
+    overflow-y: scroll;
+    .address-list__item-label {
+        width: 100%;
+        position: relative;
+        .address-list__item-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--first-level-color);
+            color: var(--white-color);
+            padding: 2px 4px;
+        }
+    }
+}

@@ -100,7 +100,7 @@ const CartItem = ({ cartItem, setCart }) => {
                             <div className={cx('cart-item__name')}>{cartItem.product.product_name}</div>
                             <div className={cx('cart-item__category')}>
                                 <span>Danh mục:</span>
-                                <span>{cartItem.product.category.category_name}</span>
+                                <span>{cartItem.product?.category?.category_name}</span>
                             </div>
                         </div>
                     </div>

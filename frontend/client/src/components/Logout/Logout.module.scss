@@ -1,0 +1,12 @@
+.logout-container {
+    display: inline-block;
+    color: var(--danger-color);
+    &:hover {
+        cursor: pointer;
+        opacity: 0.9;
+    }
+    span {
+        display: inline-block;
+        margin-left: 8px;
+    }
+}

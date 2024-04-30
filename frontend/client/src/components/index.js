@@ -17,3 +17,5 @@ export { default as OrderItem } from './OrderItem/OrderItem.jsx';
 export { default as ReviewItem } from './ReviewItem/ReviewItem.jsx';
 export { default as ReviewForm } from './ReviewForm/ReviewForm.jsx';
 export { default as Modal } from './Modal/Modal.jsx';
+export { default as Breadcrumb } from './Breadcrumb/Breadcrumb.jsx';
+export { default as Logout } from './Logout/Logout.jsx';

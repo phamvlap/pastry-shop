@@ -1,60 +1,62 @@
 import { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserTag, faLocation, faKey, faReceipt, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import {
+    faUserTag,
+    faLocation,
+    faKey,
+    faReceipt,
+    faCartShopping,
+    faArrowRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons';
 
-import UserActions from '~/utils/userActions.js';
 import Helper from '~/utils/helper.js';
 import { UserContext } from '~/contexts/UserContext.jsx';
+import routes from '~/config/routes.js';
+import { Logout } from '~/components/index.js';
 
 import styles from './../Layout.module.scss';
 
 const cx = classNames.bind(styles);
 
-const optionList = [
+const menu = [
     {
-        id: 1,
         name: 'Tài khoản',
-        path: '/user/profile',
+        path: routes.userProfile,
         icon: faUserTag,
     },
     {
-        id: 2,
         name: 'Địa chỉ',
-        path: '/user/address',
+        path: routes.userAddress,
         icon: faLocation,
     },
     {
-        id: 3,
         name: 'Đổi mật khẩu',
-        path: '/user/password',
+        path: routes.userPassword,
         icon: faKey,
     },
     {
-        id: 4,
         name: 'Đơn hàng',
-        path: '/user/order',
+        path: routes.userOrders,
         icon: faReceipt,
     },
     {
-        id: 5,
         name: 'Giỏ hàng',
-        path: '/user/cart',
+        path: routes.userCart,
         icon: faCartShopping,
     },
 ];
 
 const UserNav = () => {
-    const [activeOption, setActiveOption] = useState(null);
+    const [currentPath, setCurrentPath] = useState('');
 
     const { user } = useContext(UserContext);
+    const location = useLocation();
 
     useEffect(() => {
-        const path = window.location.pathname;
-        const active = optionList.find((option) => path.startsWith(option.path));
-        setActiveOption(active);
-    });
+        setCurrentPath(location.pathname);
+    }, [location.pathname]);
     return (
         <div className={cx('user-nav-wrapper')}>
             {user && (
@@ -66,21 +68,31 @@ const UserNav = () => {
                 </h2>
             )}
             <ul className={cx('user-nav-list')}>
-                {optionList.map((option) => {
-                    return (
-                        <li key={option.id}>
-                            <Link
-                                to={option.path}
-                                className={cx('user-nav-list__item', {
-                                    active: activeOption && activeOption.path === option.path,
-                                })}
-                            >
-                                <FontAwesomeIcon icon={option.icon} />
-                                <span>{option.name}</span>
-                            </Link>
-                        </li>
-                    );
-                })}
+                {currentPath.length > 0 &&
+                    menu.map((item, index) => {
+                        return (
+                            <li key={index}>
+                                <Link
+                                    to={item.path}
+                                    className={cx('user-nav-list__link', {
+                                        active:
+                                            item.path === routes.userProfile
+                                                ? [routes.user, routes.userProfile].includes(currentPath)
+                                                : currentPath.includes(item.path),
+                                    })}
+                                >
+                                    <FontAwesomeIcon icon={item.icon} />
+                                    <span>{item.name}</span>
+                                </Link>
+                            </li>
+                        );
+                    })}
+                <li className={cx('user-nav-list__item')}>
+                    <Logout id="confirm-logout-modal-in-usernav" />
+                </li>
+                <li className={cx('user-nav-list__item')}>
+                    <Link to={routes.products}>Tiếp tục mua hàng</Link>
+                </li>
             </ul>
         </div>
     );

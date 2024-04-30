@@ -4,6 +4,7 @@ import classNames from 'classnames/bind';
 
 import Header from './partials/Header.jsx';
 import Footer from './partials/Footer.jsx';
+import { Breadcrumb } from '~/components/index.js';
 
 import styles from './Layout.module.scss';
 
@@ -17,6 +18,7 @@ const MainLayout = ({ children }) => {
     return (
         <div className={cx('main-layout-container')}>
             <Header />
+            <Breadcrumb />
             <div className={cx('container', 'main-layout-children')}>
                 <div className={cx('wrapper')}>{children}</div>
             </div>

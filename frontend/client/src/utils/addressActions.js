@@ -10,8 +10,14 @@ const configApi = {
 class AddressActions {
     static async getAddresses() {
         const customerService = new CustomerService(configApi);
-        const addresses = await customerService.getAddresses();
-        return addresses;
+        const response = await customerService.getAddresses();
+        return response;
+    }
+
+    static getOneAddresses(id) {
+        const customerService = new CustomerService(configApi);
+        const response = customerService.getOneAddresses(id);
+        return response;
     }
 
     static async getDefaultAddress() {

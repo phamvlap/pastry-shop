@@ -33,7 +33,11 @@ class OrderActions {
     }
 
     static async updateOrder(id, order) {
-        // Update order
+        const orderService = new OrderService(configApi);
+        const response = await orderService.update(id, {
+            status_id: order.status_id,
+        });
+        return response;
     }
 
     static async cancelOrder(orderId) {

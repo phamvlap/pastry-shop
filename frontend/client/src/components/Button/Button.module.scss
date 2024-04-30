@@ -68,6 +68,7 @@
     border-color: var(--danger-color);
 }
 .link {
+    padding: 4px 8px;
     color: var(--first-level-color);
 }
 .outline {
@@ -79,7 +80,7 @@
     }
 }
 .text {
-    color: var(--info-color);
+    color: var(--dark-text-color);
     &:hover {
         text-decoration: underline;
     }
