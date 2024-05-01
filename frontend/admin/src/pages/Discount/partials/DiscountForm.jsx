@@ -133,7 +133,7 @@ const DiscountForm = ({ discount, setDiscount }) => {
                         <div className="row">
                             <div className={cx('col col-md-6', 'discount-container__col')}>
                                 <InputGroup
-                                    label="Tỷ lệ giảm giá"
+                                    label="Tỷ lệ giảm giá (%)"
                                     type="number"
                                     name="discount_rate"
                                     value={form['discount_rate']}

@@ -24,6 +24,14 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
             authorization: `Bearer ${staffActions.getToken()}`,
         },
     };
+    let statusColumn = '';
+    Object.keys(header).forEach((key) => {
+        if (key.includes('status')) {
+            statusColumn = key;
+            return;
+        }
+    });
+    const disabled = statusColumn !== '' ? !row[statusColumn] : false;
 
     const entity = entityName.trim().toLowerCase();
     switch (entity) {
@@ -195,7 +203,12 @@ const TableRow = ({ setActiveRow, entityName = '', fillable = [], header = {}, r
                                     button['data-bs-target'] = `#confirm-delete-item-modal-${row[`${entity}_id`]}`;
                                 }
                                 return (
-                                    <Button className={cx('table-row__btn')} key={index} {...button}>
+                                    <Button
+                                        className={cx('table-row__btn')}
+                                        key={index}
+                                        {...button}
+                                        disabled={disabled && action === 'edit'}
+                                    >
                                         {actions[action].value}
                                     </Button>
                                 );

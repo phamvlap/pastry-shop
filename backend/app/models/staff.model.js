@@ -1,3 +1,4 @@
+import slugify from 'slugify';
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
 import { formatDateToString, escapeData, extractData, generateRandomString } from './../utils/index.js';
@@ -52,6 +53,7 @@ class StaffModel {
     }
     // get all
     async getAll(filter = {}) {
+        const accountTable = process.env.TABLE_ACCOUNTS;
         const parseStaffName = filter.staff_name ? filter.staff_name.trim() : '';
         const parseStaffAddress = filter.staff_address ? filter.staff_address.trim() : '';
         const parseStaffRole = filter.staff_role ? filter.staff_role.trim() : null;
@@ -61,10 +63,12 @@ class StaffModel {
 
         let preparedStmt = `
             select *
-            from ${this.table}
+            from ${this.table} join ${accountTable}
+                on ${this.table}.account_id = ${accountTable}.account_id
             where (:staff_name is null or staff_name like :staff_name)
                 and (:staff_address is null or staff_address like :staff_address)
                 and (:staff_role is null or staff_role = :staff_role)
+                and ${accountTable}.account_deleted_at = '${process.env.TIME_NOT_DELETED}'
             order by staff_name ${parseStaffNameOrder}
             limit :limit offset :offset;
         `;
@@ -103,7 +107,12 @@ class StaffModel {
     }
     // store staff data
     async store(data) {
-        data.staff_email = data.staff_name.split(' ').join('').toLowerCase() + '@gmail.com';
+        data.staff_email = slugify(data.staff_name, {
+            replacement: '.',
+            lower: true,
+            strict: true,
+            trim: true,
+        }).split('.').join('') + '@gmail.com';
         const { result: staff, errors } = this.validateStaffData(data);
         if (errors.length > 0) {
             const errorMessage = errors.map((error) => error.msg).join(' ');

@@ -1,3 +1,5 @@
+import Validator from '~/utils/validator';
+
 export default [
     {
         field: 'supplier_name',
@@ -24,8 +26,7 @@ export default [
     },
     {
         field: 'supplier_phone_number',
-        method: 'isMobilePhone',
-        args: ['vi-VN'],
+        method: Validator.isPhoneNumber,
         validWhen: true,
         message: 'Số điện thoại không hợp lệ',
     },

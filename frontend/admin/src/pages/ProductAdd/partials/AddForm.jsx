@@ -3,12 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import FormData from 'form-data';
 import { toast } from 'react-toastify';
+import classNames from 'classnames/bind';
 
 import { Form, InputGroup, Modal, Button } from '~/components/index.js';
 import productRules from '~/config/rules/product.js';
 import { Validator, staffActions } from '~/utils/index.js';
 import { ProductService } from '~/services/index.js';
 import routes from '~/config/routes.js';
+
+import styles from './../ProductAdd.module.scss';
+
+const cx = classNames.bind(styles);
 
 const config = {
     headers: {
@@ -245,6 +250,7 @@ const AddForm = ({ categories, discounts, suppliers, product }) => {
                                               key={index}
                                               src={URL.createObjectURL(image)}
                                               style={{ width: '100px', height: '100px' }}
+                                              className={cx('image-item')}
                                           />
                                       );
                                   })
@@ -255,6 +261,7 @@ const AddForm = ({ categories, discounts, suppliers, product }) => {
                                               key={index}
                                               src={image.src}
                                               style={{ width: '100px', height: '100px' }}
+                                              className={cx('image-item')}
                                           />
                                       );
                                   })}

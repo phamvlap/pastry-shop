@@ -17,7 +17,6 @@ import {
     Staff,
     StaffAdd,
     Statistics,
-    Setting,
 } from '~/pages/index.js';
 
 import routesName from '~/config/routes.js';
@@ -121,12 +120,6 @@ const routes = [
     {
         path: routesName.statistics,
         page: Statistics,
-        layout: MainLayout,
-        requireAuth: true,
-    },
-    {
-        path: routesName.settings,
-        page: Setting,
         layout: MainLayout,
         requireAuth: true,
     },

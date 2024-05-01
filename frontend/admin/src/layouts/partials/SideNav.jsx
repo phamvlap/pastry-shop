@@ -12,7 +12,6 @@ import {
     faUserGroup,
     faRightFromBracket,
     faChartPie,
-    faGear,
     faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
 import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
@@ -73,11 +72,6 @@ const sideNavList = [
         name: 'Thống kê',
         to: routes.statistics,
     },
-    {
-        icon: faGear,
-        name: 'Cài đặt',
-        to: routes.settings,
-    },
 ];
 
 const SideNav = () => {
@@ -128,13 +122,13 @@ const SideNav = () => {
                                 </li>
                             );
                         })}
+                    <li onClick={confirmLogout}>
+                        <span className={cx('sidenav-item__logout')}>
+                            <FontAwesomeIcon icon={faRightFromBracket} className="me-2" />
+                            <span>Đăng xuất</span>
+                        </span>
+                    </li>
                 </ul>
-                <div className={cx('sidenav-footer')} onClick={confirmLogout}>
-                    <span className={cx('sidenav-footer__inner')}>
-                        <FontAwesomeIcon icon={faRightFromBracket} className="me-2" />
-                        <span>Đăng xuất</span>
-                    </span>
-                </div>
             </div>
 
             <Button ref={warningModalRef} data-bs-toggle="modal" data-bs-target="#warn-logout" />

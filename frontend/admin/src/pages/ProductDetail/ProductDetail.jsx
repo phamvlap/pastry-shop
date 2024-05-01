@@ -69,7 +69,7 @@ const ProductDetail = () => {
 
     const handleDeleteItem = async () => {
         try {
-            const productService = new ProductService();
+            const productService = new ProductService(configApi);
             const response = await productService.delete(productId);
             if (response.status === 'success') {
                 toast.success('Xóa sản phẩm thành công!', {
@@ -156,7 +156,7 @@ const ProductDetail = () => {
                     {
                         type: 'primary',
                         text: 'Đồng ý',
-                        onClick: () => handleDeleteItem,
+                        onClick: () => handleDeleteItem(),
                         dismiss: 'modal',
                     },
                 ]}

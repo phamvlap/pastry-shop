@@ -16,7 +16,7 @@ const routes = {
     staffAdd: '/admin/staffs/add',
     staffEdit: '/admin/staffs/:id/edit',
     statistics: '/admin/statistics',
-    settings: '/admin/settings',
+    // settings: '/admin/settings',
 };
 
 export default routes;

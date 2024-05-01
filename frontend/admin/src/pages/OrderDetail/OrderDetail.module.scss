@@ -21,6 +21,7 @@
 }
 .order-info__item-label {
     font-weight: 700;
+    margin-right: 8px;
 }
 .order-section__info {
 
@@ -32,6 +33,9 @@
     display: flex;
     justify-content: end;
     padding: 8px;
+    .order-section__total-label {
+        margin-right: 8px;
+    }
     .order-section__total-total {
         font-weight: 700;
         font-size: 2.2rem;

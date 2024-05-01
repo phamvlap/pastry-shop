@@ -44,13 +44,18 @@ const ProductAdd = () => {
             }
             setCategories(itemList);
         });
-        discountService.getAll().then((response) => {
+        discountService.getAll().then(async (response) => {
             let itemList = [];
             for (const item of response.data) {
-                itemList.push({
-                    value: item.discount_id,
-                    name: item.discount_code,
+                const discountCount = await productService.getCount({
+                    discount_id: item.discount_id,
                 });
+                if (new Date() < new Date(item.discount_end) && discountCount.data < item.discount_limit) {
+                    itemList.push({
+                        value: item.discount_id,
+                        name: item.discount_code,
+                    });
+                }
             }
             setDiscounts(itemList);
         });

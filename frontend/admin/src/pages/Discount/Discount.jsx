@@ -29,13 +29,14 @@ const Discount = () => {
                 data.push({
                     discount_id: discount.discount_id,
                     discount_code: discount.discount_code,
-                    discount_rate: Number(discount.discount_rate).toFixed(2) * 100,
+                    discount_rate: parseInt(discount.discount_rate),
                     discount_limit: discount.discount_limit,
                     discount_applied: appliedCount.data,
                     discount_start: formatDate.convertToStandardFormat(discount.discount_start),
                     discount_end: formatDate.convertToStandardFormat(discount.discount_end),
                     discount_start_view: formatDate.convertToViewFormat(discount.discount_start),
                     discount_end_view: formatDate.convertToViewFormat(discount.discount_end),
+                    discount_status: new Date() < new Date(discount.discount_end),
                 });
             }
             setDiscountList(data);
@@ -46,14 +47,14 @@ const Discount = () => {
     return (
         <div className={cx('discount-container')}>
             <div className="row">
-                <div className={cx('col col-md-8', 'discount-container__col')}>
+                <div className={cx('col col-md-9', 'discount-container__col')}>
                     <DiscountList
                         discountList={discountList}
                         setDiscountList={setDiscountList}
                         setDiscount={setDiscount}
                     />
                 </div>
-                <div className={cx('col col-md-4', 'discount-container__col')}>
+                <div className={cx('col col-md-3', 'discount-container__col')}>
                     <DiscountForm discount={discount} setDiscount={setDiscount} />
                 </div>
             </div>

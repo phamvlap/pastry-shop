@@ -33,6 +33,11 @@ const header = {
         value: 'Ngày kết thúc',
         isModified: false,
     },
+    discount_status: {
+        value: 'Trạng thái',
+        isModified: false,
+        views: ['Đang sử dụng', 'Hết hạn'],
+    },
 };
 
 const actions = {
