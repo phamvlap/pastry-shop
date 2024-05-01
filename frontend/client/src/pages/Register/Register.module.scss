@@ -8,5 +8,12 @@
     width: 100%;
     min-width: 400px;
     max-width: 580px;
-    background-color: var(--light-text-color)    
+    background-color: var(--light-text-color);
+    .form-item__direct-login {
+        padding: 4px 0;
+        .form-item__link-login {
+            padding: 4px;
+            color: var(--first-level-color);
+        }
+    }
 }

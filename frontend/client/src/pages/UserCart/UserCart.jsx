@@ -114,7 +114,6 @@ const UserCart = () => {
             calculateTotal();
         }
     }, [cart]);
-    console.log(cart);
 
     return (
         <div className={cx('container')}>

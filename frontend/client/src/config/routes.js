@@ -15,6 +15,10 @@ const routes = {
     userCart: '/user/cart',
     userCheckout: '/user/checkout',
     orderDetail: '/user/order/:id',
+    forgotPassword: '/forgot-password',
+    sendVerifyCode: '/forgot-password/send',
+    verifyCode: '/forgot-password/verify',
+    resetPassword: '/forgot-password/reset',
     notFound: '*',
 };
 

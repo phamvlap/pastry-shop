@@ -12,3 +12,7 @@ export { default as OrderDetail } from './OrderDetail/OrderDetail.jsx';
 export { default as Login } from './Login/Login.jsx';
 export { default as Register } from './Register/Register.jsx';
 export { default as NotFound } from './NotFound/NotFound.jsx';
+export { default as ForgotPassword } from './ForgotPassword/ForgotPassword.jsx';
+export { default as SendVerifyCode } from './SendVerifyCode/SendVerifyCode.jsx';
+export { default as VerifyCode } from './VerifyCode/VerifyCode.jsx';
+export { default as ResetPassword } from './ResetPassword/ResetPassword.jsx';

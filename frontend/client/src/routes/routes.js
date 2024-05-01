@@ -18,6 +18,10 @@ import {
     UserCheckout,
     OrderDetail,
     NotFound,
+    ForgotPassword,
+    VerifyCode,
+    ResetPassword,
+    SendVerifyCode,
 } from '~/pages/index.js';
 
 import routesName from '~/config/routes.js';
@@ -34,6 +38,26 @@ const routes = [
     {
         path: routesName.login,
         page: Login,
+        layout: MainLayout,
+    },
+    {
+        path: routesName.forgotPassword,
+        page: ForgotPassword,
+        layout: MainLayout,
+    },
+    {
+        path: routesName.sendVerifyCode,
+        page: SendVerifyCode,
+        layout: MainLayout,
+    },
+    {
+        path: routesName.verifyCode,
+        page: VerifyCode,
+        layout: MainLayout,
+    },
+    {
+        path: routesName.resetPassword,
+        page: ResetPassword,
         layout: MainLayout,
     },
     {

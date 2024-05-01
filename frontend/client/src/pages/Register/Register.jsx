@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { toast } from 'react-toastify';
 
@@ -116,6 +116,12 @@ const Register = () => {
                             value={form.customer_confirm_password}
                             error={errors.customer_confirm_password}
                         />
+                        <div className={cx('form-item__direct-login')}>
+                            <span>Bạn đã có tài khoản?</span>
+                            <Link to={routes.login} className={cx('form-item__link-login')}>
+                                Đăng nhập
+                            </Link>
+                        </div>
                     </>
                 </Form>
             </div>

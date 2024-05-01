@@ -1,5 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
+import { OAuth2Client } from 'google-auth-library';
 
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
@@ -159,12 +161,10 @@ class AccountModel {
         if (!account) {
             throw new Error('Invalid information.');
         }
-        console.log(payload.account_password, account.account_password)
 
         if (!bcrypt.compareSync(payload.account_password, account.account_password)) {
             throw new Error('Invalid information.');
         }
-        console.log('check4');
 
         let data = '';
         if (account.account_role === 'staff') {
@@ -262,6 +262,142 @@ class AccountModel {
         `
         await connection.execute(preparedStmt, {
             account_id: id,
+        });
+    }
+    async forgotPassword(payload) {
+        let account = null;
+        if(payload.account_role === 'staff') {
+            account = await this.getByEmail(payload.account_email);
+        } else if(payload.account_role === 'customer') {
+            account = await this.getByUsername(payload.account_username);
+        }
+        if(!account) {
+            throw new Error('Account does not exist.');
+        }
+        return {
+            account_id: account.account_id,
+            account_email: account.account_email,
+            account_username: account.account_username,
+            account_role: account.account_role,
+        };
+    }
+    async sendCode(payload) {
+        const oAuth2Client = new OAuth2Client(process.env.GOOGLE_MAILER_CLIENT_ID, process.env.GOOGLE_MAILER_CLIENT_SECRET);
+        oAuth2Client.setCredentials({
+            refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN
+        });
+        const { email } = payload;
+        if(!email) {
+            throw new Error('Please provide email.');
+        }
+        const account_role = payload.account_role;
+        const account_email = payload.account_email;
+        const account_username = payload.account_username;
+        let account = null;
+        if(account_role === 'staff') {
+            if(!account_email) {
+                throw new Error('Please provide email.');
+            }
+            account = await this.getByEmail(account_email);
+        } else if(account_role === 'customer') {
+            if(!account_username) {
+                throw new Error('Please provide username.');
+            }
+            account = await this.getByUsername(account_username);
+        }
+        if(!account) {
+            throw new Error('Account does not exist.');
+        }
+        const accessTokenObject = await oAuth2Client.getAccessToken();
+        const accessToken = accessTokenObject?.token;
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: process.env.ADMIN_EMAIL,
+                clientId: process.env.GOOGLE_MAILER_CLIENT_ID,
+                clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
+                refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
+                accessToken,
+            }
+        });
+
+        const code = Math.floor(Math.random() * 1000000);
+
+        const mailOptions = {
+            to: email,
+            subject: '[No Reply] Mã xác thực khôi phục mật khẩu',
+            html: `<div>Mã xác thực của bạn là: <strong>${code}</strong></div>`,
+        }
+
+        await transporter.sendMail(mailOptions);
+
+        const preparedStmt = `
+            update ${this.table}
+            set account_code = :account_code
+            where account_id = :account_id;
+        `;
+        await connection.execute(preparedStmt, {
+            account_code: code.toString(),
+            account_id: account.account_id,
+        });
+    }
+    async verifyCode(payload) {
+        let account = null;
+        if(payload.account_role === 'staff') {
+            if(!payload.account_email) {
+                throw new Error('Please provide email.');
+            }
+            account = await this.getByEmail(payload.account_email);
+        } else if(payload.account_role === 'customer') {
+            if(!payload.account_username) {
+                throw new Error('Please provide username.');
+            }
+            account = await this.getByUsername(payload.account_username);
+        }
+        if(!account) {
+            throw new Error('Account does not exist.');
+        }
+        if(!account.account_code) {
+            throw new Error('Please verify code.');
+        }
+        if(account.account_code !== payload.code) {
+            throw new Error('Invalid code.');
+        }
+        return {
+            account_id: account.account_id,
+            account_email: account.account_email,
+            account_username: account.account_username,
+            account_role: account.account_role,
+        };
+    }
+    async resetPassword(payload) {
+        let account = null;
+        if(payload.account_role === 'staff') {
+            if(!payload.account_email) {
+                throw new Error('Please provide email.');
+            }
+            account = await this.getByEmail(payload.account_email);
+        } else if(payload.account_role === 'customer') {
+            if(!payload.account_username) {
+                throw new Error('Please provide username.');
+            }
+            account = await this.getByUsername(payload.account_username);
+        }
+        if(!account) {
+            throw new Error('Account does not exist.');
+        }
+        const salt = bcrypt.genSaltSync(Number(process.env.SALT_ROUNDS));
+        const hashedNewPassword = bcrypt.hashSync(payload.account_password, salt);
+        const preparedStmt = `
+            update ${this.table}
+            set account_password = :account_password,
+                account_code = null
+            where account_id = :account_id;
+        `;
+        await connection.execute(preparedStmt, {
+            account_password: hashedNewPassword,
+            account_id: account.account_id,
         });
     }
 }

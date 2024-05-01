@@ -27,6 +27,54 @@ class AccountController {
             next(new BadRequestError(error.message));
         }
     }
+    async forgotPassword(req, res, next) {
+        try {
+            const accountModel = new AccountModel();
+            const account = await accountModel.forgotPassword(req.body);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: account,
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
+    async sendCode(req, res, next) {
+        try {
+            const accountModel = new AccountModel();
+            await accountModel.sendCode(req.body);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: 'Send code successfully',
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
+    async verifyCode(req, res, next) {
+        try {
+            const accountModel = new AccountModel();
+            const account = await accountModel.verifyCode(req.body);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: account,
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
+    async resetPassword(req, res, next) {
+        try {
+            const accountModel = new AccountModel();
+            await accountModel.resetPassword(req.body);
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: 'Reset password successfully',
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
 }
 
 export default new AccountController();

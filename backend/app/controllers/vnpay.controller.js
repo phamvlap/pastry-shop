@@ -1,50 +1,34 @@
 import config from 'config';
-import dateFormat from 'dateformat';
 import queryString from 'qs';
 import crypto from 'crypto-js';
 import { StatusCodes } from 'http-status-codes';
+import moment from 'moment';
+import Helper from './../utils/helper.js';
 
 class VNPAYController {
-    // sortObject(object) {
-    // 	console.log('check');
-    // 	console.log(object);
-    // 	const sortedObject = {};
-    // 	const key = Object.keys(object).sort();
-    // 	for (let i = 0; i < key.length; i++) {
-    // 		sortedObject[key[i]] = object[key[i]];
-    // 	}
-    // 	return sortedObject;
-    // }
     // [POST]
     buildUrl(req, res, next) {
-        function sortObject(object) {
-            const sortedObject = {};
-            const key = Object.keys(object).sort();
-            for (let i = 0; i < key.length; i++) {
-                sortedObject[key[i]] = object[key[i]];
-            }
-            return sortedObject;
-        }
-
         const ipAddr =
             req.headers['x-forwared-for'] ||
             req.connection.remoteAddress ||
             req.socket.remoteAddress ||
             req.connection.socket.remoteAddress;
-        const tmnCode = config.get('vnpay_TmnCode');
-        const secretKey = config.get('vnpay_HashSecret');
-        let vnpUrl = config.get('vnpay_Url');
-        const returnUrl = config.get('vnpay_ReturnUrl');
+        const tmnCode = config.get('vnp_TmnCode');
+        const secretKey = config.get('vnp_HashSecret');
+        let vnpUrl = config.get('vnp_Url');
+        const returnUrl = config.get('vnp_ReturnUrl');
 
         const date = new Date();
-        const createDate = dateFormat(date, 'YYYYMMDDHHmmss');
-        const orderId = dateFormat(date, 'HHmmss');
+        const createDate = moment(date).format('YYYYMMDDHHmmss');
+        const orderId = moment(date).format('HHmmss');
 
         const amount = req.body.amount;
-        const orderInfo = req.body.orderInfo;
-        const orderType = req.body.orderType;
+        // const orderInfo = req.body.orderInfo;
+        // const orderType = req.body.orderType;
+        const orderInfo = 'Test';
+        const orderType = 'Other';
         let locale = req.body.language;
-        if (locale === null || locale === '') {
+        if (locale === null || locale === '' || locale === undefined) {
             locale = 'vn';
         }
         const currCode = 'VND';
@@ -62,29 +46,30 @@ class VNPAYController {
         vnp_Params['vnp_Amount'] = Number(amount) * 100;
         vnp_Params['vnp_ReturnUrl'] = returnUrl;
         vnp_Params['vnp_IpAddr'] = ipAddr;
-        // if(bankCode !== null && bankCode !== ''){
-        // 	vnp_Params['vnp_BankCode'] = bankCode;
-        // }
-
         vnp_Params = {
-            ...sortObject(vnp_Params),
+            ...Helper.sortObject(vnp_Params),
         };
 
-        const signData = queryString.stringify(vnp_Params, {
-            encode: false,
-        });
-        const secureHash = crypto.HmacSHA512(secretKey, signData).toString();
-        vnp_Params['vnp_SecureHashType'] = 'SHA512';
-        vnp_Params['vnp_SecureHash'] = secureHash;
-        vnpUrl +=
-            '?' +
-            queryString.stringify(vnp_Params, {
-                encode: false,
-            });
+        const redirectUrl = new URL(vnpUrl);
+        
+        Object.keys(vnp_Params).forEach((key) => {
+            if(!vnp_Params[key] || vnp_Params[key] === '' || vnp_Params[key] === undefined || vnp_Params[key] === null) {
+                return;
+            }
+            redirectUrl.searchParams.append(key, vnp_Params[key].toString());
+        })
+
+        let hmac = crypto.algo.HMAC.create(crypto.algo.SHA512, secretKey);
+        hmac.update(new Buffer(redirectUrl.search.slice(1).toString(), 'utf-8'));
+        const signed = hmac.finalize().toString(crypto.enc.Hex);
+
+        // vnp_Params['vnp_SecureHashType'] = 'SHA512';
+        vnp_Params['vnp_SecureHash'] = signed;
+        redirectUrl.searchParams.append('vnp_SecureHash', signed);
         return res.status(StatusCodes.OK).json({
             status: 'success',
             data: {
-                vnpUrl: vnpUrl,
+                vnpUrl: redirectUrl.toString(),
             },
         });
     }

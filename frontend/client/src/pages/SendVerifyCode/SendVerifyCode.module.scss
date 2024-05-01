@@ -1,0 +1,30 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container {
+    width: 100%;
+    min-width: 400px;
+    max-width: 580px;
+    position: relative;
+    .back-btn-section {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 8px;
+    }
+    .back-btn {
+        background-color: transparent;
+    }
+    .success-msg {
+        color: var(--success-color);
+        text-align: center;
+        padding: 4px;
+        line-height: 1.4;
+    }
+}
+.form-content {
+    background-color: var(--light-text-color);
+}

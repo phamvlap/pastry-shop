@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faTrashCan, faBan } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 import { OrderItemList, Button, Modal } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
@@ -28,6 +29,7 @@ const OrderDetail = () => {
     const [total, setTotal] = useState(0);
 
     const { id: orderId } = useParams();
+    const navigate = useNavigate();
     const openBtnRef = useRef(null);
     const closeBtnRef = useRef(null);
 
@@ -76,8 +78,28 @@ const OrderDetail = () => {
         openBtnRef.current.click();
     };
     const implementCancelOrder = async () => {
-        await OrderActions.cancelOrder(order.order_id);
-        closeBtnRef.current.click();
+        try {
+            await OrderActions.cancelOrder(order.order_id);
+            closeBtnRef.current.click();
+            toast.success('Hủy đơn hàng thành công', {
+                duration: 1000,
+                onClose: () => {
+                    navigate(
+                        routes.userOrders,
+                        {
+                            state: {
+                                activeFitler: 1005,
+                            },
+                        },
+                        {
+                            replace: true,
+                        },
+                    );
+                },
+            });
+        } catch (error) {
+            toast.error('Hủy đơn hàng thất bại');
+        }
     };
 
     useEffect(() => {

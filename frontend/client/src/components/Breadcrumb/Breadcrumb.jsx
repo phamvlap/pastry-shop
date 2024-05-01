@@ -62,6 +62,18 @@ const Breadcrumb = () => {
                 name = 'Giỏ hàng của tôi';
             } else if (pathname === 'checkout') {
                 name = 'Xác nhận đơn hàng';
+            } else if (pathname === 'login') {
+                name = 'Đăng nhập';
+            } else if (pathname === 'register') {
+                name = 'Đăng ký';
+            } else if (pathname === 'forgot-password') {
+                name = 'Quên mật khẩu';
+            } else if (pathname === 'send' && pathnames[i - 1] === 'forgot-password') {
+                name = 'Gửi mã xác thực';
+            } else if (pathname === 'verify' && pathnames[i - 1] === 'forgot-password') {
+                name = 'Nhập mã xác thực';
+            } else if (pathname === 'reset' && pathnames[i - 1] === 'forgot-password') {
+                name = 'Đặt lại mật khẩu';
             } else if (pathname === 'add' && pathnames[i - 1] === 'address') {
                 name = 'Thêm địa chỉ';
             } else if (pathname === 'edit' && pathnames[i - 1] === 'address') {

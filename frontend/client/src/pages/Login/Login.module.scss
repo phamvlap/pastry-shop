@@ -12,6 +12,9 @@
     .form-item__forget-password, .form-item__direct-register {
         padding: 4px 0;
     }
+    .form-item__forget-password {
+        color: var(--first-level-color);
+    }
     .form-item__direct-register {
         .form-item__link-register {
             padding: 4px;

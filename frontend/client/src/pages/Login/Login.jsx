@@ -120,9 +120,11 @@ const Login = () => {
                         value={form.customer_password}
                         error={errors.customer_password}
                     />
-                    <div className={cx('form-item__forget-password')}>Quên mật khẩu?</div>
+                    <div className={cx('form-item__forget-password')}>
+                        <Link to={routes.forgotPassword}>Quên mật khẩu?</Link>
+                    </div>
                     <div className={cx('form-item__direct-register')}>
-                        Bạn chưa có tài khoản?
+                        <span>Bạn chưa có tài khoản?</span>
                         <Link to={routes.register} className={cx('form-item__link-register')}>
                             Đăng ký
                         </Link>

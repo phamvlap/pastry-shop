@@ -195,21 +195,21 @@ const UserCheckout = () => {
             console.log(error);
         }
     };
-    // const redirectToVnpay = async (event) => {
-    // event.preventDefault();
-    // const vnpayService = new VNPAYService();
-    // const data = {
-    //     amount: total,
-    //     orderInfo: 'Thanh toán đơn hàng',
-    //     orderType: 'billpayment',
-    // };
-    // const response = await vnpayService.create(data);
-    // console.log(response);
-    // if (response.status === 'success') {
-    //     window.clearTimeout();
-    //     window.location.href = response.data.vnpUrl;
-    // }
-    // };
+    const redirectToVnpay = async (event) => {
+        event.preventDefault();
+        const vnpayService = new VNPAYService();
+        const data = {
+            amount: total,
+            orderInfo: 'Thanh toán đơn hàng',
+            orderType: 'billpayment',
+        };
+        console.log(data);
+        const response = await vnpayService.create(data);
+        if (response.status === 'success') {
+            console.log(response.data);
+            // window.location.href = response.data.vnpUrl;
+        }
+    };
 
     useEffect(() => {
         fetchAddresses();
