@@ -76,7 +76,7 @@ const ProductInfo = ({ item }) => {
             </div>
             <div className={cx('info-category')}>
                 <span className="fw-bold">Danh mục: </span>
-                <span>{item?.category?.category_name}</span>
+                <span>{item.category ? item.category.category_name : 'Đang cập nhật'}</span>
             </div>
             <div className={cx('info-price')}>
                 <div className={cx('info-price__old')}>

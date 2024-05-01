@@ -70,12 +70,9 @@ const InputSearch = () => {
     };
     const handleSubmitSearch = (event) => {
         event.preventDefault();
-        console.log(searchValueView);
         if (searchValueView === '') {
-            console.log('check');
             setSearchParams({});
         } else {
-            console.log('check2');
             setSearchParams({
                 search_name: searchValue,
             });

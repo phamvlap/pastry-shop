@@ -189,6 +189,7 @@ class ProductModel {
     // get total product with filter
     async getCount(
         product_name,
+        product_slug,
         category_id,
         supplier_id,
         discount_id,
@@ -196,6 +197,7 @@ class ProductModel {
     ) {
         const products = await this.getAll(
             product_name,
+            product_slug,
             category_id,
             supplier_id,
             discount_id,

@@ -39,28 +39,27 @@ const Products = ({ setToasts }) => {
     const location = useLocation();
 
     const fetchProductData = async (options) => {
-        let filter = {};
+        let localFilter = {};
         let response = null;
         for (const key of filterOptions) {
             if (options[key] && options[key] !== '' && options[key] !== undefined) {
-                filter[key] = options[key];
+                localFilter[key] = options[key];
             }
         }
-        if (filter.limit && !filter.offset) {
-            filter.offset = 0;
+        if (localFilter.limit && !localFilter.offset) {
+            localFilter.offset = 0;
         }
-        if (filter.search_name) {
-            filter.product_slug = filter.search_name;
-            delete filter.search_name;
+        if (localFilter.search_name) {
+            localFilter.product_slug = localFilter.search_name;
         }
-        response = await productService.getCount(filter);
+        response = await productService.getCount(localFilter);
         if (response.status === 'success') {
             setTotalRecords(response.data);
             setTotalPages(
-                Math.ceil(response.data / (filter.limit || Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE))),
+                Math.ceil(response.data / (localFilter.limit || Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE))),
             );
         }
-        response = await productService.getAll(filter);
+        response = await productService.getAll(localFilter);
         let data = [];
         if (response.status === 'success') {
             for (const row of response.data) {
@@ -92,13 +91,7 @@ const Products = ({ setToasts }) => {
             setTotalPages(Math.ceil(response.data / recordsPerPage));
             setCurrentPage(1);
         };
-        let customFilter = {};
-        Object.keys(filter).forEach((key) => {
-            if (filter[key] && key !== 'limit' && key !== 'offset') {
-                customFilter[key] = filter[key];
-            }
-        });
-        getTotalProducts(customFilter);
+        getTotalProducts({});
     }, []);
 
     useEffect(() => {
@@ -118,12 +111,18 @@ const Products = ({ setToasts }) => {
             });
         } else {
             setFilter((prevFilter) => {
-                const tmp = {
-                    ...prevFilter,
-                };
-                delete tmp.search_name;
-                return tmp;
+                if (prevFilter.search_name) {
+                    delete prevFilter.search_name;
+                }
+                return prevFilter;
             });
+            const newFilter = {};
+            Object.keys(filter).forEach((key) => {
+                if (key !== 'search_name') {
+                    newFilter[key] = filter[key];
+                }
+            });
+            fetchProductData(newFilter);
         }
     }, [location.search]);
 
@@ -137,7 +136,12 @@ const Products = ({ setToasts }) => {
                         </div>
                         <div className="col-md-9">
                             <div className={cx('container')}>
-                                <div className={cx('search-result')}></div>
+                                {filter.search_name && (
+                                    <div className={cx('p-2 mb-2', 'search-result')}>
+                                        Có {totalRecords} sản phẩm được tìm thấy phù hợp với từ khóa &ldquo;
+                                        {filter.search_name}&rdquo;
+                                    </div>
+                                )}
                                 <SortBar filter={filter} setFilter={setFilter} />
                                 <div className={cx('products-list')}>
                                     <h2 className={cx('list-title')}>Dành cho bạn</h2>

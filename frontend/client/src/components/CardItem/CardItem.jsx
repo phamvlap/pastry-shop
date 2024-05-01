@@ -63,13 +63,15 @@ const CardItem = ({ product }) => {
                             <span>{Helper.formatMoney(parseInt(product.product_price))}</span>
                             <span className={cx('card-price__unit-money')}>VNĐ</span>
                         </p>
-                        <p className={cx('card-price__deducted-rate')}>
-                            <span className="d-inline-block me-1">-</span>
-                            <span className="d-inline-block me-1">
-                                {Number(product.product_discount.discount_rate)}
-                            </span>
-                            <span>%</span>
-                        </p>
+                        {product.product_discount && (
+                            <p className={cx('card-price__deducted-rate')}>
+                                <span className="d-inline-block me-1">-</span>
+                                <span className="d-inline-block me-1">
+                                    {Number(product.product_discount.discount_rate)}
+                                </span>
+                                <span>%</span>
+                            </p>
+                        )}
                     </div>
                     <div className={cx('card-price__current')}>
                         <span>{Helper.formatMoney(currentPrice)}</span>
