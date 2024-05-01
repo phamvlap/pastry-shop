@@ -15,7 +15,7 @@ const App = () => {
                     const Page = page;
 
                     const Element = (
-                        <Layout>
+                        <Layout key={Math.floor(Math.random() * 10000)}>
                             <Page />
                         </Layout>
                     );

@@ -119,6 +119,7 @@ class ProductModel {
     // get all products by filter
     async getAll(
         product_name,
+        product_slug,
         category_id,
         supplier_id,
         discount_id,
@@ -129,6 +130,7 @@ class ProductModel {
         offset,
     ) {
         const parseProductName = product_name ? product_name : '';
+        const parseProductSlug = product_slug ? product_slug : '';
         const parseCategoryId = category_id ? category_id : null;
         const parseSupplierId = supplier_id ? supplier_id : null;
         const parseDiscountId = discount_id ? discount_id : null;
@@ -143,6 +145,7 @@ class ProductModel {
             from ${this.table} as p
             where product_deleted_at = '${process.env.TIME_NOT_DELETED}'
                 and (:product_name is null or p.product_name like :product_name)
+                and (:product_slug is null or p.product_slug like :product_slug)
                 and (:category_id is null or p.category_id = :category_id)
                 and (:supplier_id is null or p.supplier_id = :supplier_id)
                 and (:discount_id is null or p.discount_id = :discount_id)
@@ -160,6 +163,7 @@ class ProductModel {
         `;
         const [rows] = await connection.execute(preparedStmt, {
             product_name: `%${parseProductName}%`,
+            product_slug: `%${parseProductSlug}%`,
             category_id: parseCategoryId,
             supplier_id: parseSupplierId,
             discount_id: parseDiscountId,

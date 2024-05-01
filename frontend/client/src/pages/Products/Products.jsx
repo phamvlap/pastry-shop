@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 
@@ -13,6 +13,8 @@ const cx = classNames.bind(styles);
 
 const filterOptions = [
     'product_name',
+    'search_name',
+    'product_slug',
     'category_id',
     'supplier_id',
     'discount_id',
@@ -34,17 +36,22 @@ const Products = ({ setToasts }) => {
 
     const productService = new ProductService();
     const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
 
     const fetchProductData = async (options) => {
         let filter = {};
         let response = null;
         for (const key of filterOptions) {
-            if (options[key]) {
+            if (options[key] && options[key] !== '' && options[key] !== undefined) {
                 filter[key] = options[key];
             }
         }
         if (filter.limit && !filter.offset) {
             filter.offset = 0;
+        }
+        if (filter.search_name) {
+            filter.product_slug = filter.search_name;
+            delete filter.search_name;
         }
         response = await productService.getCount(filter);
         if (response.status === 'success') {
@@ -79,13 +86,19 @@ const Products = ({ setToasts }) => {
     };
 
     useEffect(() => {
-        const getTotalProducts = async () => {
-            const response = await productService.getCount({});
+        const getTotalProducts = async (filter) => {
+            const response = await productService.getCount(filter);
             setTotalRecords(response.data);
             setTotalPages(Math.ceil(response.data / recordsPerPage));
             setCurrentPage(1);
         };
-        getTotalProducts();
+        let customFilter = {};
+        Object.keys(filter).forEach((key) => {
+            if (filter[key] && key !== 'limit' && key !== 'offset') {
+                customFilter[key] = filter[key];
+            }
+        });
+        getTotalProducts(customFilter);
     }, []);
 
     useEffect(() => {
@@ -97,19 +110,25 @@ const Products = ({ setToasts }) => {
         });
     }, [filter, currentPage, recordsPerPage, recordOffset]);
 
+    useEffect(() => {
+        if (location.search.includes('search_name')) {
+            setFilter({
+                ...filter,
+                search_name: searchParams.get('search_name'),
+            });
+        } else {
+            setFilter((prevFilter) => {
+                const tmp = {
+                    ...prevFilter,
+                };
+                delete tmp.search_name;
+                return tmp;
+            });
+        }
+    }, [location.search]);
+
     return (
         <div>
-            <div className="container">
-                {/* <div className={cx('breadcrumb-wrapper')}>
-                    <ul className={cx('breadcrumb')}>
-                        <li className={cx('breadcrumb-item')}>Trang chủ</li>
-                        <span className={cx('breadcrumb-seperate')}>/</span>
-                        <li className={cx('breadcrumb-item')}>Danh muc</li>
-                        <span className={cx('breadcrumb-seperate')}>/</span>
-                        <li className={cx('breadcrumb-item')}>Do uong</li>
-                    </ul>
-                </div> */}
-            </div>
             <div className="container">
                 <div className={cx('content-wrapper')}>
                     <div className="row">
@@ -118,6 +137,7 @@ const Products = ({ setToasts }) => {
                         </div>
                         <div className="col-md-9">
                             <div className={cx('container')}>
+                                <div className={cx('search-result')}></div>
                                 <SortBar filter={filter} setFilter={setFilter} />
                                 <div className={cx('products-list')}>
                                     <h2 className={cx('list-title')}>Dành cho bạn</h2>

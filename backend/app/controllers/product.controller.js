@@ -11,6 +11,7 @@ class ProductController {
             const productModel = new ProductModel();
             const products = await productModel.getAll(
                 req.query.product_name,
+                req.query.product_slug,
                 req.query.category_id,
                 req.query.supplier_id,
                 req.query.discount_id,
