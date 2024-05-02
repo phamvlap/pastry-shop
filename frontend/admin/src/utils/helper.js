@@ -92,5 +92,10 @@ class Helper {
         }
         return result;
     }
+
+    // get days in month
+    static getDaysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
 }
 export default Helper;

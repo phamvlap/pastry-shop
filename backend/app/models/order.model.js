@@ -63,11 +63,11 @@ class OrderModel {
     // get all orders
     async getAll(filter = {}) {
         const statusId = Number(filter.status_id) || null;
-        const startDate = filter.start_date !== 'null' ? filter.start_date : null;
-        const endDate = filter.end_date !== 'null' ? filter.end_date : null;
+        const startDate = (filter.start_date && filter.start_date !== 'null') ? filter.start_date : null;
+        const endDate = (filter.end_date && filter.end_date !== 'null') ? filter.end_date : null;
         const orderTotalOrder = ['asc', 'desc'].includes(filter.order_total) ? filter.order_total : null;
-        const limit = filter.limit !== 'null' ? '' + filter.limit : '' + process.env.MAX_LIMIT;
-        const offset = filter.offset !== 'null' ? '' + filter.offset : '0';
+        const limit = (filter.limit && filter.limit !== 'null') ? '' + filter.limit : '' + process.env.MAX_LIMIT;
+        const offset = (filter.offset && filter.offset !== 'null') ? '' + filter.offset : '0';
 
         let preparedStmt = `
             select *

@@ -6,6 +6,7 @@ import { StaffContext } from '~/contexts/StaffContext.jsx';
 import { staffActions, Validator } from '~/utils/index.js';
 import { InputGroup, Form } from '~/components/index.js';
 import loginRules from '~/config/rules/login.js';
+import routes from '~/config/routes.js';
 
 import styles from './Login.module.scss';
 
@@ -23,7 +24,7 @@ const Login = () => {
     const location = useLocation();
     const validator = new Validator(loginRules);
 
-    const from = location.state?.from?.pathname || '/';
+    const from = location.state?.from?.pathname || routes.origin;
 
     const handleFormChange = (event) => {
         const newForm = { ...form, [event.target.name]: event.target.value };
