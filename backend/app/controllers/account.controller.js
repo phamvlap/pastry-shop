@@ -3,6 +3,18 @@ import { AccountModel } from './../models/index.js';
 import { BadRequestError } from './../errors/index.js';
 
 class AccountController {
+    async index(req, res, next) {
+        try {
+            const accountModel = new AccountModel();
+            const accounts = await accountModel.getAll();
+            return res.status(StatusCodes.OK).json({
+                status: 'success',
+                data: accounts,
+            });
+        } catch (error) {
+            next(new BadRequestError(error.message));
+        }
+    }
     async login(req, res, next) {
         try {
             const accountModel = new AccountModel();

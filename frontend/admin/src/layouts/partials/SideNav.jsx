@@ -1,5 +1,5 @@
 import { useContext, useRef, useEffect, useState } from 'react';
-import { Link, UNSAFE_DataRouterStateContext, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -133,7 +133,7 @@ const SideNav = () => {
                 </ul>
             </div>
 
-            <Button ref={warningModalRef} data-bs-toggle="modal" data-bs-target="#warn-logout" />
+            <Button ref={warningModalRef} data-bs-toggle="modal" data-bs-target="#warn-logout" className="p-0" />
             <Modal
                 id="warn-logout"
                 title="Cảnh báo"

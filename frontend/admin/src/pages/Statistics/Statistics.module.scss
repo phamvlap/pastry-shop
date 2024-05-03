@@ -1,0 +1,80 @@
+// Statistics common
+.statistics-container {
+    padding: 4px;
+}
+.statistics-title {
+    padding: 4px;
+    text-align: center;
+}
+.overall-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px;
+    .card-item {
+        box-shadow: 4px 4px 8px 0 rgba(0, 0, 0, 0.2);
+        padding: 16px;
+        margin: 8px;
+        background-color: var(--fourth-level-color);
+        flex: 1;
+        .card-item__title {
+            font-size: 2.0rem;
+            font-weight: bold;
+            color: var(--first-level-color);
+            padding: 4px;
+        }
+        .card-item__body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-item__left {
+            display: flex;
+            align-items: center;
+            padding: 4px;
+            .card-item__body-value {
+                margin-right: 4px;
+                font-weight: bold;
+                color: var(--first-level-color);
+            }
+            .card-item__body-unit {
+                color: var(--second-level-color)
+            }
+        }
+    }
+}
+
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px;
+    background-color: var(--fourth-level-color);
+    border-radius: 4px;
+    .filter-bar__inputs {
+        display: flex;
+        align-items: center;
+        padding: 4px;
+        .filter-bar__label, .filter-bar__input {
+            font-size: 1.6rem;
+        }
+    }
+    .filter-bar__btn {
+        padding: 6px;
+    }
+}
+.month-result {
+    padding: 8px;
+    .month-result__item {
+        padding: 8px;
+        .month-result__title {
+            margin-right: 4px;
+        }
+        .month-result__value {
+            font-weight: bold;
+            color: var(--first-level-color)
+        }
+        .month-result__unit {
+            margin-left: 4px;
+        }
+    }
+}

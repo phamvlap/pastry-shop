@@ -5,6 +5,9 @@ class AccountService {
         const { baseUrl = '/api/v1/accounts', headers = {} } = config;
         this.api = createAPIService(baseUrl, headers);
     }
+    async getAll() {
+        return (await this.api.get('/')).data;
+    }
     async login(email, username, password) {
         let data = {};
         if (email && !username) {

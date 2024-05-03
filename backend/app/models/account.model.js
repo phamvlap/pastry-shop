@@ -57,6 +57,15 @@ class AccountModel {
         }
         return { result, errors };
     }
+    async getAll() {
+        const preparedStmt = `
+            select *
+            from ${this.table}
+            where account_deleted_at = '${process.env.TIME_NOT_DELETED}';
+        `;
+        const [rows] = await connection.execute(preparedStmt);
+        return rows;
+    }
     async getById(id) {
         const preparedStmt = `
             select *

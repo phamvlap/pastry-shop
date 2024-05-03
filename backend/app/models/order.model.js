@@ -63,11 +63,11 @@ class OrderModel {
     // get all orders
     async getAll(filter = {}) {
         const statusId = Number(filter.status_id) || null;
-        const startDate = (filter.start_date && filter.start_date !== 'null') ? filter.start_date : null;
-        const endDate = (filter.end_date && filter.end_date !== 'null') ? filter.end_date : null;
+        const startDate = filter.start_date && filter.start_date !== 'null' ? filter.start_date : null;
+        const endDate = filter.end_date && filter.end_date !== 'null' ? filter.end_date : null;
         const orderTotalOrder = ['asc', 'desc'].includes(filter.order_total) ? filter.order_total : null;
-        const limit = (filter.limit && filter.limit !== 'null') ? '' + filter.limit : '' + process.env.MAX_LIMIT;
-        const offset = (filter.offset && filter.offset !== 'null') ? '' + filter.offset : '0';
+        const limit = filter.limit && filter.limit !== 'null' ? '' + filter.limit : '' + process.env.MAX_LIMIT;
+        const offset = filter.offset && filter.offset !== 'null' ? '' + filter.offset : '0';
 
         let preparedStmt = `
             select *
@@ -102,7 +102,7 @@ class OrderModel {
                 orderList.push(orderDetail);
             }
         }
-        const count = await this.getCount(filter);
+        const count = orderList.length;
         return {
             count,
             orders: orderList,
@@ -170,7 +170,7 @@ class OrderModel {
         const statusDetailsTable = process.env.TABLE_STATUS_DETAILS;
 
         let rows = [];
-        if(!orderStatusId) {
+        if (!orderStatusId) {
             let preparedStmt = `
                 select *
                 from ${this.table} join ${addressTable}
@@ -181,8 +181,7 @@ class OrderModel {
                 customer_id: customerId,
                 order_status_id: orderStatusId,
             });
-        }
-        else {
+        } else {
             let preparedStmt = `
                 select *
                 from ${this.table} join ${addressTable}

@@ -1,6 +1,6 @@
 class Helper {
+    // 10000000 => 10.000.000
     static formatMoney(value) {
-        // 10000000 => 10.000.000
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
     static averageRating(ratings) {

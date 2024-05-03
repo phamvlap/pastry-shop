@@ -6,7 +6,7 @@ import styles from './BarChart.module.scss';
 
 const cx = classNames.bind(styles);
 
-const BarChart = ({ title, data }) => {
+const BarChart = ({ title, data, unit }) => {
     return (
         <div className={cx('chart-container')}>
             <Bar
@@ -28,7 +28,10 @@ const BarChart = ({ title, data }) => {
                         y: {
                             ticks: {
                                 callback: function (value, index, ticks) {
-                                    return value + ' (VNĐ)';
+                                    if (unit) {
+                                        return value + unit;
+                                    }
+                                    return value;
                                 },
                             },
                         },
@@ -42,6 +45,7 @@ const BarChart = ({ title, data }) => {
 BarChart.propTypes = {
     title: PropTypes.string,
     data: PropTypes.object,
+    unit: PropTypes.string,
 };
 
 export default BarChart;

@@ -22,7 +22,6 @@ const configApi = {
     },
 };
 
-// number of customer, staff, product, order, category, number of product(out of update)
 const Home = () => {
     const [nbCustomer, setNbCustomer] = useState(0);
     const [nbStaff, setNbStaff] = useState(0);
@@ -278,6 +277,7 @@ const Home = () => {
                                             : new Date().getFullYear()
                                     } - ${new Date().getMonth()}/${new Date().getFullYear()})`}
                                     data={data}
+                                    unit=" (VNĐ)"
                                 />
                             )}
                         </div>

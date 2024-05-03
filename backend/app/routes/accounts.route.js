@@ -4,6 +4,7 @@ import { authorizeStaff, authorizeAdmin, authorizeStaffOrCustomer } from './../m
 
 const router = express.Router();
 
+router.get('/', authorizeStaff, AccountController.index);
 router.post('/login', AccountController.login);
 router.post('/:id/password', authorizeStaffOrCustomer, AccountController.changePassword);
 
