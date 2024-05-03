@@ -27,6 +27,7 @@ class OrderDetailModel {
     }
     // get all products in order
     async get(orderId) {
+        const productModel = new ProductModel();
         const preparedStmt = `
             select *
             from ${this.table}
@@ -35,7 +36,6 @@ class OrderDetailModel {
         const [rows] = await connection.execute(preparedStmt, {
             order_id: orderId,
         });
-        const productModel = new ProductModel();
         let items = [];
         if (rows.length > 0) {
             for (const row of rows) {

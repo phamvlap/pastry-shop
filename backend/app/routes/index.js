@@ -7,6 +7,5 @@ export { default as staffRoutes } from './staffs.route.js';
 export { default as supplierRoutes } from './suppliers.route.js';
 export { default as accountRoutes } from './accounts.route.js';
 export { default as paymentMethodRoutes } from './paymentMethods.route.js';
-export { default as vnpayRoutes } from './vnpay.route.js';
 export { default as statusRoutes } from './status.route.js';
 export { default as ratingsRoutes } from './ratings.route.js';

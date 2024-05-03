@@ -115,15 +115,18 @@ class AddressModel {
                 values (${Object.keys(address).map((key) => `:${key}`)})
         `;
         await connection.execute(preparedStmt, address);
-        const [ids] = await connection.query('SELECT LAST_INSERT_ID() as address_id');
-        const [rows] = await connection.execute(`
+        const [ids] = await connection.query('select last_insert_id() as address_id');
+        const [rows] = await connection.execute(
+            `
             select *
             from ${this.table}
             where address_id = :address_id
                 and address_deleted_at = '${process.env.TIME_NOT_DELETED}';
-        `, {
-            address_id: ids[0].address_id,
-        });
+        `,
+            {
+                address_id: ids[0].address_id,
+            },
+        );
         return rows.length > 0 ? escapeData(rows[0], ['address_deleted_at', 'customer_id']) : null;
     }
     async update(addressId, payload) {
@@ -161,14 +164,17 @@ class AddressModel {
             ...address,
             address_id: addressId,
         });
-        const [rows] = await connection.execute(`
+        const [rows] = await connection.execute(
+            `
             select *
             from ${this.table}
             where address_id = :address_id
                 and address_deleted_at = '${process.env.TIME_NOT_DELETED}';
-        `, {
-            address_id: addressId,
-        });
+        `,
+            {
+                address_id: addressId,
+            },
+        );
         return rows.length > 0 ? escapeData(rows[0], ['address_deleted_at', 'customer_id']) : null;
     }
     // set default address

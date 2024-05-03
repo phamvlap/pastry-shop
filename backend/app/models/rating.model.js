@@ -43,12 +43,6 @@ class RatingModel {
         const limit = filter.limit && filter.limit !== 'null' ? '' + filter.limit : null;
         const offset = filter.offset && filter.offset !== 'null' ? '' + filter.offset : '0';
 
-        console.log({
-            ratingStarSort,
-            limit,
-            offset,
-        });
-
         let preparedStmt = `
             select *
             from ${this.table}

@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-// import bodyParser from 'body-parser';
 
 import connectDB from './db/index.js';
 import { errorHandler, notFoundHandler } from './middlewares/index.js';
@@ -15,7 +14,6 @@ import {
     supplierRoutes,
     accountRoutes,
     paymentMethodRoutes,
-    vnpayRoutes,
     statusRoutes,
     ratingsRoutes,
 } from './routes/index.js';
@@ -39,9 +37,6 @@ app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/payment-methods', paymentMethodRoutes);
 app.use('/api/v1/status', statusRoutes);
 app.use('/api/v1/ratings', ratingsRoutes);
-
-// not work
-app.use('/api/v1/payment/vnpay', vnpayRoutes);
 
 // error handlers
 app.use(errorHandler);

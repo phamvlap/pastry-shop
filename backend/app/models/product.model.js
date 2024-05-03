@@ -104,17 +104,25 @@ class ProductModel {
         const images = await imageModel.getAll('product', item.product_id);
         const ratings = await ratingModel.getAllRatingForProduct(item.product_id);
 
-        return {
+        let result = {
             ...escapeData(item, ['category_id', 'discount_id', 'supplier_id', 'product_deleted_at']),
-            category,
-            supplier,
-            discount,
-            price: {
-                ...escapeData(price, ['product_id']),
-            },
-            ratings: ratings,
-            images: images,
         };
+        if (category) {
+            result['category'] = category;
+        }
+        if (supplier) {
+            result['supplier'] = supplier;
+        }
+        if (discount) {
+            result['discount'] = discount;
+        }
+        if (price) {
+            result['price'] = escapeData(price, ['product_id']);
+        }
+        result['images'] = images;
+        result['ratings'] = ratings;
+
+        return result;
     }
     // get all products by filter
     async getAll(
@@ -224,20 +232,6 @@ class ProductModel {
         const product = rows.length > 0 ? await this.getItemDetail(rows[0]) : null;
         return product;
     }
-    // get product by date
-    async getByCreatedDate(date) {
-        const [rows] = await connection.execute(
-            `
-            select * from ${this.table}
-            where product_created_at = :product_created_at
-                and product_deleted_at = '${process.env.TIME_NOT_DELETED}'
-        `,
-            {
-                product_created_at: date,
-            },
-        );
-        return rows.length > 0 ? await this.getItemDetail(rows[0]) : null;
-    }
     // create new product
     async store(data) {
         const priceModel = new PriceModel();
@@ -262,8 +256,8 @@ class ProductModel {
         `;
         await connection.execute(preparedStmt, product);
 
-        const addedItem = await this.getByCreatedDate(product.product_created_at);
-        price.product_id = addedItem.product_id;
+        const [ids] = await connection.execute('select last_insert_id() as product_id');
+        price.product_id = ids[0].product_id;
 
         await priceModel.add(price);
 
@@ -272,7 +266,7 @@ class ProductModel {
                 const imageData = {
                     image_url: image.path,
                     image_target: 'product',
-                    belong_id: parseInt(addedItem.product_id),
+                    belong_id: parseInt(ids[0].product_id),
                 };
                 await imageModel.store(imageData);
             });
@@ -280,6 +274,9 @@ class ProductModel {
     }
     // update product
     async update(id, payload) {
+        const imageModel = new ImageModel();
+        const priceModel = new PriceModel();
+
         const images = payload.product_images;
         delete payload.product_images;
 
@@ -310,7 +307,6 @@ class ProductModel {
             delete product.product_price;
         }
         if (images) {
-            const imageModel = new ImageModel();
             const oldImages = await imageModel.getAll('product', oldItem.product_id);
 
             if (oldImages.length > 0) {
@@ -353,7 +349,6 @@ class ProductModel {
                 price_applied_date: product.product_updated_at,
                 price_value: priceValue,
             };
-            const priceModel = new PriceModel();
             await priceModel.add(price);
         }
     }

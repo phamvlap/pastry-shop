@@ -99,16 +99,6 @@ class AccountModel {
         });
         return rows.length > 0 ? rows[0] : null;
     }
-    async getNewestAccount() {
-        const preparedStmt = `
-            select *
-            from ${this.table}
-            order by account_id desc
-            limit 1;
-        `;
-        const [rows] = await connection.execute(preparedStmt);
-        return rows.length > 0 ? rows[0] : null;
-    }
     async add(payload) {
         const { result: account, errors } = this.validateAccountData(payload);
         if (errors.length > 0) {
@@ -141,14 +131,16 @@ class AccountModel {
                     .join(', ')});
         `;
         await connection.execute(preparedStmt, account);
+        const [ids] = await connection.query('select last_insert_id() as id');
 
-        const registeredAccount = await this.getNewestAccount();
-        return {
-            account_id: registeredAccount.account_id,
-            account_email: registeredAccount.account_email,
-            account_username: registeredAccount.account_username,
-            account_role: registeredAccount.account_role,
-        };
+        return ids.length > 0
+            ? {
+                  account_id: ids[0].id,
+                  account_email: account.account_email,
+                  account_username: account.account_username,
+                  account_role: account.account_role,
+              }
+            : null;
     }
     async login(payload) {
         if (Object.keys(payload).length === 0) {

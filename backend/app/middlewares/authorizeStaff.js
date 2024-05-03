@@ -12,7 +12,9 @@ export default (req, res, next) => {
         if (!decoded.staff_id) {
             return next(new UnauthorizedError('Unauthorized staff.'));
         }
-        req.staff = { ...decoded };
+        req.staff = {
+            ...decoded,
+        };
         return next();
     } catch (error) {
         return next(new UnauthorizedError('Invalid token.'));

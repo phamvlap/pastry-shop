@@ -3,7 +3,7 @@ import fs from 'fs';
 
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { formatDateToString, escapeData, extractData } from './../utils/index.js';
+import { extractData } from './../utils/index.js';
 import { AccountModel, ImageModel } from './../models/index.js';
 
 const connection = await connectDB();
@@ -55,14 +55,14 @@ class CustomerModel {
         const customerUsername = filter.customer_username ? filter.customer_username : '';
         const customerName = filter.customer_name ? filter.customer_name : '';
         let status = '';
-        if(filter.status === 'active') {
+        if (filter.status === 'active') {
             status = ` and ${accountTable}.account_deleted_at = '${process.env.TIME_NOT_DELETED}'`;
-        }
-        else if(filter.status === 'inactive') {
+        } else if (filter.status === 'inactive') {
             status = ` and ${accountTable}.account_deleted_at <> '${process.env.TIME_NOT_DELETED}'`;
         }
 
-        const preparedStmt = `
+        const preparedStmt =
+            `
             select *
             from ${this.table} join ${accountTable}
                 on ${this.table}.account_id = ${accountTable}.account_id
@@ -74,27 +74,20 @@ class CustomerModel {
             customer_name: `%${customerName}%`,
         });
         let result = [];
-        if(rows.length > 0) {
-            for(let row of rows) {
+        if (rows.length > 0) {
+            for (let row of rows) {
                 const avatar = await this.getAvatar(row.customer_id);
-                result.push({
-                    ...row,
-                    customer_avatar: avatar,
-                });
+                if (avatar) {
+                    result.push({
+                        ...row,
+                        customer_avatar: avatar,
+                    });
+                } else {
+                    result.push(row);
+                }
             }
         }
         return result;
-    }
-    // get newest user
-    async getNewestUser() {
-        const preparedStmt = `
-            select * 
-            from ${this.table} 
-            order by customer_id desc 
-            limit 1
-        `;
-        const [rows] = await connection.execute(preparedStmt);
-        return rows[0] ? rows[0] : null;
     }
     // get all infos by id
     async getById(id) {
@@ -161,15 +154,16 @@ class CustomerModel {
         `;
 
         await connection.execute(preparedStmt, customer);
-        const registeredCustomer = await this.getNewestUser();
+        const [ids] = await connection.query('select last_insert_id() as customer_id');
 
         const imageModel = new ImageModel();
         const avatar = {
             image_url: process.env.DEFAULT_URL_AVATAR_USER,
             image_target: 'customer',
-            belong_id: registeredCustomer.customer_id,
+            belong_id: ids[0].customer_id,
         };
         await imageModel.store(avatar);
+        const registeredCustomer = await this.getById(ids[0].customer_id);
 
         return registeredCustomer;
     }

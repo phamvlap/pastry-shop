@@ -12,7 +12,9 @@ export default (req, res, next) => {
         if (!decoded.customer_id) {
             return next(new UnauthorizedError('Unauthorized customer.'));
         }
-        req.customer = { ...decoded };
+        req.customer = {
+            ...decoded,
+        };
         return next();
     } catch (error) {
         return next(new UnauthorizedError('Invalid token.'));

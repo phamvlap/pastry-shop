@@ -38,6 +38,7 @@ const ProductDetail = () => {
     useEffect(() => {
         fetchProduct();
     }, [id, isAddedReview]);
+    console.log(product);
 
     return (
         <div className={cx('container')}>

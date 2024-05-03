@@ -73,20 +73,6 @@ class StatusDetailModel {
         }
         return statusList;
     }
-    // get the latest status of an order
-    async getLatestStatus(orderId) {
-        const preparedStmt = `
-            select * 
-            from ${this.table} 
-            where order_id = :order_id 
-            order by status_updated_at desc 
-            limit 1
-        `;
-        const [rows] = await connection.execute(preparedStmt, {
-            order_id: orderId,
-        });
-        return rows.length > 0 ? await this.getOneStatusDetail(rows[0]) : {};
-    }
     // add new status of order
     async add(payload) {
         const { result: statusDetail, errors } = this.validateStatusDetailData(payload);
