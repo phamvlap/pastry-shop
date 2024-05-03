@@ -108,18 +108,6 @@ class OrderModel {
             orders: orderList,
         };
     }
-    // get order by date
-    async getByDate(date) {
-        const preparedStmt = `
-            select * 
-            from ${this.table} 
-            where order_date = :order_date
-        `;
-        const [rows] = await connection.execute(preparedStmt, {
-            order_date: date,
-        });
-        return rows.length > 0 ? rows[0] : null;
-    }
     // get order by id
     async get(id) {
         const preparedStmt = `
@@ -190,6 +178,7 @@ class OrderModel {
                         'address_detail',
                         'address_deleted_at',
                         'customer_id',
+                        'address_is_default',
                     ]),
                 };
                 const orderDetail = await this.getInfoOneOrder(order);
@@ -207,11 +196,6 @@ class OrderModel {
 
         const currentDate = formatDateToString(new Date());
 
-        const selectedList = await cartModel.getSelectedItems(customerId);
-        if (selectedList.length === 0) {
-            throw new Error('No product selected.');
-        }
-        // console.log('>>> debug: selectedList', selectedList);
         const { result: order, errors } = this.validateOrderData(payload);
         if (errors.length > 0) {
             throw new Error(errors.map((error) => error.msg).join(' '));
@@ -227,20 +211,25 @@ class OrderModel {
         `;
         await connection.execute(preparedStmt, order);
 
-        const justAddedOrder = await this.getByDate(order.order_date);
-        if (justAddedOrder) {
-            for (const item of selectedList) {
-                await orderDetailModel.add(justAddedOrder.order_id, item.detail.product_id, item.quantityInCart);
-                await cartModel.delete(customerId, item.detail.product_id);
+        const [ids] = await connection.execute('select last_insert_id() as order_id');
 
-                const newQuantity = Number(item.quantityInCart) + Number(item.detail.product_sold_quantity);
-                await productModel.update(item.detail.product_id, {
+        if (ids.length > 0) {
+            for (const item of payload.items) {
+                await orderDetailModel.add(ids[0].order_id, item.product_id, item.quantity);
+
+                const hasInCart = !!(await cartModel.getOneFromCart(customerId, item.product_id));
+                if (hasInCart) {
+                    await cartModel.delete(customerId, item.product_id);
+                }
+
+                const newQuantity = Number(item.quantity) + Number(item.product_sold_quantity);
+                await productModel.update(item.product_id, {
                     product_sold_quantity: newQuantity,
                 });
             }
             const statusDetail = {
                 status_id: process.env.STATUS_WAITING_FOR_CONFIRMATION,
-                order_id: justAddedOrder.order_id,
+                order_id: ids[0].order_id,
                 status_updated_at: currentDate,
                 status_updated_by: `customer_${customerId}`,
             };

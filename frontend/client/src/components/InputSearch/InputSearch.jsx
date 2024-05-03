@@ -1,6 +1,6 @@
 import slugify from 'slugify';
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams, useLocation } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
@@ -9,6 +9,7 @@ import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 
 import useDebounce from '~/hooks/useDebounce.js';
 import { ProductService } from '~/services/index.js';
+import routes from '~/config/routes.js';
 
 import styles from './InputSearch.module.scss';
 
@@ -22,6 +23,7 @@ const InputSearch = () => {
     const [searchParams, setSearchParams] = useSearchParams();
 
     const location = useLocation();
+    const navigate = useNavigate();
     const debounceSearchValue = useDebounce(searchValue, 500);
     const wrapperRef = useRef(null);
 
@@ -70,12 +72,10 @@ const InputSearch = () => {
     };
     const handleSubmitSearch = (event) => {
         event.preventDefault();
-        if (searchValueView === '') {
-            setSearchParams({});
+        if (searchValueView.length > 0) {
+            navigate(`${routes.products}?search_name=${searchValue}`);
         } else {
-            setSearchParams({
-                search_name: searchValue,
-            });
+            setSearchParams({});
         }
         setShowResult(false);
     };
@@ -83,7 +83,6 @@ const InputSearch = () => {
         setSearchValue('');
         setSearchValueView('');
         setItemList([]);
-        setSearchParams({});
     };
 
     useClickOutside(wrapperRef);

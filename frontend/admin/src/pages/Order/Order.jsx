@@ -51,7 +51,7 @@ const Order = () => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     // const [recordsPerPage, setRecordsPerPage] = useState(Number(import.meta.env.VITE_DEFAULT_RECORDS_PER_PAGE)); // limit
-    const [recordsPerPage, setRecordsPerPage] = useState(12); // limit
+    const [recordsPerPage, setRecordsPerPage] = useState(100); // limit
 
     const [currentPage, setCurrentPage] = useState(1);
     const [recordOffset, setRecordOffset] = useState(null); // offset

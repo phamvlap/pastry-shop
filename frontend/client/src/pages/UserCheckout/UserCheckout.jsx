@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { toast } from 'react-toastify';
@@ -8,8 +8,9 @@ import AddressActions from '~/utils/addressActions.js';
 import CartActions from '~/utils/cartActions.js';
 import Helper from '~/utils/helper.js';
 import OrderActions from '~/utils/orderActions.js';
-import { PaymentService, VNPAYService } from '~/services/index.js';
+import { PaymentService } from '~/services/index.js';
 import routes from '~/config/routes.js';
+import { CartContext } from '~/contexts/CartContext';
 
 import styles from './UserCheckout.module.scss';
 
@@ -33,15 +34,16 @@ const UserCheckout = () => {
     const location = useLocation();
     const openBtnRef = useRef(null);
     const changeAddressBtnRef = useRef(null);
+    const { setQuantityInCart } = useContext(CartContext);
 
     const calculateTotal = () => {
         const subTotal = itemList.reduce((total, item) => {
-            const originalPrice = Number(item.detail.price.price_value);
+            const originalPrice = item.detail.price ? Number(item.detail.price.price_value) : 0;
             return total + originalPrice * Number(item.quantityInCart);
         }, 0);
         const discount = itemList.reduce((total, item) => {
-            const originalPrice = Number(item.detail.price.price_value);
-            const discountRate = Number(item.detail.discount.discount_rate);
+            const originalPrice = item.detail.price ? Number(item.detail.price.price_value) : 0;
+            const discountRate = item.detail.discount ? Number(item.detail.discount.discount_rate) : 0;
             return total + (originalPrice * discountRate * Number(item.quantityInCart)) / 100;
         }, 0);
         const total = subTotal - discount;
@@ -70,22 +72,29 @@ const UserCheckout = () => {
             console.log(error);
         }
     };
+    const formatItemList = (items) => {
+        return items.map((item, index) => {
+            let priceValue = 0;
+            if (item.detail.price) {
+                priceValue = Number(item.detail.price.price_value);
+                if (item.detail.discount) {
+                    priceValue -= (priceValue * Number(item.detail.discount.discount_rate)) / 100;
+                }
+            }
+            return {
+                index: index + 1,
+                imageSrc: Helper.formatImageUrl(item.detail.images[0].image_url),
+                name: item.detail.product_name,
+                price: priceValue,
+                quantity: item.quantityInCart,
+            };
+        });
+    };
     const fetchCart = async () => {
         try {
             const response = await CartActions.getCart(true);
             if (response.status === 'success') {
-                const orderItemList = response.data.map((item, index) => {
-                    const priceValue =
-                        Number(item.detail.price.price_value) -
-                        (Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate)) / 100;
-                    return {
-                        index: index + 1,
-                        imageSrc: Helper.formatImageUrl(item.detail.images[0].image_url),
-                        name: item.detail.product_name,
-                        price: priceValue,
-                        quantity: item.quantityInCart,
-                    };
-                });
+                const orderItemList = formatItemList(response.data);
                 setItemList(response.data);
                 setFormattedItemList(orderItemList);
             }
@@ -143,6 +152,9 @@ const UserCheckout = () => {
     };
     const setNewAddress = () => {
         const address = addressList.find((address) => address.address_id === Number(formAddress.address_id));
+        if (!address) {
+            return;
+        }
         setAddress(address);
     };
     const goToAddAddress = () => {
@@ -160,23 +172,43 @@ const UserCheckout = () => {
     };
     const handleSubmitCheckout = async () => {
         try {
+            let newErrors = {};
+            if (Object.keys(selectedPaymentMethod).length === 0) {
+                newErrors = {
+                    ...newErrors,
+                    payment_method: 'Vui lòng chọn phương thức thanh toán',
+                };
+            }
+            if (!address.address_id) {
+                newErrors = {
+                    ...newErrors,
+                    address: 'Vui lòng chọn địa chỉ nhận hàng',
+                };
+            }
+            if (Object.values(newErrors).filter((value) => value !== '').length > 0) {
+                setErrors({
+                    ...errors,
+                    ...newErrors,
+                });
+                return;
+            }
+            const items = itemList.map((item) => {
+                return {
+                    product_id: item.detail.product_id,
+                    quantity: item.quantityInCart,
+                };
+            });
             const order = {
                 order_total: total,
                 order_note: note,
                 pm_id: Number(selectedPaymentMethod.pm_id),
                 address_id: address.address_id,
+                items,
             };
-            if (Object.keys(selectedPaymentMethod).length === 0) {
-                setErrors({
-                    ...errors,
-                    payment_method: 'Vui lòng chọn phương thức thanh toán',
-                });
-            }
-            if (Object.values(errors).filter((value) => value !== '').length > 0) {
-                return;
-            }
             const response = await OrderActions.createOrder(order);
             if (response.status === 'success') {
+                const orderedQuantity = items.reduce((quantity, item) => quantity + item.quantity, 0);
+                setQuantityInCart((prevValue) => prevValue - orderedQuantity);
                 toast.success('Đặt hàng thành công', {
                     duration: 1000,
                     onClose: () => {
@@ -195,26 +227,10 @@ const UserCheckout = () => {
             console.log(error);
         }
     };
-    const redirectToVnpay = async (event) => {
-        event.preventDefault();
-        const vnpayService = new VNPAYService();
-        const data = {
-            amount: total,
-            orderInfo: 'Thanh toán đơn hàng',
-            orderType: 'billpayment',
-        };
-        console.log(data);
-        const response = await vnpayService.create(data);
-        if (response.status === 'success') {
-            console.log(response.data);
-            // window.location.href = response.data.vnpUrl;
-        }
-    };
 
     useEffect(() => {
         fetchAddresses();
         fetchPaymentMethod();
-        fetchCart();
         if (location.state?.state) {
             setAddress(location.state.state.address);
             setFormAddress({
@@ -225,6 +241,13 @@ const UserCheckout = () => {
             setNote(location.state.state.note);
         } else {
             fetchDefaultAddress();
+        }
+        if (location.state?.quickItemList) {
+            const orderItemList = formatItemList(location.state.quickItemList);
+            setItemList(location.state.quickItemList);
+            setFormattedItemList(orderItemList);
+        } else {
+            fetchCart();
         }
     }, []);
 
@@ -256,6 +279,7 @@ const UserCheckout = () => {
                                     {address.address_detail}
                                 </span>
                             </div>
+                            {errors.address && <span className="error">{errors.address}</span>}
                         </div>
                     )}
                     <Button text onClick={() => openChangeAddressModal()}>
@@ -283,7 +307,7 @@ const UserCheckout = () => {
                                     {item.vn_pm_name}
                                 </div>
                                 <div className={cx('checkout-payment__pay')}>
-                                    {Number(selectedPaymentMethod.pm_id) === item.pm_id &&
+                                    {/* {Number(selectedPaymentMethod.pm_id) === item.pm_id &&
                                         selectedPaymentMethod.pm_name === 'VNPAY' && (
                                             <Button
                                                 outline
@@ -292,7 +316,7 @@ const UserCheckout = () => {
                                             >
                                                 Thanh toán
                                             </Button>
-                                        )}
+                                        )} */}
                                 </div>
                             </div>
                         ))}

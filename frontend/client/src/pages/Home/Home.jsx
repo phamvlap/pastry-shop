@@ -12,6 +12,7 @@ import ProductActions from '~/utils/productActions.js';
 import RatingActions from '~/utils/ratingActions.js';
 import routes from '~/config/routes.js';
 import { UserContext } from '~/contexts/UserContext.jsx';
+import Helper from '~/utils/helper.js';
 
 import styles from './Home.module.scss';
 
@@ -39,14 +40,12 @@ const Home = () => {
                         product_images: row.images.map((image) => {
                             return {
                                 image_id: image.image_id,
-                                image_url: `${import.meta.env.VITE_UPLOADED_DIR}${
-                                    image.image_url.split('/uploads/')[1]
-                                }`,
+                                image_url: Helper.formatImageUrl(image.image_url),
                             };
                         }),
                         product_stock_quantity: row.product_stock_quantity,
                         product_sold_quantity: row.product_sold_quantity,
-                        product_price: row.price.price_value,
+                        product_price: row.price ? row.price.price_value : '',
                         product_category: row.category,
                         product_discount: row.discount,
                         product_ratings: row.ratings,
@@ -101,7 +100,11 @@ const Home = () => {
                     <div className={cx('home-new__products')}>
                         {productList &&
                             productList.map((product) => {
-                                return <CardItem key={product.product_id} product={product} />;
+                                return (
+                                    <div key={product.product_id} className={cx('home-new__item')}>
+                                        <CardItem product={product} />
+                                    </div>
+                                );
                             })}
                     </div>
                     <p className={cx('home-new__link')}>

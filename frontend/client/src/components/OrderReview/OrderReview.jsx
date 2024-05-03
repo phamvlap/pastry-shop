@@ -73,45 +73,59 @@ const OrderReview = ({ order }) => {
                 </div>
             </div>
             <div className={cx('body')}>
-                {order.items.map((item, index) => {
-                    const price =
-                        Number(item.detail.price.price_value) -
-                        (Number(item.detail.price.price_value) * Number(item.detail.discount.discount_rate)) / 100;
-                    return (
-                        <div key={index} className={cx('order-item')}>
-                            <div className={cx('row', 'order-item__row')}>
-                                <div className="col col-md-8">
-                                    <div className={cx('order-item__info')}>
-                                        <img
-                                            src={Helper.formatImageUrl(item.detail.images[0].image_url)}
-                                            alt="product"
-                                            className={cx('order-item__info-image')}
-                                        />
-                                        <div>
-                                            <p className={cx('order-item__info-name')}>{item.detail.product_name}</p>
-                                            <p className={cx('order-item__info-price')}>
-                                                <span>{Helper.formatMoney(price)}</span>
-                                                <span>VNĐ</span>
-                                            </p>
+                {order.items.length > 0 &&
+                    order.items.map((item, index) => {
+                        let price = 0;
+                        if (item.detail.price) {
+                            price = Number(item.detail.price.price_value);
+                            if (item.detail.discount) {
+                                price -=
+                                    (Number(item.detail.price.price_value) *
+                                        Number(item.detail.discount.discount_rate)) /
+                                    100;
+                            }
+                        }
+                        return (
+                            <div key={index} className={cx('order-item')}>
+                                <div className={cx('row', 'order-item__row')}>
+                                    <div className="col col-md-8">
+                                        <div className={cx('order-item__info')}>
+                                            <img
+                                                src={
+                                                    item.detail.images[0]
+                                                        ? Helper.formatImageUrl(item.detail.images[0].image_url)
+                                                        : './../src/assets/images/no_image.jpg'
+                                                }
+                                                alt="product"
+                                                className={cx('order-item__info-image')}
+                                            />
+                                            <div>
+                                                <p className={cx('order-item__info-name')}>
+                                                    {item.detail.product_name}
+                                                </p>
+                                                <p className={cx('order-item__info-price')}>
+                                                    <span>{Helper.formatMoney(price)}</span>
+                                                    <span>VNĐ</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col col-md-2">
+                                        <div className={cx('order-item__quantity')}>
+                                            <span>x</span>
+                                            <span>{item.product_quantity}</span>
+                                        </div>
+                                    </div>
+                                    <div className="col col-md-2">
+                                        <div className={cx('order-item__subtotal')}>
+                                            <span>{Helper.formatMoney(price * Number(item.product_quantity))}</span>
+                                            <span>VNĐ</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col col-md-2">
-                                    <div className={cx('order-item__quantity')}>
-                                        <span>x</span>
-                                        <span>{item.product_quantity}</span>
-                                    </div>
-                                </div>
-                                <div className="col col-md-2">
-                                    <div className={cx('order-item__subtotal')}>
-                                        <span>{Helper.formatMoney(price * Number(item.product_quantity))}</span>
-                                        <span>VNĐ</span>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
             </div>
             <div className={cx('footer')}>
                 <div>

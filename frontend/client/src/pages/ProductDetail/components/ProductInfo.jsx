@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +12,7 @@ import { CartContext } from '~/contexts/CartContext.jsx';
 import Helper from '~/utils/helper.js';
 import CartActions from '~/utils/cartActions.js';
 import { Button } from '~/components/index.js';
+import routes from '~/config/routes.js';
 
 import styles from './../ProductDetail.module.scss';
 
@@ -21,9 +23,13 @@ const ProductInfo = ({ item }) => {
 
     const { user } = useContext(UserContext);
     const { setQuantityInCart } = useContext(CartContext);
+    const navigate = useNavigate();
 
     const currentPrice =
-        Number(item.price.price_value) - (Number(item.price.price_value) * Number(item.discount.discount_rate)) / 100;
+        item.price && item.discount
+            ? Number(item.price.price_value) -
+              (Number(item.price.price_value) * Number(item.discount.discount_rate)) / 100
+            : 0;
     const ratingValue = Helper.averageRating(item.ratings);
     let starIcons = [];
     for (let i = 0; i < 5; i++) {
@@ -62,7 +68,39 @@ const ProductInfo = ({ item }) => {
         setQuantityInCart((oldQuantity) => oldQuantity + selectedQuantity);
         setSelectedQuantity(0);
     };
-    // const handleToCheckout = () => {};
+    const handleToCheckout = async () => {
+        try {
+            if (!user) {
+                toast.error('Vui lòng đăng nhập để thực hiện đặt hàng');
+                return;
+            }
+            if (selectedQuantity === 0) {
+                toast.error('Vui lòng chọn số lượng sản phẩm');
+                return;
+            }
+            const data = {
+                product_id: item.product_id,
+                cart_quantity: selectedQuantity,
+                cart_is_selected: 1,
+            };
+            await CartActions.addItem(data);
+            setQuantityInCart((oldQuantity) => oldQuantity + selectedQuantity);
+            navigate(routes.userCheckout, {
+                state: {
+                    quickItemList: [
+                        {
+                            detail: {
+                                ...item,
+                            },
+                            quantityInCart: selectedQuantity,
+                        },
+                    ],
+                },
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
         <div className={cx('info-wrapper')}>
             <h2 className={cx('info-title')}>{item.product_name}</h2>
@@ -80,18 +118,20 @@ const ProductInfo = ({ item }) => {
             </div>
             <div className={cx('info-price')}>
                 <div className={cx('info-price__old')}>
-                    <span>{Helper.formatMoney(Number(item.price.price_value))}</span>
+                    <span>{item.price ? Helper.formatMoney(Number(item.price.price_value)) : 0}</span>
                     <span>VNĐ</span>
                 </div>
                 <div className={cx('info-price__current')}>
                     <span>{Helper.formatMoney(currentPrice)}</span>
                     <span>VNĐ</span>
                 </div>
-                <div className={cx('info-price__discount')}>
-                    <span className="d-inline-block me-1">-</span>
-                    <span className="d-inline-block me-1">{Number(item.discount.discount_rate)}</span>
-                    <span>%</span>
-                </div>
+                {item.discount && (
+                    <div className={cx('info-price__discount')}>
+                        <span className="d-inline-block me-1">-</span>
+                        <span className="d-inline-block me-1">{Number(item.discount.discount_rate)}</span>
+                        <span>%</span>
+                    </div>
+                )}
             </div>
             <div className={cx('info-quantity')}>
                 <span className={cx('info-quantity__label')}>Số lượng: </span>
@@ -109,9 +149,9 @@ const ProductInfo = ({ item }) => {
                 <Button outline onClick={() => handleAddToCart()}>
                     Thêm vào giỏ hàng
                 </Button>
-                {/* <Button primary onClick={() => handleToCheckout()}>
+                <Button primary onClick={() => handleToCheckout()}>
                     Đặt hàng
-                </Button> */}
+                </Button>
             </div>
         </div>
     );

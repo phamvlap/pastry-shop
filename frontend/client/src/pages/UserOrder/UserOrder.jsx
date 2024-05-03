@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 
 import { OrderReview } from '~/components/index.js';
@@ -16,18 +16,15 @@ const UserOrder = () => {
     const [activeFilter, setActiveFilter] = useState('all');
 
     const statusService = new StatusService();
-    const navigate = useNavigate();
     const location = useLocation();
 
     const fetchOrders = async () => {
         try {
             const response = await OrderActions.getUserOrders(activeFilter);
-            console.log(response)
             if (response.status === 'success') {
                 setOrders(response.data);
             }
-        }
-        catch(error) {
+        } catch (error) {
             console.log(error);
         }
     };
@@ -35,9 +32,13 @@ const UserOrder = () => {
         setActiveFilter(event.target.id.split('-')[2]);
     };
     const fetchStatusList = async () => {
-        const response = await statusService.getAll();
-        if (response.status === 'success') {
-            setStatusList(response.data);
+        try {
+            const response = await statusService.getAll();
+            if (response.status === 'success') {
+                setStatusList(response.data);
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -67,18 +68,19 @@ const UserOrder = () => {
                     >
                         Tất cả đơn hàng
                     </div>
-                    {statusList.map((status) => (
-                        <div
-                            key={status.status_id}
-                            className={cx('order-filter__item', {
-                                'order-filter__item-active': activeFilter === status.status_id.toString(),
-                            })}
-                            id={`order-filter-${status.status_id}`}
-                            onClick={(event) => handleChangeActiveFilter(event)}
-                        >
-                            {status.vn_status_name}
-                        </div>
-                    ))}
+                    {statusList.length > 0 &&
+                        statusList.map((status) => (
+                            <div
+                                key={status.status_id}
+                                className={cx('order-filter__item', {
+                                    'order-filter__item-active': activeFilter === status.status_id.toString(),
+                                })}
+                                id={`order-filter-${status.status_id}`}
+                                onClick={(event) => handleChangeActiveFilter(event)}
+                            >
+                                {status.vn_status_name}
+                            </div>
+                        ))}
                 </div>
                 <div className={cx('order-list')}>
                     {orders.length > 0 ? (

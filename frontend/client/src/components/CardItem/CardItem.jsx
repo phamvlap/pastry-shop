@@ -23,8 +23,13 @@ const CardItem = ({ product }) => {
 
     const ratingValue = Helper.averageRating(product.product_ratings);
     let starIcons = [];
-    const currentPrice =
-        product.product_price - (Number(product.product_price) * Number(product.product_discount.discount_rate)) / 100;
+    let currentPrice = 0;
+    if (product.product_price) {
+        currentPrice = Number(product.product_price);
+        if (product.product_discount) {
+            currentPrice -= (Number(product.product_price) * Number(product.product_discount.discount_rate)) / 100;
+        }
+    }
     for (let i = 0; i < 5; i++) {
         if (i < ratingValue) {
             starIcons.push(<FontAwesomeIcon key={i} icon={faFilledStar} />);

@@ -16,11 +16,9 @@ const Sidebar = ({ filter, setFilter }) => {
 
     const handleChangeCategory = (id) => {
         setActive(id);
-        setFilter((prevFilter) => {
-            return {
-                ...prevFilter,
-                category_id: id,
-            };
+        setFilter({
+            ...filter,
+            category_id: id,
         });
     };
 

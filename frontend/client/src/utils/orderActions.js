@@ -27,6 +27,7 @@ class OrderActions {
             order_note: data.order_note,
             pm_id: data.pm_id,
             address_id: data.address_id,
+            items: data.items,
         };
         const response = await orderService.create(order);
         return response;

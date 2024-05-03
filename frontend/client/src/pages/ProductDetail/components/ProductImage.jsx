@@ -16,26 +16,29 @@ const ProductImage = ({ images }) => {
             <div className="row">
                 <div className="col col-md-3">
                     <div className={cx('list')}>
-                        {images.map((image, index) => {
-                            return (
-                                <div className={cx('list-item')} key={index} onClick={() => setActiveImage(index)}>
-                                    <img
-                                        src={Helper.formatImageUrl(image.image_url)}
-                                        alt="Product"
-                                        className={cx('list__thumb-image')}
-                                    />
-                                </div>
-                            );
-                        })}
+                        {images.length > 0 &&
+                            images.map((image, index) => {
+                                return (
+                                    <div className={cx('list-item')} key={index} onClick={() => setActiveImage(index)}>
+                                        <img
+                                            src={Helper.formatImageUrl(image.image_url)}
+                                            alt="Product"
+                                            className={cx('list__thumb-image')}
+                                        />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
                 <div className="col col-md-9">
                     <div className={cx('single')}>
-                        <img
-                            src={Helper.formatImageUrl(images[activeImage].image_url)}
-                            alt="Product"
-                            className={cx('curr-image')}
-                        />
+                        {images[activeImage] && (
+                            <img
+                                src={Helper.formatImageUrl(images[activeImage].image_url)}
+                                alt="Product"
+                                className={cx('curr-image')}
+                            />
+                        )}
                     </div>
                 </div>
             </div>
