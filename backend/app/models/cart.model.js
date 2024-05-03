@@ -50,11 +50,12 @@ class CartModel {
     async getInfoCartItem(cartItem) {
         const productModel = new ProductModel();
         const item = await productModel.getById(cartItem.product_id);
-        return {
+
+        return item ? {
             quantityInCart: cartItem.cart_quantity,
             statusItem: cartItem.cart_is_selected,
             detail: item,
-        };
+        } : null;
     }
     // get all products in cart of customer
     async get(customerId, isSelected) {
@@ -84,7 +85,9 @@ class CartModel {
         if (rows.length > 0) {
             for (const row of rows) {
                 const item = await this.getInfoCartItem(row);
-                products.push(item);
+                if(item) {
+                    products.push(item);
+                }
             }
         }
         return products;

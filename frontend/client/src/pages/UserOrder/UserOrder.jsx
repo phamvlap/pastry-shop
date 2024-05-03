@@ -20,9 +20,15 @@ const UserOrder = () => {
     const location = useLocation();
 
     const fetchOrders = async () => {
-        const response = await OrderActions.getUserOrders(activeFilter);
-        if (response.status === 'success') {
-            setOrders(response.data);
+        try {
+            const response = await OrderActions.getUserOrders(activeFilter);
+            console.log(response)
+            if (response.status === 'success') {
+                setOrders(response.data);
+            }
+        }
+        catch(error) {
+            console.log(error);
         }
     };
     const handleChangeActiveFilter = (event) => {

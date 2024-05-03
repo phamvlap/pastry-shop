@@ -5,7 +5,7 @@ import { OAuth2Client } from 'google-auth-library';
 
 import connectDB from './../db/index.js';
 import Validator from './../helpers/validator.js';
-import { formatDateToString, escapeData, extractData } from './../utils/index.js';
+import { formatDateToString, extractData } from './../utils/index.js';
 import { StaffModel, CustomerModel } from './../models/index.js';
 
 const connection = await connectDB();
@@ -18,12 +18,12 @@ class AccountModel {
         this.schema = {
             account_email: {
                 type: String,
-                required: true,
+                // required: true,
                 email: true,
             },
             account_username: {
                 type: String,
-                required: true,
+                // required: true,
                 min: 2,
             },
             account_password: {
@@ -259,19 +259,19 @@ class AccountModel {
             set account_deleted_at = '${process.env.TIME_NOT_DELETED}'
             where account_id = :account_id
                 and account_deleted_at <> '${process.env.TIME_NOT_DELETED}';
-        `
+        `;
         await connection.execute(preparedStmt, {
             account_id: id,
         });
     }
     async forgotPassword(payload) {
         let account = null;
-        if(payload.account_role === 'staff') {
+        if (payload.account_role === 'staff') {
             account = await this.getByEmail(payload.account_email);
-        } else if(payload.account_role === 'customer') {
+        } else if (payload.account_role === 'customer') {
             account = await this.getByUsername(payload.account_username);
         }
-        if(!account) {
+        if (!account) {
             throw new Error('Account does not exist.');
         }
         return {
@@ -282,30 +282,33 @@ class AccountModel {
         };
     }
     async sendCode(payload) {
-        const oAuth2Client = new OAuth2Client(process.env.GOOGLE_MAILER_CLIENT_ID, process.env.GOOGLE_MAILER_CLIENT_SECRET);
+        const oAuth2Client = new OAuth2Client(
+            process.env.GOOGLE_MAILER_CLIENT_ID,
+            process.env.GOOGLE_MAILER_CLIENT_SECRET,
+        );
         oAuth2Client.setCredentials({
-            refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN
+            refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
         });
         const { email } = payload;
-        if(!email) {
+        if (!email) {
             throw new Error('Please provide email.');
         }
         const account_role = payload.account_role;
         const account_email = payload.account_email;
         const account_username = payload.account_username;
         let account = null;
-        if(account_role === 'staff') {
-            if(!account_email) {
+        if (account_role === 'staff') {
+            if (!account_email) {
                 throw new Error('Please provide email.');
             }
             account = await this.getByEmail(account_email);
-        } else if(account_role === 'customer') {
-            if(!account_username) {
+        } else if (account_role === 'customer') {
+            if (!account_username) {
                 throw new Error('Please provide username.');
             }
             account = await this.getByUsername(account_username);
         }
-        if(!account) {
+        if (!account) {
             throw new Error('Account does not exist.');
         }
         const accessTokenObject = await oAuth2Client.getAccessToken();
@@ -319,7 +322,7 @@ class AccountModel {
                 clientSecret: process.env.GOOGLE_MAILER_CLIENT_SECRET,
                 refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
                 accessToken,
-            }
+            },
         });
 
         const code = Math.floor(Math.random() * 1000000);
@@ -328,7 +331,7 @@ class AccountModel {
             to: email,
             subject: '[No Reply] Mã xác thực khôi phục mật khẩu',
             html: `<div>Mã xác thực của bạn là: <strong>${code}</strong></div>`,
-        }
+        };
 
         await transporter.sendMail(mailOptions);
 
@@ -344,24 +347,24 @@ class AccountModel {
     }
     async verifyCode(payload) {
         let account = null;
-        if(payload.account_role === 'staff') {
-            if(!payload.account_email) {
+        if (payload.account_role === 'staff') {
+            if (!payload.account_email) {
                 throw new Error('Please provide email.');
             }
             account = await this.getByEmail(payload.account_email);
-        } else if(payload.account_role === 'customer') {
-            if(!payload.account_username) {
+        } else if (payload.account_role === 'customer') {
+            if (!payload.account_username) {
                 throw new Error('Please provide username.');
             }
             account = await this.getByUsername(payload.account_username);
         }
-        if(!account) {
+        if (!account) {
             throw new Error('Account does not exist.');
         }
-        if(!account.account_code) {
+        if (!account.account_code) {
             throw new Error('Please verify code.');
         }
-        if(account.account_code !== payload.code) {
+        if (account.account_code !== payload.code) {
             throw new Error('Invalid code.');
         }
         return {
@@ -373,18 +376,18 @@ class AccountModel {
     }
     async resetPassword(payload) {
         let account = null;
-        if(payload.account_role === 'staff') {
-            if(!payload.account_email) {
+        if (payload.account_role === 'staff') {
+            if (!payload.account_email) {
                 throw new Error('Please provide email.');
             }
             account = await this.getByEmail(payload.account_email);
-        } else if(payload.account_role === 'customer') {
-            if(!payload.account_username) {
+        } else if (payload.account_role === 'customer') {
+            if (!payload.account_username) {
                 throw new Error('Please provide username.');
             }
             account = await this.getByUsername(payload.account_username);
         }
-        if(!account) {
+        if (!account) {
             throw new Error('Account does not exist.');
         }
         const salt = bcrypt.genSaltSync(Number(process.env.SALT_ROUNDS));

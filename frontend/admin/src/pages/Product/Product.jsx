@@ -5,15 +5,15 @@ import classNames from 'classnames/bind';
 import { ProductService } from '~/services/index.js';
 
 import { Pagination, Table } from '~/components/index.js';
-import SearchBar from '~/pages/Product/partials/SearchBar.jsx';
-import ControlPanel from '~/pages/Product/partials/ControlPanel.jsx';
+import SearchBar from './partials/SearchBar.jsx';
+import ControlPanel from './partials/ControlPanel.jsx';
 
-import styles from '~/pages/Product/Product.module.scss';
+import styles from './Product.module.scss';
 
 const cx = classNames.bind(styles);
 
 const header = {
-    hasCheckbox: true,
+    // hasCheckbox: true,
     product_id: {
         value: 'Mã sản phẩm',
         isModified: false,

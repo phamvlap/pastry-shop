@@ -24,6 +24,15 @@ const BarChart = ({ title, data }) => {
                             },
                         },
                     },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function (value, index, ticks) {
+                                    return value + ' (VNĐ)';
+                                },
+                            },
+                        },
+                    },
                 }}
             />
         </div>

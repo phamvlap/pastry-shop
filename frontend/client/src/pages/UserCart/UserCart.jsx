@@ -32,15 +32,20 @@ const UserCart = () => {
             'product_updated_at',
             'supplier',
         ];
-        const response = await CartActions.getCart();
-        if (response.status === 'success') {
-            const cartItems = response.data.map((item) => {
-                return {
-                    ...Helper.filterObject(item, ['detail']),
-                    product: Helper.filterObject(item.detail, discardDetailKeys),
-                };
-            });
-            setCart(cartItems);
+        try {
+            const response = await CartActions.getCart();
+            if (response.status === 'success') {
+                const cartItems = response.data.map((item) => {
+                    return {
+                        ...Helper.filterObject(item, ['detail']),
+                        product: Helper.filterObject(item.detail, discardDetailKeys),
+                    };
+                });
+                setCart(cartItems);
+            }
+        }
+        catch(error) {
+            console.log(error)
         }
     };
     const calculateTotal = () => {

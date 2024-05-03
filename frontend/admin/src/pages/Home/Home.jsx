@@ -150,6 +150,7 @@ const Home = () => {
                     data: data,
                     borderWidth: 1,
                     backgroundColor: '#427D9D',
+                    barThickness: 68,
                 },
             ],
         });

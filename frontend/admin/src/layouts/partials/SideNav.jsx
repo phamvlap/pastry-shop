@@ -1,5 +1,5 @@
 import { useContext, useRef, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, UNSAFE_DataRouterStateContext, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -113,7 +113,9 @@ const SideNav = () => {
                                         ? activeSideNav === routes.origin || activeSideNav === routes.home
                                         : activeSideNav.includes(sideNav.to),
                             });
-                            return (
+                            return sideNav.to === routes.staffs && staff.staff_role.toUpperCase() !== 'ADMIN' ? (
+                                <></>
+                            ) : (
                                 <li key={index}>
                                     <Link to={sideNav.to} className={sideNavLinkClass}>
                                         <FontAwesomeIcon icon={sideNav.icon} className="me-2" />

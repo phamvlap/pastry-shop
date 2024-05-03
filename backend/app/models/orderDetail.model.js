@@ -59,13 +59,15 @@ class OrderDetailModel {
                     Object.assign(price, rows[0]);
                 }
 
-                items.push({
-                    ...escapeData(row, ['product_id']),
-                    detail: {
-                        ...item,
-                        price: price,
-                    },
-                });
+                if (item && price) {
+                    items.push({
+                        ...escapeData(row, ['product_id']),
+                        detail: {
+                            ...item,
+                            price: price,
+                        },
+                    });
+                }
             }
         }
         return items;
