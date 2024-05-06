@@ -5,6 +5,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "startup": "concurrently \"npm install\" \"cd ./../frontend/admin && npm install\" \"cd ./../frontend/client && npm install\"",
         "start": "concurrently \"nodemon app/index.js\" \"cd ./../frontend/admin && npm run dev\" \"cd ./../frontend/client && npm run dev\"",
         "dev": "nodemon app/index.js"
     },

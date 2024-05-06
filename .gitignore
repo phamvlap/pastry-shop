@@ -5,7 +5,6 @@ hint.txt
 # backend
 backend/node_modules/
 backend/.env
-backend/public/
 backend/test.js
 
 # frontend
