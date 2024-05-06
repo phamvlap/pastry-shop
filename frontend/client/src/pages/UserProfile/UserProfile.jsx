@@ -172,7 +172,7 @@ const UserProfile = () => {
                                                 error={errors.customer_username}
                                                 onChange={(event) => handleOnChange(event)}
                                                 className={cx('account-info__value')}
-                                                disabled={!isUpdating}
+                                                disabled
                                             />
                                         </div>
                                     </div>

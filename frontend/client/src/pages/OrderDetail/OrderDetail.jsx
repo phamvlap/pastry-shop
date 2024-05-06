@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import classNames from 'classnames/bind';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faTrashCan, faBan } from '@fortawesome/free-solid-svg-icons';
@@ -27,16 +27,17 @@ const OrderDetail = () => {
     const [subTotal, setSubTotal] = useState(0);
     const [discount, setDiscount] = useState(0);
     const [total, setTotal] = useState(0);
+    const [activeFilter, setActiveFilter] = useState('all');
 
     const { id: orderId } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const openBtnRef = useRef(null);
     const closeBtnRef = useRef(null);
 
     const fetchOrder = async () => {
         try {
             const response = await OrderActions.getOrderById(orderId);
-            console.log(response);
             if (response.status === 'success') {
                 const itemList = response.data.items.map((item, index) => {
                     const imageSrc = Helper.formatImageUrl(item.detail.images[0].image_url);
@@ -54,12 +55,12 @@ const OrderDetail = () => {
                     };
                 });
                 const subTotal = response.data.items.reduce((total, item) => {
-                    const originalPrice = Number(item.detail.price.price_value);
+                    const originalPrice = item.detail.price ? Number(item.detail.price.price_value) : 0;
                     return total + originalPrice * Number(item.product_quantity);
                 }, 0);
                 const discount = response.data.items.reduce((total, item) => {
-                    const originalPrice = Number(item.detail.price.price_value);
-                    const discountRate = Number(item.detail.discount.discount_rate) / 100;
+                    const originalPrice = item.detail.price ? Number(item.detail.price.price_value) : 0;
+                    const discountRate = item.detail.discount ? Number(item.detail.discount.discount_rate) / 100 : 0;
                     return total + originalPrice * discountRate * Number(item.product_quantity);
                 }, 0);
                 const total = subTotal - discount;
@@ -88,7 +89,7 @@ const OrderDetail = () => {
                         routes.userOrders,
                         {
                             state: {
-                                activeFitler: 1005,
+                                activeFilter: 1005,
                             },
                         },
                         {
@@ -108,11 +109,33 @@ const OrderDetail = () => {
         }
     }, [orderId]);
 
+    useEffect(() => {
+        if (location.state?.activeFilter) {
+            setActiveFilter(location.state.activeFilter.toString());
+        }
+    }, []);
+
     return (
         <div className={cx('order-wrapper')}>
             <h3 className={cx('order-title')}>
                 <div className={cx('order-back')}>
-                    <Button to={routes.userOrders} link className={cx('order-back-btn')}>
+                    <Button
+                        link
+                        className={cx('order-back-btn')}
+                        onClick={() => {
+                            navigate(
+                                routes.userOrders,
+                                // {
+                                //     state: {
+                                //         activeFilter,
+                                //     },
+                                // },
+                                // {
+                                //     replace: true,
+                                // },
+                            );
+                        }}
+                    >
                         <FontAwesomeIcon icon={faChevronLeft} />
                         <span className="ms-2">Quay lại</span>
                     </Button>

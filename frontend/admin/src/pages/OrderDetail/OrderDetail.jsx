@@ -81,7 +81,6 @@ const OrderDetail = () => {
         ) {
             errors.status_id = 'Trạng thái mới không hợp lệ';
         }
-        console.log(errors);
         setErrors(errors);
         return Object.keys(errors).length === 0;
     };

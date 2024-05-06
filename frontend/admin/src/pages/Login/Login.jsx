@@ -33,8 +33,6 @@ const Login = () => {
     const handleSubmitForm = async (event) => {
         event.preventDefault();
 
-        // console.log(form);
-
         const newErrors = validator.validate(form);
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) {

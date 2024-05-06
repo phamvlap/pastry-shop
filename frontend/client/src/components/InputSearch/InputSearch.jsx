@@ -56,6 +56,9 @@ const InputSearch = () => {
             }),
         );
         setSearchValueView(event.target.value);
+        if (event.target.value.length === 0) {
+            setSearchParams({});
+        }
     };
     const useClickOutside = (ref) => {
         useEffect(() => {

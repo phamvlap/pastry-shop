@@ -43,9 +43,8 @@ const UserCart = () => {
                 });
                 setCart(cartItems);
             }
-        }
-        catch(error) {
-            console.log(error)
+        } catch (error) {
+            console.log(error);
         }
     };
     const calculateTotal = () => {

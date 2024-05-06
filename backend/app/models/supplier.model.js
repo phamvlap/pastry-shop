@@ -102,7 +102,6 @@ class SupplierModel {
     }
     // update
     async update(id, payload) {
-        console.log(id, payload)
         const oldSupplier = await this.getById(id);
         if (!oldSupplier) {
             throw new Error('Supplier not found.');

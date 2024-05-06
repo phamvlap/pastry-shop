@@ -78,7 +78,6 @@ const UserAddressAdd = () => {
                     ...form,
                     address_is_default: Number(form.address_is_default),
                 });
-                console.log(response);
             }
             if (response.status !== 'success') {
                 throw new Error('Invalid credentials');

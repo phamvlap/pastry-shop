@@ -49,6 +49,9 @@
                 color: var(--first-level-color);
                 background-color: rgba(0, 0, 0, 0.1);
             }
+            .empty {
+                background-color: white;
+            }
         }
         .card-price__current {
             display: flex;
@@ -95,3 +98,4 @@
         text-align: center;
     }
 }
+

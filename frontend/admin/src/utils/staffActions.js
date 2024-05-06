@@ -15,7 +15,6 @@ const logIn = async (email, password) => {
         const accountService = new AccountService();
         const response = await accountService.login(email, null, password);
         if (response.status !== 'success') {
-            console.log('error');
             throw new Error('Error while login.');
         }
         const staff = {

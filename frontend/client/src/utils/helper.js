@@ -2,6 +2,7 @@ class Helper {
     static formatMoney(value) {
         // split value into parts, each part contains 3 digits
         // 10000000 => 10.000.000
+        value = parseInt(value);
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
     static averageRating(ratings) {

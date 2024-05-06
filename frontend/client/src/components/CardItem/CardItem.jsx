@@ -63,21 +63,37 @@ const CardItem = ({ product }) => {
                     <h3 className={cx('card-title')}>{product.product_name}</h3>
                 </Link>
                 <div className={cx('card-price')}>
-                    <div className={cx('card-price__original-container')}>
-                        <p className={cx('card-price__original')}>
-                            <span>{Helper.formatMoney(parseInt(product.product_price))}</span>
-                            <span className={cx('card-price__unit-money')}>VNĐ</span>
-                        </p>
-                        {product.product_discount && (
-                            <p className={cx('card-price__deducted-rate')}>
-                                <span className="d-inline-block me-1">-</span>
-                                <span className="d-inline-block me-1">
-                                    {Number(product.product_discount.discount_rate)}
-                                </span>
-                                <span>%</span>
+                    {product.product_discount && product.product_discount.discount_rate > 0 ? (
+                        <div className={cx('card-price__original-container')}>
+                            <p className={cx('card-price__original')}>
+                                <span>{Helper.formatMoney(parseInt(product.product_price))}</span>
+                                <span className={cx('card-price__unit-money')}>VNĐ</span>
                             </p>
-                        )}
-                    </div>
+                            {product.product_discount && (
+                                <p className={cx('card-price__deducted-rate')}>
+                                    <span className="d-inline-block me-1">-</span>
+                                    <span className="d-inline-block me-1">
+                                        {Number(product.product_discount.discount_rate)}
+                                    </span>
+                                    <span>%</span>
+                                </p>
+                            )}
+                        </div>
+                    ) : (
+                        <div className={cx('card-price__original-container')}>
+                            <p className={cx('card-price__original')}>
+                                <span></span>
+                                <span className={cx('card-price__unit-money')}></span>
+                            </p>
+                            {product.product_discount && (
+                                <p className={cx('card-price__deducted-rate', 'empty')}>
+                                    <span className="d-inline-block me-1"></span>
+                                    <span className="d-inline-block me-1"></span>
+                                    <span></span>
+                                </p>
+                            )}
+                        </div>
+                    )}
                     <div className={cx('card-price__current')}>
                         <span>{Helper.formatMoney(currentPrice)}</span>
                         <span className={cx('card-price__unit-money')}>VNĐ</span>

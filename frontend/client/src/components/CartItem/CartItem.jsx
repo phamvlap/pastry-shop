@@ -111,10 +111,12 @@ const CartItem = ({ cartItem, setCart }) => {
                             <span>{Helper.formatMoney(currentPrice)}</span>
                             <span>VNĐ</span>
                         </p>
-                        <p className={cx('cart-item__price-item')}>
-                            <span>{Helper.formatMoney(Number(cartItem.product.price.price_value))}</span>
-                            <span>VNĐ</span>
-                        </p>
+                        {cartItem.product.discount && cartItem.product.discount.discount_rate > 0 && (
+                            <p className={cx('cart-item__price-item', 'old-price')}>
+                                <span>{Helper.formatMoney(Number(cartItem.product.price.price_value))}</span>
+                                <span>VNĐ</span>
+                            </p>
+                        )}
                     </div>
                 </div>
                 <div className="col col-md-2">

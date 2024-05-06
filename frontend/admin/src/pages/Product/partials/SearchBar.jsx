@@ -81,7 +81,6 @@ const SearchBar = ({ setRecordsPerPage, setCurrentFilter }) => {
         setCurrentFilter(filter);
     };
     const handleSubmitSearch = () => {
-        console.log(filter);
         setCurrentFilter(filter);
     };
     const handleRefreshFilter = () => {

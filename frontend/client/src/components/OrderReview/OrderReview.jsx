@@ -6,13 +6,12 @@ import { toast } from 'react-toastify';
 import { Button } from '~/components/index.js';
 import Helper from '~/utils/helper.js';
 import OrderActions from '~/utils/orderActions';
-import routes from '~/config/routes.js';
 
 import styles from './OrderReview.module.scss';
 
 const cx = classNames.bind(styles);
 
-const OrderReview = ({ order }) => {
+const OrderReview = ({ order, activeFilter, setActiveFilter }) => {
     const statusMapping = {
         1001: 'waiting',
         1002: 'confirmed',
@@ -27,6 +26,7 @@ const OrderReview = ({ order }) => {
         navigate(`/user/order/${orderId}`, {
             state: {
                 order,
+                activeFilter,
             },
         });
     };
@@ -38,17 +38,7 @@ const OrderReview = ({ order }) => {
             toast.success('Chúc mừng bạn đã nhận hàng thành công!', {
                 duration: 1000,
                 onClose: () => {
-                    navigate(
-                        routes.userOrders,
-                        {
-                            state: {
-                                activeFilter: 1004,
-                            },
-                        },
-                        {
-                            replace: true,
-                        },
-                    );
+                    setActiveFilter('1004');
                 },
             });
         } catch (err) {
@@ -155,6 +145,8 @@ const OrderReview = ({ order }) => {
 
 OrderReview.propTypes = {
     order: PropTypes.object.isRequired,
+    activeFilter: PropTypes.string,
+    setActiveFilter: PropTypes.func,
 };
 
 export default OrderReview;

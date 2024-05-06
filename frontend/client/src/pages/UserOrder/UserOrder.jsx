@@ -18,7 +18,7 @@ const UserOrder = () => {
     const statusService = new StatusService();
     const location = useLocation();
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (activeFilter) => {
         try {
             const response = await OrderActions.getUserOrders(activeFilter);
             if (response.status === 'success') {
@@ -43,15 +43,12 @@ const UserOrder = () => {
     };
 
     useEffect(() => {
-        fetchOrders();
         fetchStatusList();
-        if (location.state?.activeFilter) {
-            setActiveFilter(location.state.activeFilter.toString());
-        }
+        fetchOrders(activeFilter);
     }, []);
 
     useEffect(() => {
-        fetchOrders();
+        fetchOrders(activeFilter);
     }, [activeFilter]);
 
     return (
@@ -84,7 +81,14 @@ const UserOrder = () => {
                 </div>
                 <div className={cx('order-list')}>
                     {orders.length > 0 ? (
-                        orders.map((order) => <OrderReview key={order.order_id} order={order} />)
+                        orders.map((order) => (
+                            <OrderReview
+                                key={order.order_id}
+                                order={order}
+                                activeFilter={activeFilter}
+                                setActiveFilter={setActiveFilter}
+                            />
+                        ))
                     ) : (
                         <div className={cx('order-empty')}>
                             <p>Không có đơn hàng nào.</p>

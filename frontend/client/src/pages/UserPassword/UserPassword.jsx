@@ -40,7 +40,6 @@ const UserPassword = () => {
             if (form.new_password !== form.confirm_password) {
                 newErrors.confirm_password = 'Mật khẩu xác nhận không khớp';
             }
-            console.log(newErrors);
             if (Object.keys(newErrors).length > 0) {
                 setErrors(newErrors);
                 return;

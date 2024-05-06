@@ -47,6 +47,9 @@
             display: flex;
             align-items: center;
             padding: 4px;   
+            &.old-price {
+                text-decoration: line-through;
+            }
         }
         span {
             display: inline-block;
@@ -54,9 +57,9 @@
         span:last-child {
             margin-left: 4px;
         }
-        &>.cart-item__price-item:last-child {
-            text-decoration: line-through;
-        }
+        // .cart-item__price-item:last-child {
+        //     text-decoration: line-through;
+        // }
     }
     .cart-item__actions {
         display: flex;

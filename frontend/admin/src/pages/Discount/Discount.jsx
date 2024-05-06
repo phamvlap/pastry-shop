@@ -23,21 +23,23 @@ const Discount = () => {
             const response = await discountService.getAll();
             let data = [];
             for (const discount of response.data) {
-                const appliedCount = await productService.getCount({
-                    discount_id: discount.discount_id,
-                });
-                data.push({
-                    discount_id: discount.discount_id,
-                    discount_code: discount.discount_code,
-                    discount_rate: parseInt(discount.discount_rate),
-                    discount_limit: discount.discount_limit,
-                    discount_applied: appliedCount.data,
-                    discount_start: formatDate.convertToStandardFormat(discount.discount_start),
-                    discount_end: formatDate.convertToStandardFormat(discount.discount_end),
-                    discount_start_view: formatDate.convertToViewFormat(discount.discount_start),
-                    discount_end_view: formatDate.convertToViewFormat(discount.discount_end),
-                    discount_status: new Date() < new Date(discount.discount_end),
-                });
+                if (Number(discount.discount_id) > 1000) {
+                    const appliedCount = await productService.getCount({
+                        discount_id: discount.discount_id,
+                    });
+                    data.push({
+                        discount_id: discount.discount_id,
+                        discount_code: discount.discount_code,
+                        discount_rate: parseInt(discount.discount_rate),
+                        discount_limit: discount.discount_limit,
+                        discount_applied: appliedCount.data,
+                        discount_start: formatDate.convertToStandardFormat(discount.discount_start),
+                        discount_end: formatDate.convertToStandardFormat(discount.discount_end),
+                        discount_start_view: formatDate.convertToViewFormat(discount.discount_start),
+                        discount_end_view: formatDate.convertToViewFormat(discount.discount_end),
+                        discount_status: new Date() < new Date(discount.discount_end),
+                    });
+                }
             }
             setDiscountList(data);
         };

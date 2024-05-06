@@ -68,7 +68,7 @@ const Login = () => {
                 },
             });
         } catch (error) {
-            console.log(error.message);
+            console.log(error);
             setErrors({
                 form: 'Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại',
             });

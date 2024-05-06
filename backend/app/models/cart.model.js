@@ -51,11 +51,13 @@ class CartModel {
         const productModel = new ProductModel();
         const item = await productModel.getById(cartItem.product_id);
 
-        return item ? {
-            quantityInCart: cartItem.cart_quantity,
-            statusItem: cartItem.cart_is_selected,
-            detail: item,
-        } : null;
+        return item
+            ? {
+                  quantityInCart: cartItem.cart_quantity,
+                  statusItem: cartItem.cart_is_selected,
+                  detail: item,
+              }
+            : null;
     }
     // get all products in cart of customer
     async get(customerId, isSelected) {
@@ -85,7 +87,7 @@ class CartModel {
         if (rows.length > 0) {
             for (const row of rows) {
                 const item = await this.getInfoCartItem(row);
-                if(item) {
+                if (item) {
                     products.push(item);
                 }
             }
@@ -127,7 +129,9 @@ class CartModel {
             cart.cart_quantity += oldItem.cart_quantity;
             await this.update(cart);
         } else {
-            cart['cart_is_selected'] = 0;
+            if (!data.cart_is_selected) {
+                cart['cart_is_selected'] = 0;
+            }
             const preparedStmt = `insert into ${this.table} (${Object.keys(cart)
                 .map((key) => `${key}`)
                 .join(', ')}) values (${Object.keys(cart).map((key) => `:${key}`)})`;

@@ -55,7 +55,7 @@ class DiscountModel {
     // get by id
     async getById(id) {
         const preparedStmt = `
-            select * 
+            select *
             from ${this.table} 
             where discount_id = :discount_id
         `;

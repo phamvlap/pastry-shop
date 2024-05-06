@@ -117,15 +117,17 @@ const ProductInfo = ({ item }) => {
                 <span>{item.category ? item.category.category_name : 'Đang cập nhật'}</span>
             </div>
             <div className={cx('info-price')}>
-                <div className={cx('info-price__old')}>
-                    <span>{item.price ? Helper.formatMoney(Number(item.price.price_value)) : 0}</span>
-                    <span>VNĐ</span>
-                </div>
+                {item.discount && item.discount.discount_rate > 0 && (
+                    <div className={cx('info-price__old')}>
+                        <span>{item.price ? Helper.formatMoney(Number(item.price.price_value)) : 0}</span>
+                        <span>VNĐ</span>
+                    </div>
+                )}
                 <div className={cx('info-price__current')}>
                     <span>{Helper.formatMoney(currentPrice)}</span>
                     <span>VNĐ</span>
                 </div>
-                {item.discount && (
+                {item.discount && item.discount.discount_rate > 0 && (
                     <div className={cx('info-price__discount')}>
                         <span className="d-inline-block me-1">-</span>
                         <span className="d-inline-block me-1">{Number(item.discount.discount_rate)}</span>
